@@ -1,0 +1,1 @@
+gem 'emf_jruby'
