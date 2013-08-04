@@ -1,11 +1,12 @@
+require 'helper'
+
 require 'test/unit'
-require 'parser'
-require 'metamodel'
+require 'rubymm'
  
 class TestOperations < Test::Unit::TestCase
  
   def test_sum
-  	root = parse('3+40')
+  	root = RubyMM.parse('3+40')
 
   	assert_right_class root, RubyMM::Call
   	assert_equal '+', root.name  	
@@ -15,7 +16,7 @@ class TestOperations < Test::Unit::TestCase
   end
 
   def test_def_with_some_statements
-    root = parse("def somefunc \n 1\n 2\n 3\n end")
+    root = RubyMM.parse("def somefunc \n 1\n 2\n 3\n end")
 
     assert_right_class root, RubyMM::Def
     assert_equal 'somefunc', root.name        
@@ -27,7 +28,7 @@ class TestOperations < Test::Unit::TestCase
   end
 
   def test_def_with_one_statements
-  	root = parse("def somefunc \n 10\n end")
+  	root = RubyMM.parse("def somefunc \n 10\n end")
 
   	assert_right_class root, RubyMM::Def
   	assert_equal 'somefunc', root.name  	
