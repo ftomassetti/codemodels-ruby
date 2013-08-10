@@ -34,6 +34,13 @@ def self.node_to_model(node)
 		model.args = args_to_model node.args
 		model.implicit_receiver = false
 		model
+	when 'VCALLNODE'
+		model = RubyMM::Call.new
+		model.name = node.name
+		#model.receiver = node_to_model node.receiver
+		#model.args = args_to_model node.args
+		model.implicit_receiver = false
+		model
 	when 'FCALLNODE'
 		model = RubyMM::Call.new
 		model.name = node.name
@@ -63,7 +70,18 @@ def self.node_to_model(node)
 	when 'STRNODE'
 		model = RubyMM::StringLiteral.new
 		model.value = node.value
+		model.dynamic = false
 		model
+	when 'DSTRNODE'
+		model = RubyMM::StringLiteral.new
+		#model.value = node.value
+		model.dynamic = true
+		for i in 0..(node.size-1)
+			model.pieces = model.pieces << node_to_model(node.get i)
+		end
+		model
+	when 'EVSTRNODE'
+		node_to_model(node.body)
 	when 'CLASSNODE'
 		model = RubyMM::ClassDecl.new
 		model.defname = node_to_model(node.getCPath)

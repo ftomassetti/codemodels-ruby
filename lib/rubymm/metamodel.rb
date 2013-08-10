@@ -34,6 +34,8 @@ module RubyMM
 
 	class StringLiteral < Literal
 		has_attr 'value', String
+		has_attr 'dynamic', Boolean
+		has_many 'pieces', Value # only for dynamic
 	end
 
 	class NilLiteral < Literal
@@ -44,7 +46,7 @@ module RubyMM
 		has_one 'container',Constant
 	end
 
-	class ClassDecl < RGen::MetamodelBuilder::MMBase
+	class ClassDecl < Value
 		has_one 'defname', Constant
 		has_one 'super_class',Constant
 		has_many 'body',Value
