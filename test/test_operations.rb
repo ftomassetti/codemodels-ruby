@@ -50,11 +50,11 @@ class TestOperations < Test::Unit::TestCase
     root = RubyMM.parse("class TestOperations < Test::Unit::TestCase\nend")
   
     assert_right_class root, RubyMM::ClassDecl
-    assert_right_class root.super_class,RubyMM::Const
+    assert_right_class root.super_class,RubyMM::Constant
     assert_equal 'TestCase', root.super_class.name
-    assert_right_class root.super_class.container,RubyMM::Const
+    assert_right_class root.super_class.container,RubyMM::Constant
     assert_equal 'Unit', root.super_class.container.name
-    assert_right_class root.super_class.container.container,RubyMM::Const
+    assert_right_class root.super_class.container.container,RubyMM::Constant
     assert_equal 'Test', root.super_class.container.container.name
     assert_equal nil, root.super_class.container.container.container
   end
@@ -74,6 +74,16 @@ class TestOperations < Test::Unit::TestCase
     assert_equal nil,root.super_class
   end
 
+  def test_class_with_content
+    root = RubyMM.parse("class AClass\nattr_accessor :name\nend")
+
+    assert_right_class root, RubyMM::ClassDecl
+    assert_equal nil,root.super_class
+    assert_simple_const root.defname,'AClass'
+    assert_equal 1,root.body.count
+    assert_right_class root.body[0], RubyMM::Call
+  end
+
   def assert_is_int(node,value)
   	assert node.is_a? RubyMM::IntLiteral
   	assert_equal value, node.value
@@ -86,6 +96,12 @@ class TestOperations < Test::Unit::TestCase
 
   def assert_right_class(node,clazz)
   	assert node.is_a?(clazz), "Instead #{node.class}"
+  end
+
+  def assert_simple_const(node,name)
+    assert_right_class node,RubyMM::Constant
+    assert_equal name, node.name
+    assert_equal nil, node.container
   end
  
 end

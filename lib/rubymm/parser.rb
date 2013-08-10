@@ -21,6 +21,7 @@ end
 
 def self.node_to_model(node)
 	return nil if node==nil
+	#puts "#{node} #{node.node_type.name}"
 	case node.node_type.name
 	when 'NEWLINENODE'
 		node_to_model node.next_node
@@ -63,10 +64,27 @@ def self.node_to_model(node)
 		model
 	when 'CLASSNODE'
 		model = RubyMM::ClassDecl.new
+		model.defname = node_to_model(node.getCPath)
 		model.super_class = node_to_model(node.super)
+		body = node_to_model(node.body_node)
+		# if it is a single element...
+		if not body
+			# nothing to do
+			#puts "\tbody null, ignored"
+		elsif not body.is_a? Enumerable
+			#puts "\tAdding #{body}"
+			#non stampa body e poi non fa la cosa sotto
+			model.body = model.body << body
+			#puts "\tmodel.body #{model.body} (count: #{model.body.count})"
+		else
+			raise 'not implemented'
+		end
+		#model.body = body
 		model
+	when 'NILNODE'
+		nil
 	when 'COLON2NODE'
-		model = RubyMM::Const.new
+		model = RubyMM::Constant.new
 		model.name = node.name
 		model.container = node_to_model(node.left_node)
 		#puts "COLON2NODE #{node}"
@@ -74,8 +92,11 @@ def self.node_to_model(node)
 		#puts "\tname:#{node.value}"
 		#model.container =
  		model
+ 	when 'SYMBOLNODE'
+ 		model = RubyMM::Symbol.new
+ 		model
  	when 'CONSTNODE'
- 		model = RubyMM::Const.new
+ 		model = RubyMM::Constant.new
  		model.name = node.name
  		model
 	else		
