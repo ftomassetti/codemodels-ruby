@@ -46,6 +46,34 @@ class TestOperations < Test::Unit::TestCase
     assert_is_str root.args[0],'something'   
   end
 
+  def test_class_decl_ext_class_in_module
+    root = RubyMM.parse("class TestOperations < Test::Unit::TestCase\nend")
+  
+    assert_right_class root, RubyMM::ClassDecl
+    assert_right_class root.super_class,RubyMM::Const
+    assert_equal 'TestCase', root.super_class.name
+    assert_right_class root.super_class.container,RubyMM::Const
+    assert_equal 'Unit', root.super_class.container.name
+    assert_right_class root.super_class.container.container,RubyMM::Const
+    assert_equal 'Test', root.super_class.container.container.name
+    assert_equal nil, root.super_class.container.container.container
+  end
+
+  def test_class_decl_ext_class_simple
+    root = RubyMM.parse("class Literal < Value\nend")
+
+    assert_right_class root, RubyMM::ClassDecl
+    assert_equal 'Value', root.super_class.name
+    assert_equal nil,root.super_class.container
+  end
+
+  def test_class_decl_no_ext
+    root = RubyMM.parse("class Literal\nend")
+
+    assert_right_class root, RubyMM::ClassDecl
+    assert_equal nil,root.super_class
+  end
+
   def assert_is_int(node,value)
   	assert node.is_a? RubyMM::IntLiteral
   	assert_equal value, node.value

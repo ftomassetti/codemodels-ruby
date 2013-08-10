@@ -32,4 +32,25 @@ module RubyMM
 		has_attr 'value', String
 	end
 
+	class Const < RGen::MetamodelBuilder::MMBase
+		has_attr 'name', String
+		has_one 'container',Const
+	end
+
+	# class ClassRef < RGen::MetamodelBuilder::MMBase
+	# 	has_one 'constant', ConstantAccess
+
+	# 	def self.assign(obj,value)
+	# 		if value.is_a? ConstantAccess
+	# 			obj.constant = value
+	# 		else
+	# 			raise "Unknown: #{value} (#{value.class})"
+	# 		end
+	# 	end
+	# end
+
+	class ClassDecl < RGen::MetamodelBuilder::MMBase
+		has_one 'super_class',Const
+	end
+
 end

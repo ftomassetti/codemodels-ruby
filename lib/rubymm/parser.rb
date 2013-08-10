@@ -20,6 +20,7 @@ def self.tree_to_model(tree)
 end
 
 def self.node_to_model(node)
+	return nil if node==nil
 	case node.node_type.name
 	when 'NEWLINENODE'
 		node_to_model node.next_node
@@ -60,6 +61,23 @@ def self.node_to_model(node)
 		model = RubyMM::StringLiteral.new
 		model.value = node.value
 		model
+	when 'CLASSNODE'
+		model = RubyMM::ClassDecl.new
+		model.super_class = node_to_model(node.super)
+		model
+	when 'COLON2NODE'
+		model = RubyMM::Const.new
+		model.name = node.name
+		model.container = node_to_model(node.left_node)
+		#puts "COLON2NODE #{node}"
+		#puts "\tname:#{node.name}"
+		#puts "\tname:#{node.value}"
+		#model.container =
+ 		model
+ 	when 'CONSTNODE'
+ 		model = RubyMM::Const.new
+ 		model.name = node.name
+ 		model
 	else		
 		raise "I don't know how to deal with #{node.node_type.name}"
 	end
