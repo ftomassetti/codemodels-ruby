@@ -4,11 +4,13 @@ require 'java'
 require 'emf_jruby'
 
 java_import org.jrubyparser.ast.ArrayNode
+java_import org.jrubyparser.ast.ListNode
 
 module RubyMM
 
 def self.parse(code)
 	tree = JRubyParser.parse(code)
+	#puts "Code: #{code} Root: #{tree}"
 	tree_to_model(tree)
 end
 
@@ -82,7 +84,7 @@ def self.node_to_model(node)
 		#model.body = body
 		model
 	when 'NILNODE'
-		nil
+		RubyMM::NilLiteral.new
 	when 'COLON2NODE'
 		model = RubyMM::Constant.new
 		model.name = node.name
@@ -100,6 +102,20 @@ def self.node_to_model(node)
  		model = RubyMM::Constant.new
  		model.name = node.name
  		model
+ 	when 'LOCALASGNNODE'
+ 		model = RubyMM::LocalVarAssignment.new
+ 		model
+ 	when 'LOCALVARNODE'
+ 		model = RubyMM::LocalVarAccess.new
+ 		model
+ 	when 'FALSENODE'
+ 		model = RubyMM::BooleanLiteral.new
+ 		model.value = false
+ 		model
+ 	when 'TRUENODE'
+ 		model = RubyMM::BooleanLiteral.new
+ 		model.value = true
+ 		model
 	else		
 		raise "I don't know how to deal with #{node.node_type.name}"
 	end
@@ -114,6 +130,12 @@ def self.args_to_model(args_node)
 			args << node_to_model(args_node.get i)
 		end
 		args
+	elsif args_node.is_a? ListNode 
+		for i in 0..(args_node.size-1) 
+			#puts "DEALING WITH #{i} #{args_node.get i} #{(args_node.get i).class}"
+			args << node_to_model(args_node.get i)
+		end
+		args		
 	else 
 		raise "I don't know how to deal with #{args_node.class}"
 	end

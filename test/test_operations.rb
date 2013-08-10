@@ -91,6 +91,33 @@ class TestOperations < Test::Unit::TestCase
     assert_right_class root.body[0], RubyMM::Call
   end
 
+  def test_false
+    root = RubyMM.parse('false')
+
+    assert_right_class root, RubyMM::BooleanLiteral
+    assert_equal false,root.value
+  end
+
+  def test_true
+    root = RubyMM.parse('true')
+
+    assert_right_class root, RubyMM::BooleanLiteral
+    assert_equal true,root.value
+  end
+
+  def test_nil
+    root = RubyMM.parse('nil')
+
+    assert_right_class root, RubyMM::NilLiteral
+  end
+
+  def test_load_this_file
+    content = s = IO.read(__FILE__)
+    #root = RubyMM.parse(content)
+
+    # check no exceptions are generated...
+  end
+
   def assert_is_int(node,value)
   	assert node.is_a? RubyMM::IntLiteral
   	assert_equal value, node.value

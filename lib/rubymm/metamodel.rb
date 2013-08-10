@@ -16,12 +16,16 @@ module RubyMM
 		has_attr 'implicit_receiver', Boolean
 	end
 
-	class Def < RGen::MetamodelBuilder::MMBase
+	class Def < Value
 		has_attr 'name', String
 		has_one 'body', Value
 	end
 
 	class Literal < Value
+	end
+
+	class BooleanLiteral < Literal
+		has_attr 'value', Boolean
 	end
 
 	class IntLiteral < Literal
@@ -32,7 +36,10 @@ module RubyMM
 		has_attr 'value', String
 	end
 
-	class Constant < RGen::MetamodelBuilder::MMBase
+	class NilLiteral < Literal
+	end
+
+	class Constant < Value
 		has_attr 'name', String
 		has_one 'container',Constant
 	end
@@ -45,6 +52,12 @@ module RubyMM
 
 	class Symbol < Value
 		has_attr 'name', String
+	end
+
+	class LocalVarAssignment < Value
+	end
+
+	class LocalVarAccess < Value
 	end
 
 end
