@@ -11,6 +11,7 @@ class TestOperations < Test::Unit::TestCase
   	assert_right_class root, RubyMM::Call
   	assert_equal '+', root.name  	
   	assert_is_int root.receiver, 3
+    assert_equal false, root.implicit_receiver
   	assert_equal 1,  root.args.count
   	assert_is_int root.args[0], 40
   end
@@ -35,9 +36,24 @@ class TestOperations < Test::Unit::TestCase
     assert_is_int root.body, 10
   end
 
+  def test_require
+    root = RubyMM.parse("require 'something'")
+
+    assert_right_class root, RubyMM::Call
+    assert_equal 'require', root.name
+    assert_equal true, root.implicit_receiver
+    assert_equal 1, root.args.count
+    assert_is_str root.args[0],'something'   
+  end
+
   def assert_is_int(node,value)
   	assert node.is_a? RubyMM::IntLiteral
   	assert_equal value, node.value
+  end
+
+  def assert_is_str(node,value)
+    assert node.is_a? RubyMM::StringLiteral
+    assert_equal value, node.value
   end
 
   def assert_right_class(node,clazz)

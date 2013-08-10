@@ -13,6 +13,7 @@ module RubyMM
 		has_attr 'name', String
 		has_many 'args', Value
 		has_one 'receiver', Value
+		has_attr 'implicit_receiver', Boolean
 	end
 
 	class Def < RGen::MetamodelBuilder::MMBase
@@ -25,6 +26,10 @@ module RubyMM
 
 	class IntLiteral < Literal
 		has_attr 'value', Integer
+	end
+
+	class StringLiteral < Literal
+		has_attr 'value', String
 	end
 
 end

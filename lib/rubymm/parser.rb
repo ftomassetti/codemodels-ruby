@@ -28,7 +28,15 @@ def self.node_to_model(node)
 		model.name = node.name
 		model.receiver = node_to_model node.receiver
 		model.args = args_to_model node.args
+		model.implicit_receiver = false
 		model
+	when 'FCALLNODE'
+		model = RubyMM::Call.new
+		model.name = node.name
+		#model.receiver = node_to_model node.receiver
+		model.args = args_to_model node.args
+		model.implicit_receiver = true
+		model		
 	when 'DEFNNODE'
 		model = RubyMM::Def.new
 		model.name = node.name
@@ -46,6 +54,10 @@ def self.node_to_model(node)
 		model
 	when 'FIXNUMNODE'
 		model = RubyMM::IntLiteral.new
+		model.value = node.value
+		model
+	when 'STRNODE'
+		model = RubyMM::StringLiteral.new
 		model.value = node.value
 		model
 	else		
