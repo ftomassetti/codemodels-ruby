@@ -5,6 +5,13 @@ require 'rubymm'
  
 class TestOperations < Test::Unit::TestCase
  
+  def test_symbol
+    root = RubyMM.parse(':a')
+
+    assert_right_class root, RubyMM::Symbol
+    assert_equal 'a',root.name
+  end
+
   def test_sum
   	root = RubyMM.parse('3+40')
 

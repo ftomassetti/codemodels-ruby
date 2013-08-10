@@ -44,6 +44,7 @@ module RubyMM
 	end
 
 	class Symbol < Value
+		has_attr 'name', String
 	end
 
 end

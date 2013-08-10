@@ -94,6 +94,7 @@ def self.node_to_model(node)
  		model
  	when 'SYMBOLNODE'
  		model = RubyMM::Symbol.new
+ 		model.name = node.name
  		model
  	when 'CONSTNODE'
  		model = RubyMM::Constant.new
