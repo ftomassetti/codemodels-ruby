@@ -5,3 +5,5 @@ end
 
 require 'rubymm/metamodel'
 require 'rubymm/parser'
+require 'rubymm/query'
+require 'rubymm/rgen_ext'

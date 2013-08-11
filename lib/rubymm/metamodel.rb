@@ -5,6 +5,14 @@ module RubyMM
 	class Value < RGen::MetamodelBuilder::MMBase
 	end
 
+	class Statement < Value
+	end
+
+	class IfStatement < Statement
+		has_one 'condition', Value
+		has_many 'body', Value
+	end
+
 	class Block < Value
 		has_many 'contents', Value
 	end 
@@ -36,6 +44,12 @@ module RubyMM
 		has_attr 'value', String
 		has_attr 'dynamic', Boolean
 		has_many 'pieces', Value # only for dynamic
+	end
+
+	def self.string(value)
+		node = StringLiteral.new
+		node.value = value
+		node
 	end
 
 	class NilLiteral < Literal

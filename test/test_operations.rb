@@ -128,10 +128,21 @@ class TestOperations < Test::Unit::TestCase
   end
 
   def test_load_complex_file
+    #Dir['../../**/*.rb'].each do |f|
+    #  puts "#{f}"
+    #  content = s = IO.read(f)
+    #  root = RubyMM.parse(content)
+    #end
     content = s = IO.read(File.dirname(__FILE__)+'/example_of_complex_class.rb.txt')
     root = RubyMM.parse(content)
 
-    # check no exceptions are generated...
+    assert_right_class root, RubyMM::Block
+    assert_equal 4, root.contents.count
+    assert RubyMM.is_call(root.contents[0],'require',[RubyMM::string('helper')])
+    assert RubyMM.is_call(root.contents[1],'require',[RubyMM::string('test/unit')])
+    assert RubyMM.is_call(root.contents[2],'require',[RubyMM::string('rubymm')])
+    def_of_TestOperations = root.contents[3]
+    # check class, base class etc.
   end
 
   def assert_is_int(node,value)

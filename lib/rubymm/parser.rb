@@ -134,6 +134,11 @@ def self.node_to_model(node)
  		model = RubyMM::BooleanLiteral.new
  		model.value = true
  		model
+ 	when 'IFNODE'
+ 		model = RubyMM::IfStatement.new
+ 		model
+ 	when 'CONSTDECLNODE'
+ 		raise 'Const decl node: not implemented'
 	else		
 		raise "I don't know how to deal with #{node.node_type.name}"
 	end
