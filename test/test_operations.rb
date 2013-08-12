@@ -4,13 +4,8 @@ require 'test/unit'
 require 'rubymm'
  
 class TestOperations < Test::Unit::TestCase
- 
-  def test_symbol
-    root = RubyMM.parse(':a')
 
-    assert_right_class root, RubyMM::Symbol
-    assert_equal 'a',root.name
-  end
+  include TestHelper
 
   def test_sum
   	root = RubyMM.parse('3+40')
@@ -89,80 +84,6 @@ class TestOperations < Test::Unit::TestCase
     assert_simple_const root.defname,'AClass'
     assert_equal 1,root.body.count
     assert_right_class root.body[0], RubyMM::Call
-  end
-
-  def test_false
-    root = RubyMM.parse('false')
-
-    assert_right_class root, RubyMM::BooleanLiteral
-    assert_equal false,root.value
-  end
-
-  def test_dstring
-    root = RubyMM.parse("\"some string\"")
-
-    assert_right_class root, RubyMM::StringLiteral
-    assert_equal 'some string', root.value
-  end
-
-  def test_dstring_with_value
-    root = RubyMM.parse('"some #{val} string"')
-
-    assert_right_class root, RubyMM::StringLiteral
-    assert_equal 3, root.pieces.count
-    assert_is_str root.pieces[0],'some '
-    assert_is_str root.pieces[2],' string'
-  end
-
-  def test_true
-    root = RubyMM.parse('true')
-
-    assert_right_class root, RubyMM::BooleanLiteral
-    assert_equal true,root.value
-  end
-
-  def test_nil
-    root = RubyMM.parse('nil')
-
-    assert_right_class root, RubyMM::NilLiteral
-  end
-
-  def test_load_complex_file
-    #Dir['../../**/*.rb'].each do |f|
-    #  puts "#{f}"
-    #  content = s = IO.read(f)
-    #  root = RubyMM.parse(content)
-    #end
-    content = s = IO.read(File.dirname(__FILE__)+'/example_of_complex_class.rb.txt')
-    root = RubyMM.parse(content)
-
-    assert_right_class root, RubyMM::Block
-    assert_equal 4, root.contents.count
-    assert RubyMM.is_call(root.contents[0],'require',[RubyMM::string('helper')])
-    assert RubyMM.is_call(root.contents[1],'require',[RubyMM::string('test/unit')])
-    assert RubyMM.is_call(root.contents[2],'require',[RubyMM::string('rubymm')])
-    def_of_TestOperations = root.contents[3]
-    # check class, base class etc.
-  end
-
-  def assert_is_int(node,value)
-  	assert node.is_a? RubyMM::IntLiteral
-  	assert_equal value, node.value
-  end
-
-  def assert_is_str(node,value)
-    assert node.is_a? RubyMM::StringLiteral
-    assert_equal value, node.value
-  end
-
-  def assert_right_class(node,clazz)
-  	assert node.is_a?(clazz), "Instead #{node.class}"
-  end
-
-  def assert_simple_const(node,name)
-    assert_right_class node,RubyMM::Constant
-    assert_equal name, node.name
-    assert_equal nil, node.container
   end
  
 end

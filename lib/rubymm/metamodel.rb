@@ -1,4 +1,5 @@
 require 'rgen/metamodel_builder'
+require 'rubymm/rgen_ext'
 
 module RubyMM
 
@@ -58,6 +59,39 @@ module RubyMM
 	class Constant < Value
 		has_attr 'name', String
 		has_one 'container',Constant
+		has_one 'top_container',Constant, :derived => true
+
+		module Methods
+			def top_container_derived
+				return nil unless container
+				return container if not container.container
+				container.top_container
+			end
+		end
+		include Methods
+	end
+
+	def self.constant(first_part,*other_parts)
+		#puts "first_part: #{first_part}"
+		#puts "other_parts: #{other_parts}"
+
+		cont = Constant.build(first_part)
+
+		return cont if other_parts.count == 0
+
+		new_first_part, *new_other_parts = other_parts
+		#new_other_parts = [] if new_other_parts==[[]]
+
+		#puts "new_first_part: #{new_first_part}"
+		#puts "new_other_parts: #{new_other_parts}"
+		internal_constant = constant(new_first_part, *new_other_parts)
+		if internal_constant.container
+			internal_constant.top_container.container = cont
+		else
+			internal_constant.container = cont
+		end
+
+		internal_constant
 	end
 
 	class ClassDecl < Value
