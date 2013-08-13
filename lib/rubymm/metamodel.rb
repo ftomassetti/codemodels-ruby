@@ -182,4 +182,10 @@ module RubyMM
 		has_one 'rescue_body',Value
 	end
 
+	class HashElementAssignement < Value
+		has_one 'array',Value
+		has_one 'element',Value
+		has_one 'value',Value
+	end
+
 end

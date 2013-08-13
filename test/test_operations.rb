@@ -178,7 +178,11 @@ class TestOperations < Test::Unit::TestCase
   end
 
   def test_attrib_assignment
-    root = RubyMM.parse('models[p] = model')
+    root = RubyMM.parse('models[1] = 2')
+    assert_node root,RubyMM::HashElementAssignement,
+        array: RubyMM::Call.build(name:'models',implicit_receiver:false),
+        element: RubyMM.int(1),
+        value: RubyMM.int(2)
   end
 
 end

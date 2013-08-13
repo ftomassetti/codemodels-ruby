@@ -187,6 +187,12 @@ def self.node_to_model(node)
  		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
  		model.rescue_body = node_to_model(rescue_body_node.body)
  		model
+ 	when 'ATTRASSIGNNODE'
+ 		model = RubyMM::HashElementAssignement.new
+ 		model.array = node_to_model(node.receiver)
+ 		model.element = node_to_model(node.args[0])
+ 		model.value = node_to_model(node.args[1])
+ 		model
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
 	else		
