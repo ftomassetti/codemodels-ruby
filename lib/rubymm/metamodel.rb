@@ -36,6 +36,7 @@ module RubyMM
 	class Def < Value
 		has_attr 'name', String
 		has_one 'body', Value
+		has_attr 'onself',Boolean
 	end
 
 	class Literal < Value

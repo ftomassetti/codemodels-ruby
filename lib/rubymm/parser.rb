@@ -56,8 +56,14 @@ def self.node_to_model(node)
 	when 'DEFNNODE'
 		model = RubyMM::Def.new
 		model.name = node.name
-		#puts "Body #{node_to_model node.body}"
 		model.body = node_to_model node.body
+		model.onself = false
+		model
+	when 'DEFSNODE'
+		model = RubyMM::Def.new
+		model.name = node.name
+		model.body = node_to_model node.body
+		model.onself = true
 		model
 	when 'BLOCKNODE'
 		model = RubyMM::Block.new		

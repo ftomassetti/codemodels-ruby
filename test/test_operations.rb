@@ -152,5 +152,15 @@ class TestOperations < Test::Unit::TestCase
     assert_is_int root.values[0], 1
     assert_is_int root.values[1], 2
   end
- 
+
+  def test_self_def
+    root = RubyMM.parse('class A;def self.verbose;true;end;end')
+
+    assert_right_class root,RubyMM::ClassDecl
+    assert_node root.contents[0], RubyMM::Def, 
+        onself: true,
+        name: 'verbose',
+        body: RubyMM::BooleanLiteral.build(true)
+  end
+
 end
