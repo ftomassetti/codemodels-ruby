@@ -178,6 +178,15 @@ def self.node_to_model(node)
  		model
  	when 'ZARRAYNODE'
  		RubyMM::ArrayLiteral.new
+ 	when 'BEGINNODE'
+ 		model = RubyMM::BeginRescue.new
+ 		rescue_node = node.body
+ 		raise 'AssertionFailed' unless rescue_node.node_type.name=='RESCUENODE'
+ 		model.body = node_to_model(rescue_node.body)
+ 		rescue_body_node = rescue_node.rescue
+ 		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
+ 		model.rescue_body = node_to_model(rescue_body_node.body)
+ 		model
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
 	else		

@@ -177,4 +177,9 @@ module RubyMM
 		has_many 'values', Value
 	end
 
+	class BeginRescue < Value
+		has_one 'body',Value
+		has_one 'rescue_body',Value
+	end
+
 end
