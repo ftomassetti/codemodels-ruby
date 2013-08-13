@@ -8,6 +8,11 @@ java_import org.jrubyparser.ast.ListNode
 
 module RubyMM
 
+def self.parse_file(path)
+	content = IO.read(path)
+	self.parse(content)
+end
+
 def self.parse(code)
 	tree = JRubyParser.parse(code)
 	#puts "Code: #{code} Root: #{tree}"
@@ -118,8 +123,6 @@ def self.node_to_model(node)
  		model
  	when 'LOCALASGNNODE'
  		model = RubyMM::LocalVarAssignment.new
- 		#puts node.methods.sort
- 		#puts "LASGN #{node.name.class} #{node.value.class}"
  		model.name_assigned = node.name
  		model.value = node_to_model(node.value)
  		model
@@ -138,6 +141,37 @@ def self.node_to_model(node)
  	when 'IFNODE'
  		model = RubyMM::IfStatement.new
  		model
+ 	when 'GLOBALVARNODE'
+ 		model = RubyMM::GlobalVarAccess.new
+ 		model.name = node.name[1..-1]
+ 		model
+ 	when 'GLOBALASGNNODE'
+ 		model = RubyMM::GlobalVarAssignment.new
+ 		model.name_assigned = node.name[1..-1]
+ 		model.value = node_to_model(node.value)
+ 		model
+ 	when 'HASHNODE'
+ 		model = RubyMM::HashLiteral.new
+ 		count = node.get_list_node.count / 2
+ 		for i in 0..(count-1)
+ 			k_node = node.get_list_node[i*2]
+ 			k = node_to_model(k_node)
+ 			v_node = node.get_list_node[i*2 +1]
+ 			v = node_to_model(v_node)
+ 			pair = RubyMM::HashPair.build key: k, value: v
+ 			model.pairs = model.pairs << pair
+ 		end
+ 		model
+ 	when 'ARRAYNODE'
+ 		model = RubyMM::ArrayLiteral.new
+ 		for i in 0..(node.count-1)
+ 			v_node = node[i]
+ 			v = node_to_model(v_node)
+ 			model.values = model.values << v
+ 		end
+ 		model
+ 	when 'ZARRAYNODE'
+ 		RubyMM::ArrayLiteral.new
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
 	else		

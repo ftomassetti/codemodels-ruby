@@ -49,6 +49,10 @@ module RubyMM
 		has_attr 'value', Integer
 	end
 
+	def self.int(value)
+		IntLiteral.build(value)
+	end
+
 	class StringLiteral < Literal
 		has_attr 'value', String
 		has_attr 'dynamic', Boolean
@@ -56,9 +60,7 @@ module RubyMM
 	end
 
 	def self.string(value)
-		node = StringLiteral.new
-		node.value = value
-		node
+		StringLiteral.build(value)
 	end
 
 	class NilLiteral < Literal
@@ -139,6 +141,39 @@ module RubyMM
 		lva = LocalVarAccess.new
 		lva.name = name
 		lva
+	end
+
+	class GlobalVarAssignment < Value
+		has_attr 'name_assigned', String
+		has_one 'value', Value
+	end
+
+	class GlobalVarAccess < Value
+		has_attr 'name', String
+
+		module Methods
+			def to_s
+				name
+			end
+
+			def inspect
+				'GlobalVarAccess{'+self.to_s+'}'
+			end
+		end
+		include Methods
+	end
+
+	class HashPair < RGen::MetamodelBuilder::MMBase
+		has_one 'key', Value
+		has_one 'value', Value
+	end
+
+	class HashLiteral < Literal
+		has_many 'pairs', HashPair
+	end
+
+	class ArrayLiteral < Literal
+		has_many 'values', Value
 	end
 
 end

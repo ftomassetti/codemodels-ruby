@@ -101,5 +101,56 @@ class TestOperations < Test::Unit::TestCase
     assert_equal 'some_var',root.name_assigned
     assert_is_int root.value, 10
   end
+
+  def test_global_var_access
+    root = RubyMM.parse('$v')
+
+    assert_right_class root, RubyMM::GlobalVarAccess
+    assert_equal 'v',root.name
+  end
+
+  def test_global_var_assignement
+    root = RubyMM.parse('$v = 10')
+
+    assert_right_class root, RubyMM::GlobalVarAssignment
+    assert_equal 'v',root.name_assigned
+    assert_is_int root.value, 10
+  end
+
+  def test_empty_hash
+    root = RubyMM.parse('{}')
+
+    assert_right_class root, RubyMM::HashLiteral
+    assert_equal 0, root.pairs.count
+  end
+
+  def test_hash_with_pairs
+    root = RubyMM.parse('{ "a"=>1, "b"=>2}')
+
+    assert_right_class root, RubyMM::HashLiteral
+    assert_equal 2, root.pairs.count
+    assert_node root.pairs[0], RubyMM::HashPair, 
+        key: RubyMM.string('a'),
+        value: RubyMM.int(1)
+    assert_node root.pairs[1], RubyMM::HashPair, 
+        key: RubyMM.string('b'),
+        value: RubyMM.int(2)
+  end
+
+  def test_empty_array
+    root = RubyMM.parse('[]')
+
+    assert_right_class root, RubyMM::ArrayLiteral
+    assert_equal 0, root.values.count
+  end
+
+  def test_array_with_values
+    root = RubyMM.parse('[1,2]')
+
+    assert_right_class root, RubyMM::ArrayLiteral
+    assert_equal 2, root.values.count
+    assert_is_int root.values[0], 1
+    assert_is_int root.values[1], 2
+  end
  
 end
