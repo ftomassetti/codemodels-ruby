@@ -23,6 +23,14 @@ module RubyMM
 		has_many 'args', Value
 		has_one 'receiver', Value
 		has_attr 'implicit_receiver', Boolean
+
+		module Methods
+			def inspect
+				"Call{name=#{name},args=#{args},receiver=#{receiver.class},implicit_receiver=#{implicit_receiver}}"
+			end
+		end
+
+		include Methods
 	end
 
 	class Def < Value
@@ -67,23 +75,26 @@ module RubyMM
 				return container if not container.container
 				container.top_container
 			end
+
+			def to_s
+				return "#{name}" unless container
+				"#{container}::#{name}"
+			end
+
+			def inspect
+				'Constant{'+self.to_s+'}'
+			end
 		end
 		include Methods
 	end
 
 	def self.constant(first_part,*other_parts)
-		#puts "first_part: #{first_part}"
-		#puts "other_parts: #{other_parts}"
-
 		cont = Constant.build(first_part)
 
 		return cont if other_parts.count == 0
 
 		new_first_part, *new_other_parts = other_parts
-		#new_other_parts = [] if new_other_parts==[[]]
 
-		#puts "new_first_part: #{new_first_part}"
-		#puts "new_other_parts: #{new_other_parts}"
 		internal_constant = constant(new_first_part, *new_other_parts)
 		if internal_constant.container
 			internal_constant.top_container.container = cont
@@ -97,7 +108,7 @@ module RubyMM
 	class ClassDecl < Value
 		has_one 'defname', Constant
 		has_one 'super_class',Constant
-		has_many 'body',Value
+		has_many 'contents',Value
 	end
 
 	class Symbol < Value
@@ -105,9 +116,29 @@ module RubyMM
 	end
 
 	class LocalVarAssignment < Value
+		has_attr 'name_assigned', String
+		has_one 'value', Value
 	end
 
 	class LocalVarAccess < Value
+		has_attr 'name', String
+
+		module Methods
+			def to_s
+				name
+			end
+
+			def inspect
+				'LocalVarAccess{'+self.to_s+'}'
+			end
+		end
+		include Methods
+	end
+
+	def self.localvarac(name)
+		lva = LocalVarAccess.new
+		lva.name = name
+		lva
 	end
 
 end

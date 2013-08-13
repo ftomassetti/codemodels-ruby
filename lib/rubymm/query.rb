@@ -12,4 +12,10 @@ module RubyMM
 		true
 	end
 
+	def self.is_def(node,name=nil)
+		return false unless node.is_a? RubyMM::Def
+		return false if name and node.name!=name
+		true
+	end
+
 end

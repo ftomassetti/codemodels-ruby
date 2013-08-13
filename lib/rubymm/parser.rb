@@ -87,30 +87,26 @@ def self.node_to_model(node)
 		model.defname = node_to_model(node.getCPath)
 		model.super_class = node_to_model(node.super)
 		body = node_to_model(node.body_node)
-		# if it is a single element...
-		if not body
-			# nothing to do
-			#puts "\tbody null, ignored"
-		elsif not body.is_a? Enumerable
-			#puts "\tAdding #{body}"
-			#non stampa body e poi non fa la cosa sotto
-			model.body = model.body << body
-			#puts "\tmodel.body #{model.body} (count: #{model.body.count})"
-		else
-			raise 'not implemented'
+		if body
+			if body.is_a? RubyMM::Block	
+				body.contents.each do |el|
+					model.contents = model.contents << el 
+				end
+			else
+				model.contents = model.contents << body
+			end
 		end
-		#model.body = body
 		model
 	when 'NILNODE'
-		RubyMM::NilLiteral.new
+		if node.is_a? Java::OrgJrubyparserAst::NilImplicitNode
+			return nil
+		else
+			RubyMM::NilLiteral.new
+		end
 	when 'COLON2NODE'
 		model = RubyMM::Constant.new
 		model.name = node.name
 		model.container = node_to_model(node.left_node)
-		#puts "COLON2NODE #{node}"
-		#puts "\tname:#{node.name}"
-		#puts "\tname:#{node.value}"
-		#model.container =
  		model
  	when 'SYMBOLNODE'
  		model = RubyMM::Symbol.new
@@ -122,9 +118,14 @@ def self.node_to_model(node)
  		model
  	when 'LOCALASGNNODE'
  		model = RubyMM::LocalVarAssignment.new
+ 		#puts node.methods.sort
+ 		#puts "LASGN #{node.name.class} #{node.value.class}"
+ 		model.name_assigned = node.name
+ 		model.value = node_to_model(node.value)
  		model
  	when 'LOCALVARNODE'
  		model = RubyMM::LocalVarAccess.new
+ 		model.name = node.name
  		model
  	when 'FALSENODE'
  		model = RubyMM::BooleanLiteral.new

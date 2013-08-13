@@ -76,14 +76,30 @@ class TestOperations < Test::Unit::TestCase
     assert_equal nil,root.super_class
   end
 
+  def test_class_with_nil_content
+    root = RubyMM.parse("class Literal\nnil\nend")
+
+    assert_right_class root, RubyMM::ClassDecl
+    assert_equal 1,root.contents.count
+    assert_right_class root.contents[0],RubyMM::NilLiteral
+  end
+
   def test_class_with_content
     root = RubyMM.parse("class AClass\nattr_accessor :name\nend")
 
     assert_right_class root, RubyMM::ClassDecl
     assert_equal nil,root.super_class
     assert_simple_const root.defname,'AClass'
-    assert_equal 1,root.body.count
-    assert_right_class root.body[0], RubyMM::Call
+    assert_equal 1,root.contents.count
+    assert_right_class root.contents[0], RubyMM::Call
+  end
+
+  def test_local_var_assign
+    root = RubyMM.parse('some_var = 10')
+
+    assert_right_class root, RubyMM::LocalVarAssignment
+    assert_equal 'some_var',root.name_assigned
+    assert_is_int root.value, 10
   end
  
 end

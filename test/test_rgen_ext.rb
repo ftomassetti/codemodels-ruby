@@ -14,7 +14,7 @@ end
 class TestOperations < Test::Unit::TestCase
 
 	def test_build_with_wrong_param
-		assert_raise RGen::UnexistingAttribute do
+		assert_raise RGen::UnexistingFeature do
 			instance = FirstClass.build({'unexisting_attr'=>'some_val'})
 		end
 	end
@@ -56,6 +56,26 @@ class TestOperations < Test::Unit::TestCase
 		inst1 = FirstClass.build({'name'=>'a name','code'=>123})
 		inst2 = FirstClass.build({'name'=>'a name','code'=>123})
 		assert_equal true, inst1.eql?(inst2)
+	end
+
+	def test_eql_constants
+		c1 = RubyMM.constant 'a','b','c'
+		c2 = RubyMM.constant 'a','b','c'
+
+		assert c1.eql?(c2)
+		assert c2.eql?(c1)
+		assert c1==c2
+		assert c2==c1
+	end
+
+	def test_not_eql_constants
+		c1 = RubyMM.constant 'a','b','c'
+		c2 = RubyMM.constant 'a','d','c'
+
+		assert (not (c1.eql?(c2)))
+		assert (not (c2.eql?(c1)))
+		assert (not (c1==c2))
+		assert (not (c2==c1))
 	end
 
 end
