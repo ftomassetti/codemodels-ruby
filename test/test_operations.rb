@@ -185,4 +185,11 @@ class TestOperations < Test::Unit::TestCase
         value: RubyMM.int(2)
   end
 
+  def test_inst_assignment
+    root = RubyMM.parse('@v = 1')
+    assert_node root, RubyMM::InstanceVarAssignement,
+      name_assigned: 'v',
+      value: RubyMM.int(1)
+  end
+
 end

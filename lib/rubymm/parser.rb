@@ -193,6 +193,11 @@ def self.node_to_model(node)
  		model.element = node_to_model(node.args[0])
  		model.value = node_to_model(node.args[1])
  		model
+ 	when 'INSTASGNNODE'
+ 		model = RubyMM::InstanceVarAssignement.new
+ 		model.name_assigned = node.name[1..-1]
+ 		model.value = node_to_model(node.value)
+ 		model
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
 	else		

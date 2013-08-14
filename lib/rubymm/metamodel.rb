@@ -118,9 +118,18 @@ module RubyMM
 		has_attr 'name', String
 	end
 
-	class LocalVarAssignment < Value
+	class VarAssignement < Value
 		has_attr 'name_assigned', String
 		has_one 'value', Value
+	end
+
+	class LocalVarAssignment < VarAssignement
+	end
+
+	class GlobalVarAssignment < VarAssignement
+	end
+
+	class InstanceVarAssignement < VarAssignement
 	end
 
 	class LocalVarAccess < Value
@@ -142,11 +151,6 @@ module RubyMM
 		lva = LocalVarAccess.new
 		lva.name = name
 		lva
-	end
-
-	class GlobalVarAssignment < Value
-		has_attr 'name_assigned', String
-		has_one 'value', Value
 	end
 
 	class GlobalVarAccess < Value
