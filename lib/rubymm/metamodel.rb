@@ -132,7 +132,7 @@ module RubyMM
 	class InstanceVarAssignement < VarAssignement
 	end
 
-	class LocalVarAccess < Value
+	class VarAccess < Value
 		has_attr 'name', String
 
 		module Methods
@@ -141,10 +141,13 @@ module RubyMM
 			end
 
 			def inspect
-				'LocalVarAccess{'+self.to_s+'}'
+				"#{self.class}{#{self.to_s}}"
 			end
 		end
 		include Methods
+	end
+
+	class LocalVarAccess < VarAccess
 	end
 
 	def self.localvarac(name)
@@ -153,19 +156,10 @@ module RubyMM
 		lva
 	end
 
-	class GlobalVarAccess < Value
-		has_attr 'name', String
+	class GlobalVarAccess < VarAccess
+	end
 
-		module Methods
-			def to_s
-				name
-			end
-
-			def inspect
-				'GlobalVarAccess{'+self.to_s+'}'
-			end
-		end
-		include Methods
+	class InstanceVarAccess < VarAccess
 	end
 
 	class HashPair < RGen::MetamodelBuilder::MMBase

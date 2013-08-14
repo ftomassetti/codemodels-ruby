@@ -198,6 +198,8 @@ def self.node_to_model(node)
  		model.name_assigned = node.name[1..-1]
  		model.value = node_to_model(node.value)
  		model
+ 	when 'INSTVARNODE'
+ 		RubyMM::InstanceVarAccess.build node.name[1..-1]
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
 	else		

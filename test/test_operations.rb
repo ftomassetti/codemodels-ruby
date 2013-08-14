@@ -192,4 +192,10 @@ class TestOperations < Test::Unit::TestCase
       value: RubyMM.int(1)
   end
 
+  def test_inst_access
+    root = RubyMM.parse('@v')
+    assert_node root,RubyMM::InstanceVarAccess,
+      name:'v'
+  end
+
 end
