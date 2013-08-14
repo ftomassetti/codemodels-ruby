@@ -26,6 +26,19 @@ def self.tree_to_model(tree)
 	node_to_model tree.body
 end
 
+def self.body_node_to_contents(body_node,container_node)
+	body = node_to_model(body_node)
+	if body
+		if body.is_a? RubyMM::Block	
+			body.contents.each do |el|
+				container_node.contents = container_node.contents << el 
+			end
+		else
+			container_node.contents = container_node.contents << body
+		end
+	end
+end
+
 def self.node_to_model(node)
 	return nil if node==nil
 	#puts "#{node} #{node.node_type.name}"
@@ -97,16 +110,12 @@ def self.node_to_model(node)
 		model = RubyMM::ClassDecl.new
 		model.defname = node_to_model(node.getCPath)
 		model.super_class = node_to_model(node.super)
-		body = node_to_model(node.body_node)
-		if body
-			if body.is_a? RubyMM::Block	
-				body.contents.each do |el|
-					model.contents = model.contents << el 
-				end
-			else
-				model.contents = model.contents << body
-			end
-		end
+		body_node_to_contents(node.body_node,model)
+		model
+	when 'MODULENODE'
+		model = RubyMM::ModuleDecl.new
+		model.defname = node_to_model(node.getCPath)
+		body_node_to_contents(node.body_node,model)
 		model
 	when 'NILNODE'
 		if node.is_a? Java::OrgJrubyparserAst::NilImplicitNode

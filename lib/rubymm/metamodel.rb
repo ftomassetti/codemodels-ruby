@@ -125,10 +125,15 @@ module RubyMM
 		internal_constant
 	end
 
+	class ModuleDecl < Value
+		contains_one_uni 'defname', Constant
+		contains_many_uni 'contents', Value
+	end
+
 	class ClassDecl < Value
 		contains_one_uni 'defname', Constant
 		contains_one_uni 'super_class',Constant
-		contains_many_uni 'contents',Value
+		contains_many_uni 'contents', Value
 	end
 
 	class Symbol < Value
