@@ -65,6 +65,7 @@ class TestOperations < Test::Unit::TestCase
     root = RubyMM.parse("class Literal < Value\nend")
 
     assert_right_class root, RubyMM::ClassDecl
+    assert_equal RubyMM.constant('Literal'),root.defname
     assert_equal 'Value', root.super_class.name
     assert_equal nil,root.super_class.container
   end
