@@ -137,7 +137,7 @@ module RubyMM
 
 	class VarAssignement < Value
 		has_attr 'name_assigned', String
-		has_one 'value', Value
+		contains_one_uni 'value', Value
 	end
 
 	class LocalVarAssignment < VarAssignement
