@@ -200,6 +200,10 @@ def self.node_to_model(node)
  		model
  	when 'INSTVARNODE'
  		RubyMM::InstanceVarAccess.build node.name[1..-1]
+ 	when 'RETURNNODE'
+ 		model = RubyMM::Return.new
+ 		model.value = node_to_model(node.value)
+ 		model
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
 	else		

@@ -198,4 +198,16 @@ class TestOperations < Test::Unit::TestCase
       name:'v'
   end
 
+  def test_return_empty
+    root = RubyMM.parse('return')
+    assert_node root,RubyMM::Return,
+      value:nil
+  end
+
+  def test_return_value
+    root = RubyMM.parse('return 1')
+    assert_node root,RubyMM::Return,
+      value: RubyMM.int(1)
+  end
+
 end

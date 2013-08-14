@@ -186,4 +186,8 @@ module RubyMM
 		has_one 'value',Value
 	end
 
+	class Return < Statement
+		has_one 'value',Value
+	end
+
 end
