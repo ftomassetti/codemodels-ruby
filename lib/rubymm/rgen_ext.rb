@@ -79,12 +79,15 @@ class RGen::MetamodelBuilder::MMBase
 		end
 
 		def eql?(other)
+			# it should ignore relations which has as opposite a containement
 			return false unless self.shallow_eql?(other)
 			self.class.ecore.eAllReferences.each do |ref|
-				#if attrib.name != 'dynamic' # I have to understand this...
-					self_value = self.get(ref)
-					other_value = other.get(ref)
-					#puts "returning false on #{attrib.name}" unless self_value.eql?(other_value)
+				self_value = self.get(ref)
+				other_value = other.get(ref)
+				to_ignore = ref.getEOpposite and ref.getEOpposite.containment
+				#puts "ignore #{self.class.name}.#{ref.name}" if to_ignore
+				#puts "returning false on #{attrib.name}" unless self_value.eql?(other_value)
+				unless to_ignore
 					if ref.containment
 						return false unless self_value == other_value
 					else
@@ -100,8 +103,8 @@ class RGen::MetamodelBuilder::MMBase
 								return false unless self_value.shallow_eql?(other_value)
 							end
 						end
-					end						
-				#end
+					end
+				end						
 			end
 			true
 		end

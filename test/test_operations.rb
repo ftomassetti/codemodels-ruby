@@ -211,4 +211,16 @@ class TestOperations < Test::Unit::TestCase
       value: RubyMM.int(1)
   end
 
+  def test_true_eq_true
+    assert_equal true,RubyMM.bool(true)==RubyMM.bool(true)
+  end
+
+  def test_false_eq_false
+    assert_equal true,RubyMM.bool(false)==RubyMM.bool(false)
+  end
+
+  def test_true_neq_false
+    assert_equal false,RubyMM.bool(true)==RubyMM.bool(false)
+  end
+
 end

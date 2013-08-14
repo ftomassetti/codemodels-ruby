@@ -10,18 +10,18 @@ module RubyMM
 	end
 
 	class IfStatement < Statement
-		has_one 'condition', Value
-		has_many 'body', Value
+		contains_one_uni 'condition', Value
+		contains_many_uni 'body', Value
 	end
 
 	class Block < Value
-		has_many 'contents', Value
+		contains_many_uni 'contents', Value
 	end 
 
 	class Call < Value
 		has_attr 'name', String
-		has_many 'args', Value
-		has_one 'receiver', Value
+		contains_many_uni 'args', Value
+		contains_one_uni 'receiver', Value
 		has_attr 'implicit_receiver', Boolean
 
 		module Methods
@@ -35,11 +35,24 @@ module RubyMM
 
 	class Def < Value
 		has_attr 'name', String
-		has_one 'body', Value
+		contains_one_uni 'body', Value
 		has_attr 'onself',Boolean
 	end
 
 	class Literal < Value
+		module Methods
+
+			def to_s
+				value.to_s
+			end
+
+			def inspect
+				"#{self.class}[#{to_s}]"
+			end
+
+		end
+
+		include Methods
 	end
 
 	class BooleanLiteral < Literal
@@ -50,6 +63,10 @@ module RubyMM
 		has_attr 'value', Integer
 	end
 
+	def self.bool(value)
+		BooleanLiteral.build(value)
+	end
+
 	def self.int(value)
 		IntLiteral.build(value)
 	end
@@ -57,7 +74,7 @@ module RubyMM
 	class StringLiteral < Literal
 		has_attr 'value', String
 		has_attr 'dynamic', Boolean
-		has_many 'pieces', Value # only for dynamic
+		contains_many_uni 'pieces', Value # only for dynamic strings
 	end
 
 	def self.string(value)
@@ -69,7 +86,7 @@ module RubyMM
 
 	class Constant < Value
 		has_attr 'name', String
-		has_one 'container',Constant
+		contains_one_uni 'container',Constant
 		has_one 'top_container',Constant, :derived => true
 
 		module Methods
@@ -109,9 +126,9 @@ module RubyMM
 	end
 
 	class ClassDecl < Value
-		has_one 'defname', Constant
-		has_one 'super_class',Constant
-		has_many 'contents',Value
+		contains_one_uni 'defname', Constant
+		contains_one_uni 'super_class',Constant
+		contains_many_uni 'contents',Value
 	end
 
 	class Symbol < Value
@@ -163,31 +180,31 @@ module RubyMM
 	end
 
 	class HashPair < RGen::MetamodelBuilder::MMBase
-		has_one 'key', Value
-		has_one 'value', Value
+		contains_one_uni 'key', Value
+		contains_one_uni 'value', Value
 	end
 
 	class HashLiteral < Literal
-		has_many 'pairs', HashPair
+		contains_many_uni 'pairs', HashPair
 	end
 
 	class ArrayLiteral < Literal
-		has_many 'values', Value
+		contains_many_uni 'values', Value
 	end
 
 	class BeginRescue < Value
-		has_one 'body',Value
-		has_one 'rescue_body',Value
+		contains_one_uni 'body',Value
+		contains_one_uni 'rescue_body',Value
 	end
 
 	class ElementAssignement < Value
-		has_one 'array',Value
-		has_one 'element',Value
-		has_one 'value',Value
+		contains_one_uni 'array',Value
+		contains_one_uni 'element',Value
+		contains_one_uni 'value',Value
 	end
 
 	class Return < Statement
-		has_one 'value',Value
+		contains_one_uni 'value',Value
 	end
 
 end
