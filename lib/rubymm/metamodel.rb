@@ -1,5 +1,4 @@
 require 'rgen/metamodel_builder'
-require 'rubymm/rgen_ext'
 
 module RubyMM
 
