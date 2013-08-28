@@ -33,7 +33,6 @@ class ParsingError < Exception
 
 end
 
-
 class UnknownNodeType < ParsingError
 
  	def initialize(node)
@@ -265,15 +264,21 @@ def self.node_to_model(node,parent_model=nil)
  	when 'ZARRAYNODE'
  		RubyMM::ArrayLiteral.new
  	when 'BEGINNODE'
- 		model = RubyMM::BeginRescue.new
- 		rescue_node = node.body
- 		assert_node_type(rescue_node,'RESCUENODE')
- 		model.body = node_to_model(rescue_node.body)
- 		rescue_body_node = rescue_node.rescue
- 		assert_node_type(rescue_body_node,'RESCUEBODYNODE')
- 		rescue_clause_model = RubyMM::RescueClause.new
-	 	rescue_clause_model.body = node_to_model(rescue_body_node.body)
-	 	model.rescue_clauses = model.rescue_clauses << rescue_clause_model
+ 		model = RubyMM::BeginEndBlock.new
+ 		if node.body==nil
+ 			# nothing to do, model.body should be nil
+ 		elsif node.body.node_type.name =='RESCUENODE'
+	 		rescue_node = node.body
+	 		assert_node_type(rescue_node,'RESCUENODE')
+	 		model.body = node_to_model(rescue_node.body)
+	 		rescue_body_node = rescue_node.rescue
+	 		assert_node_type(rescue_body_node,'RESCUEBODYNODE')
+	 		rescue_clause_model = RubyMM::RescueClause.new
+		 	rescue_clause_model.body = node_to_model(rescue_body_node.body)
+		 	model.rescue_clauses = model.rescue_clauses << rescue_clause_model
+		else
+			model.body = node_to_model(node.body)
+		end
  		model
  	when 'ATTRASSIGNNODE'
  		model = RubyMM::ElementAssignement.new

@@ -22,7 +22,7 @@ class TestExceptionHandling < Test::Unit::TestCase
 
   def test_rescue_empty
     root = RubyMM.parse('begin;rescue;end')
-    assert_node root, RubyMM::BeginRescue,
+    assert_node root, RubyMM::BeginEndBlock,
         body: nil
     assert_equal 1,root.rescue_clauses.count
     assert_node root.rescue_clauses[0], RubyMM::RescueClause,
@@ -31,7 +31,7 @@ class TestExceptionHandling < Test::Unit::TestCase
 
   def test_rescue_full
     root = RubyMM.parse('begin;1;rescue;2;end')
-    assert_node root, RubyMM::BeginRescue,
+    assert_node root, RubyMM::BeginEndBlock,
         body: RubyMM.int(1)
     assert_equal 1,root.rescue_clauses.count
     assert_node root.rescue_clauses[0], RubyMM::RescueClause,

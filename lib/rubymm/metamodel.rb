@@ -222,7 +222,7 @@ module RubyMM
 		contains_many_uni 'values', Value
 	end
 
-	class BeginRescue < Value
+	class BeginEndBlock < Value
 		contains_one_uni 'body',Value
 		contains_many_uni 'rescue_clauses',RescueClause
 	end
