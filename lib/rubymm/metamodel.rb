@@ -173,7 +173,10 @@ module RubyMM
 	class GlobalVarAssignment < VarAssignement
 	end
 
-	class InstanceVarAssignement < VarAssignement
+	class InstanceVarAssignment < VarAssignement
+	end
+
+	class ClassVarAssignment < VarAssignement
 	end
 
 	class VarAccess < Value
@@ -207,6 +210,9 @@ module RubyMM
 	end
 
 	class InstanceVarAccess < VarAccess
+	end
+
+	class ClassVarAccess < VarAccess
 	end
 
 	class HashPair < RGen::MetamodelBuilder::MMBase

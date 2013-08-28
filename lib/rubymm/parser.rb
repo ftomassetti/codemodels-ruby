@@ -74,15 +74,13 @@ def self.body_node_to_contents(body_node,container_node)
 	end
 end
 
-def self.get_var_name_depending_on_parser_version(node)
+def self.get_var_name_depending_on_parser_version(node,prefix_size=1)
 	if node.respond_to? :lexical_name # depends on the version...
 		return node.name
  	else
- 		return node.name[1..-1]
+ 		return node.name[prefix_size..-1]
  	end
  end
-
-
 
 def self.node_to_model(node,parent_model=nil)
 	return nil if node==nil
@@ -241,6 +239,15 @@ def self.node_to_model(node,parent_model=nil)
  		model.name_assigned = get_var_name_depending_on_parser_version(node)
  		model.value = node_to_model(node.value)
  		model
+ 	when 'CLASSVARNODE'
+ 		model = RubyMM::ClassVarAccess.new
+ 		model.name = get_var_name_depending_on_parser_version(node,2)
+ 		model
+ 	when 'CLASSVARASGNNODE'
+ 		model = RubyMM::ClassVarAssignment.new
+ 		model.name_assigned = get_var_name_depending_on_parser_version(node,2)
+ 		model.value = node_to_model(node.value)
+ 		model 		
  	when 'HASHNODE'
  		model = RubyMM::HashLiteral.new
  		count = node.get_list_node.count / 2
@@ -287,7 +294,7 @@ def self.node_to_model(node,parent_model=nil)
  		model.value = node_to_model(node.args[1])
  		model
  	when 'INSTASGNNODE'
- 		model = RubyMM::InstanceVarAssignement.new
+ 		model = RubyMM::InstanceVarAssignment.new
  		model.name_assigned = get_var_name_depending_on_parser_version(node)
  		model.value = node_to_model(node.value)
  		model
