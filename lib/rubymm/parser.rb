@@ -240,10 +240,16 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::Return.new
  		model.value = node_to_model(node.value)
  		model
- 	#when 'RESCUENODE'
- 	#	raise "Parent of rescue should be a Def" unless parent_model.is_a? RubyMM::Def
- 	#	model = RubyMM::RescueClause.new
- 	#	model
+ 	when 'ANDNODE'
+ 		model = RubyMM::AndOperator.new
+ 		model.left = node_to_model(node.first)
+ 		model.right = node_to_model(node.second)
+ 		model
+ 	when 'ORNODE'
+ 		model = RubyMM::OrOperator.new
+ 		model.left = node_to_model(node.first)
+ 		model.right = node_to_model(node.second)
+ 		model
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
 	else		

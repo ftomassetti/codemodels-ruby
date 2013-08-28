@@ -216,4 +216,17 @@ module RubyMM
 		contains_one_uni 'value',Value
 	end
 
+	class BinaryOperator < Value
+		contains_one_uni 'left',Value
+		contains_one_uni 'right',Value		
+	end
+
+	class AndOperator < BinaryOperator
+		#has_attr 'word_form', Boolean # true for 'and', false for '&&'
+	end
+
+	class OrOperator < BinaryOperator
+		#has_attr 'word_form', Boolean # true for 'or', false for '||'
+	end
+
 end
