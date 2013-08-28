@@ -56,16 +56,16 @@ class TestBlocks < Test::Unit::TestCase
   	assert_equal 0,root.args.count
   	assert_not_nil root.block_arg
   	assert_node root.block_arg, RubyMM::BlockReference,
-  	name: 'new_statuses_allowed_to'
+  	value: RubyMM::Symbol.build('new_statuses_allowed_to')
   end
 
-  def test_block_passed_using_symbol
+  def test_block_passed_using_symbol_and_other_param
   	root = RubyMM.parse('@issues.map(1,&:new_statuses_allowed_to)')
   	assert_node root, RubyMM::Call, name: 'map'
   	assert_equal 1,root.args.count
   	assert_not_nil root.block_arg
   	assert_node root.block_arg, RubyMM::BlockReference,
-  	name: 'new_statuses_allowed_to'
+  		value: RubyMM::Symbol.build('new_statuses_allowed_to')
   end
 
   def test_begin_empty
@@ -89,6 +89,16 @@ class TestBlocks < Test::Unit::TestCase
   	assert_equal 2,root.body.contents.count
   	assert_is_int root.body.contents[0], 1
   	assert_is_int root.body.contents[1], 2
+  end
+
+  def test_forward_block
+  	 root = RubyMM.parse('def project_tree(projects, &block);Project.project_tree(projects, &block);end')
+
+  	 call_in_def = root.body
+  	 assert_equal 'project_tree',call_in_def.name
+  	 assert_equal 1, call_in_def.args.count # the block arg does not count!
+  	 assert_node call_in_def.block_arg,RubyMM::BlockReference,
+  	 	value: RubyMM::LocalVarAccess.build(name: 'block')
   end
 
 end

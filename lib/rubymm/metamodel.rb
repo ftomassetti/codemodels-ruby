@@ -31,7 +31,7 @@ module RubyMM
 	end
 
 	class BlockReference < AbstractCodeBlock
-		has_attr 'name', String
+		contains_one_uni 'value', Value
 	end
 
 	class Call < Value
@@ -158,7 +158,7 @@ module RubyMM
 		contains_many_uni 'contents', Value
 	end
 
-	class Symbol < Value
+	class Symbol < Literal
 		has_attr 'name', String
 	end
 

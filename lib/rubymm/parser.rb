@@ -327,8 +327,8 @@ def self.node_to_model(node,parent_model=nil)
  		model
  	when 'BLOCKPASSNODE'
  		model = RubyMM::BlockReference.new
- 		raise "Unexpected" unless node.body.is_a? SymbolNode
- 		model.name = node.body.name
+ 		#raise ParsingError.new(node,"Unexpected something that is not a symbol but a #{node.body}") unless node.body.is_a? SymbolNode
+ 		model.value = node_to_model(node.body)
  		model
 	else		
 		#n = node
