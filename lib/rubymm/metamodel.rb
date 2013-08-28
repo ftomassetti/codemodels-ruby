@@ -229,4 +229,9 @@ module RubyMM
 		#has_attr 'word_form', Boolean # true for 'or', false for '||'
 	end
 
+	class OrAssignment < Value # ||=
+		contains_one_uni 'assigned',Value
+		contains_one_uni 'value', Value
+	end
+
 end

@@ -78,7 +78,9 @@ def self.node_to_model(node,parent_model=nil)
 		model = RubyMM::Def.new
 		model.name = node.name
 		#puts "NODE BODY: #{node.body}"	
-		if node.body.node_type.name=='RESCUENODE'
+		if node.body==nil
+			model.body = nil
+		elsif node.body.node_type.name=='RESCUENODE'
 			rescue_node = node.body
 			model.body = node_to_model(rescue_node.body)
 	 		rescue_body_node = rescue_node.rescue
@@ -249,6 +251,13 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::OrOperator.new
  		model.left = node_to_model(node.first)
  		model.right = node_to_model(node.second)
+ 		model
+ 	when 'OPASGNORNODE'
+ 		model = RubyMM::OrAssignment.new
+ 		# assigned : from access to variable
+ 		# value    : from assignement to value 		
+ 		model.assigned = node_to_model(node.first)
+ 		model.value = node_to_model(node.second).value
  		model
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
