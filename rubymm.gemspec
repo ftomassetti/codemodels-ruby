@@ -12,4 +12,5 @@ Gem::Specification.new do |s|
   s.add_dependency('json')
   s.add_dependency('emf_jruby')
   s.add_dependency('jruby-parser')
+  s.add_dependency('lightmodels')
 end

@@ -39,6 +39,14 @@ def self.body_node_to_contents(body_node,container_node)
 	end
 end
 
+def self.get_var_name_depending_on_parser_version(node)
+	if node.respond_to? :lexical_name # depends on the version...
+		return node.name
+ 	else
+ 		return node.name[1..-1]
+ 	end
+ end
+
 def self.node_to_model(node)
 	return nil if node==nil
 	#puts "#{node} #{node.node_type.name}"
@@ -118,9 +126,15 @@ def self.node_to_model(node)
 		body_node_to_contents(node.body_node,model)
 		model
 	when 'NILNODE'
-		if node.is_a? Java::OrgJrubyparserAst::NilImplicitNode
+		begin
+			implicit_nil = Java::OrgJrubyparserAst::NilImplicitNode
+		rescue
+			implicit_nil = nil # apparently the class was removed...
+		end
+		if implicit_nil && (node.is_a? Java::OrgJrubyparserAst::NilImplicitNode)
 			return nil
 		else
+			#puts "NIL for #{node}"
 			RubyMM::NilLiteral.new
 		end
 	when 'COLON2NODE'
@@ -158,11 +172,11 @@ def self.node_to_model(node)
  		model
  	when 'GLOBALVARNODE'
  		model = RubyMM::GlobalVarAccess.new
- 		model.name = node.name[1..-1]
+ 		model.name = get_var_name_depending_on_parser_version(node)
  		model
  	when 'GLOBALASGNNODE'
  		model = RubyMM::GlobalVarAssignment.new
- 		model.name_assigned = node.name[1..-1]
+ 		model.name_assigned = get_var_name_depending_on_parser_version(node)
  		model.value = node_to_model(node.value)
  		model
  	when 'HASHNODE'
@@ -204,11 +218,11 @@ def self.node_to_model(node)
  		model
  	when 'INSTASGNNODE'
  		model = RubyMM::InstanceVarAssignement.new
- 		model.name_assigned = node.name[1..-1]
+ 		model.name_assigned = get_var_name_depending_on_parser_version(node)
  		model.value = node_to_model(node.value)
  		model
  	when 'INSTVARNODE'
- 		RubyMM::InstanceVarAccess.build node.name[1..-1]
+ 		RubyMM::InstanceVarAccess.build get_var_name_depending_on_parser_version(node)
  	when 'RETURNNODE'
  		model = RubyMM::Return.new
  		model.value = node_to_model(node.value)

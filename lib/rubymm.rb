@@ -6,3 +6,4 @@ end
 require 'rubymm/metamodel'
 require 'rubymm/query'
 require 'rubymm/parser'
+require 'rubymm/model_building'
