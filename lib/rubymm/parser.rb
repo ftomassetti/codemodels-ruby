@@ -10,6 +10,10 @@ java_import org.jrubyparser.ast.SymbolNode
 
 module RubyMM
 
+class << self
+	attr_accessor :skip_unknown_node
+end
+
 def self.parse_file(path)
 	content = IO.read(path)
 	self.parse(content)
@@ -312,7 +316,11 @@ def self.node_to_model(node,parent_model=nil)
 		#	puts "> #{n}"
 		#	n = n.parent
 		#end
-		raise UnknownNodeType.new(node)
+		if RubyMM.skip_unknown_node
+			puts "skipping #{node.node_type.name}..."
+		else
+			raise UnknownNodeType.new(node)
+		end
 		#raise "I don't know how to deal with #{node.node_type.name} (position: #{node.position})"
 	end
 end
