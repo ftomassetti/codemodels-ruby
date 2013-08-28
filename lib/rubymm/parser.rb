@@ -19,18 +19,33 @@ def self.parse_file(path)
 	self.parse(content)
 end
 
- class UnknownNodeType < Exception
+class ParsingError < Exception
  	attr_reader :node
 
- 	def initialize(node)
+ 	def initialize(node,msg)
  		@node = node
+ 		@msg = msg
  	end
 
  	def to_s
- 		"UnknownNodeType: type=#{@node.node_type.name}, start line: #{@node.position.start_line}"
+ 		"#{@msg}, start line: #{@node.position.start_line}"
  	end
 
- end
+end
+
+
+class UnknownNodeType < ParsingError
+
+ 	def initialize(node)
+ 		super(node,"UnknownNodeType: type=#{node.node_type.name}")
+ 	end
+
+end
+
+def self.assert_node_type(node,type)
+	raise ParsingError.new(node,"AssertionFailed: #{type} expected but #{node.node_type.name} found") unless node.node_type.name==type
+end
+
 
 def self.parse(code)
 	tree = JRubyParser.parse(code)
@@ -252,10 +267,10 @@ def self.node_to_model(node,parent_model=nil)
  	when 'BEGINNODE'
  		model = RubyMM::BeginRescue.new
  		rescue_node = node.body
- 		raise 'AssertionFailed' unless rescue_node.node_type.name=='RESCUENODE'
+ 		assert_node_type(rescue_node,'RESCUENODE')
  		model.body = node_to_model(rescue_node.body)
  		rescue_body_node = rescue_node.rescue
- 		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
+ 		assert_node_type(rescue_body_node,'RESCUEBODYNODE')
  		rescue_clause_model = RubyMM::RescueClause.new
 	 	rescue_clause_model.body = node_to_model(rescue_body_node.body)
 	 	model.rescue_clauses = model.rescue_clauses << rescue_clause_model
