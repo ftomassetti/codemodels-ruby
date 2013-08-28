@@ -1,10 +1,11 @@
 require 'jruby-parser'
 require 'rubymm/metamodel'
-require 'java'
 require 'emf_jruby'
 
 java_import org.jrubyparser.ast.ArrayNode
 java_import org.jrubyparser.ast.ListNode
+java_import org.jrubyparser.ast.BlockPassNode
+java_import org.jrubyparser.ast.ArgsNode
 
 module RubyMM
 
@@ -58,6 +59,9 @@ def self.node_to_model(node,parent_model=nil)
 		model.name = node.name
 		model.receiver = node_to_model node.receiver
 		model.args = args_to_model node.args
+		if node.iter
+			model.block_arg = node_to_model(node.iter)
+		end
 		model.implicit_receiver = false
 		model
 	when 'VCALLNODE'
@@ -172,6 +176,10 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::LocalVarAccess.new
  		model.name = node.name
  		model
+ 	when 'DVARNODE'
+ 		model = RubyMM::BlockVarAccess.new
+ 		model.name = node.name
+ 		model
  	when 'FALSENODE'
  		model = RubyMM::BooleanLiteral.new
  		model.value = false
@@ -259,8 +267,17 @@ def self.node_to_model(node,parent_model=nil)
  		model.assigned = node_to_model(node.first)
  		model.value = node_to_model(node.second).value
  		model
+ 	when 'ITERNODE'
+ 		model = RubyMM::CodeBlock.new
+ 		model.args = args_to_model(node.var)
+ 		model.body = node_to_model(node.body)
+ 		model
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
+ 	when 'ARGUMENTNODE'
+ 		model = RubyMM::Argument.new
+ 		model.name = node.name
+ 		model
 	else		
 		#n = node
 		#while n
@@ -268,6 +285,12 @@ def self.node_to_model(node,parent_model=nil)
 		#	n = n.parent
 		#end
 		raise "I don't know how to deal with #{node.node_type.name}"
+	end
+end
+
+def self.populate_from_list(array,list_node)
+	for i in 0..(list_node.size-1) 
+		array << node_to_model(list_node.get i)
 	end
 end
 
@@ -285,7 +308,15 @@ def self.args_to_model(args_node)
 			#puts "DEALING WITH #{i} #{args_node.get i} #{(args_node.get i).class}"
 			args << node_to_model(args_node.get i)
 		end
-		args		
+		args 	
+	elsif args_node.is_a? ArgsNode
+		populate_from_list(args,args_node.pre)
+		populate_from_list(args,args_node.optional) if args_node.optional
+		populate_from_list(args,args_node.rest) if args_node.rest
+		populate_from_list(args,args_node.post) if args_node.post
+		args
+	#elsif args_node.is_a? BlockPassNode
+	#	raise 'BLOCKPASSNODE: what should I do with that?'
 	else 
 		raise "I don't know how to deal with #{args_node.class}"
 	end

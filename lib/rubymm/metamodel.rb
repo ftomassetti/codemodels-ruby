@@ -5,6 +5,11 @@ module RubyMM
 	class Value < RGen::MetamodelBuilder::MMBase
 	end
 
+	# later attrs like optional or default value could be added
+	class Argument < RGen::MetamodelBuilder::MMBase
+		has_attr 'name', String
+	end
+
 	class Statement < Value
 	end
 
@@ -17,9 +22,15 @@ module RubyMM
 		contains_many_uni 'contents', Value
 	end 
 
+	class CodeBlock < RGen::MetamodelBuilder::MMBase
+		contains_one_uni 'body', Value
+		contains_many_uni 'args', Argument
+	end
+
 	class Call < Value
 		has_attr 'name', String
 		contains_many_uni 'args', Value
+		contains_one_uni 'block_arg', CodeBlock
 		contains_one_uni 'receiver', Value
 		has_attr 'implicit_receiver', Boolean
 
@@ -174,6 +185,9 @@ module RubyMM
 	end
 
 	class LocalVarAccess < VarAccess
+	end
+
+	class BlockVarAccess < VarAccess
 	end
 
 	def self.localvarac(name)
