@@ -316,12 +316,16 @@ def self.node_to_model(node,parent_model=nil)
 		#	puts "> #{n}"
 		#	n = n.parent
 		#end
-		if RubyMM.skip_unknown_node
-			puts "skipping #{node.node_type.name}..."
-		else
-			raise UnknownNodeType.new(node)
-		end
+		unknown_node_type_found(node)
 		#raise "I don't know how to deal with #{node.node_type.name} (position: #{node.position})"
+	end
+end
+
+def self.unknown_node_type_found(node)
+	if RubyMM.skip_unknown_node
+		puts "skipping #{node.node_type.name}..."
+	else
+		raise UnknownNodeType.new(node)
 	end
 end
 
@@ -356,8 +360,7 @@ def self.args_to_model(args_node)
 	#	args << node_to_model(args_node)
 	#	args
 	else 
-		#raise "I don't know how to deal with #{node.node_type.name} (position: #{node.position})"
-		raise UnknownNodeType.new(args_node)
+		unknown_node_type_found(args_node)
 	end
 end
 
