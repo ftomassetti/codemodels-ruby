@@ -347,7 +347,7 @@ def self.args_to_model(args_node)
 		end
 		args 	
 	elsif args_node.is_a? ArgsNode
-		populate_from_list(args,args_node.pre)
+		populate_from_list(args,args_node.pre) if args_node.pre
 		populate_from_list(args,args_node.optional) if args_node.optional
 		populate_from_list(args,args_node.rest) if args_node.rest
 		populate_from_list(args,args_node.post) if args_node.post
