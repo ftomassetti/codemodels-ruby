@@ -117,20 +117,6 @@ class TestOperations < Test::Unit::TestCase
         body: RubyMM::BooleanLiteral.build(true)
   end
 
-  def test_rescue_empty
-    root = RubyMM.parse('begin;rescue;end')
-    assert_node root, RubyMM::BeginRescue,
-        body: nil,
-        rescue_body: nil
-  end
-
-  def test_rescue_full
-    root = RubyMM.parse('begin;1;rescue;2;end')
-    assert_node root, RubyMM::BeginRescue,
-        body: RubyMM.int(1),
-        rescue_body: RubyMM.int(2)
-  end
-
   def test_element_assignment
     root = RubyMM.parse('models[1] = 2')
     assert_node root,RubyMM::ElementAssignement,

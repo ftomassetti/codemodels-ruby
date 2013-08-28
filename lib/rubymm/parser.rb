@@ -47,7 +47,7 @@ def self.get_var_name_depending_on_parser_version(node)
  	end
  end
 
-def self.node_to_model(node)
+def self.node_to_model(node,parent_model=nil)
 	return nil if node==nil
 	#puts "#{node} #{node.node_type.name}"
 	case node.node_type.name
@@ -77,7 +77,18 @@ def self.node_to_model(node)
 	when 'DEFNNODE'
 		model = RubyMM::Def.new
 		model.name = node.name
-		model.body = node_to_model node.body
+		#puts "NODE BODY: #{node.body}"	
+		if node.body.node_type.name=='RESCUENODE'
+			rescue_node = node.body
+			model.body = node_to_model(rescue_node.body)
+	 		rescue_body_node = rescue_node.rescue
+	 		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
+	 		rescue_clause_model = RubyMM::RescueClause.new
+	 		rescue_clause_model.body = node_to_model(rescue_body_node.body)
+	 		model.rescue_clauses = model.rescue_clauses << rescue_clause_model
+		else
+			model.body = node_to_model(node.body,model)
+		end
 		model.onself = false
 		model
 	when 'DEFSNODE'
@@ -208,7 +219,9 @@ def self.node_to_model(node)
  		model.body = node_to_model(rescue_node.body)
  		rescue_body_node = rescue_node.rescue
  		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
- 		model.rescue_body = node_to_model(rescue_body_node.body)
+ 		rescue_clause_model = RubyMM::RescueClause.new
+	 	rescue_clause_model.body = node_to_model(rescue_body_node.body)
+	 	model.rescue_clauses = model.rescue_clauses << rescue_clause_model
  		model
  	when 'ATTRASSIGNNODE'
  		model = RubyMM::ElementAssignement.new
@@ -227,9 +240,18 @@ def self.node_to_model(node)
  		model = RubyMM::Return.new
  		model.value = node_to_model(node.value)
  		model
+ 	#when 'RESCUENODE'
+ 	#	raise "Parent of rescue should be a Def" unless parent_model.is_a? RubyMM::Def
+ 	#	model = RubyMM::RescueClause.new
+ 	#	model
  	when 'CONSTDECLNODE'
  		raise 'Const decl node: not implemented'
 	else		
+		#n = node
+		#while n
+		#	puts "> #{n}"
+		#	n = n.parent
+		#end
 		raise "I don't know how to deal with #{node.node_type.name}"
 	end
 end

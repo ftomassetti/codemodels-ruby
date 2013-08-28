@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.platform    = 'java'
   s.name        = 'rubymm'
-  s.version     = '0.1.2'
-  s.date        = '2013-08-15'
+  s.version     = '0.1.3'
+  s.date        = '2013-08-28'
   s.summary     = "Ruby metamodel and parser"
   s.description = "Ruby metamodel and parser producing an EMF model"
   s.authors     = ["Federico Tomassetti"]

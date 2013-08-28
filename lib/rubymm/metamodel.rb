@@ -32,10 +32,15 @@ module RubyMM
 		include Methods
 	end
 
+	class RescueClause < RGen::MetamodelBuilder::MMBase 
+		contains_one_uni 'body',Value
+	end
+
 	class Def < Value
 		has_attr 'name', String
 		contains_one_uni 'body', Value
 		has_attr 'onself',Boolean
+		contains_many_uni 'rescue_clauses',RescueClause
 	end
 
 	class Literal < Value
@@ -198,7 +203,7 @@ module RubyMM
 
 	class BeginRescue < Value
 		contains_one_uni 'body',Value
-		contains_one_uni 'rescue_body',Value
+		contains_many_uni 'rescue_clauses',RescueClause
 	end
 
 	class ElementAssignement < Value
