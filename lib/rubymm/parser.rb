@@ -299,8 +299,8 @@ def self.node_to_model(node,parent_model=nil)
  		model.args = args_to_model(node.var)
  		model.body = node_to_model(node.body)
  		model
- 	when 'CONSTDECLNODE'
- 		raise 'Const decl node: not implemented'
+ 	#when 'CONSTDECLNODE'
+ 	#	raise 'Const decl node: not implemented'
  	when 'ARGUMENTNODE'
  		model = RubyMM::Argument.new
  		model.name = node.name
