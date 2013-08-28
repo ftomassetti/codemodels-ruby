@@ -6,6 +6,7 @@ java_import org.jrubyparser.ast.ArrayNode
 java_import org.jrubyparser.ast.ListNode
 java_import org.jrubyparser.ast.BlockPassNode
 java_import org.jrubyparser.ast.ArgsNode
+java_import org.jrubyparser.ast.SymbolNode
 
 module RubyMM
 
@@ -14,10 +15,25 @@ def self.parse_file(path)
 	self.parse(content)
 end
 
+ class UnknownNodeType < Exception
+ 	attr_reader :node
+
+ 	def initialize(node)
+ 		@node = node
+ 	end
+
+ 	def to_s
+ 		"UnknownNodeType: type=#{@node.node_type.name}, start line: #{@node.position.start_line}"
+ 	end
+
+ end
+
 def self.parse(code)
 	tree = JRubyParser.parse(code)
 	#puts "Code: #{code} Root: #{tree}"
 	tree_to_model(tree)
+#rescue UnknownNodeType => e
+#	raise "Gotcha: #{e}"
 end
 
 def self.tree_to_model(tree)
@@ -48,6 +64,8 @@ def self.get_var_name_depending_on_parser_version(node)
  	end
  end
 
+
+
 def self.node_to_model(node,parent_model=nil)
 	return nil if node==nil
 	#puts "#{node} #{node.node_type.name}"
@@ -58,7 +76,12 @@ def self.node_to_model(node,parent_model=nil)
 		model = RubyMM::Call.new
 		model.name = node.name
 		model.receiver = node_to_model node.receiver
-		model.args = args_to_model node.args
+		if node.args.node_type.name == 'BLOCKPASSNODE'
+			model.block_arg = node_to_model(node.args)
+			model.args = args_to_model(node.args.args) if node.args.args
+		else
+			model.args = args_to_model node.args
+		end
 		if node.iter
 			model.block_arg = node_to_model(node.iter)
 		end
@@ -278,13 +301,19 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::Argument.new
  		model.name = node.name
  		model
+ 	when 'BLOCKPASSNODE'
+ 		model = RubyMM::BlockReference.new
+ 		raise "Unexpected" unless node.body.is_a? SymbolNode
+ 		model.name = node.body.name
+ 		model
 	else		
 		#n = node
 		#while n
 		#	puts "> #{n}"
 		#	n = n.parent
 		#end
-		raise "I don't know how to deal with #{node.node_type.name}"
+		raise UnknownNodeType.new(node)
+		#raise "I don't know how to deal with #{node.node_type.name} (position: #{node.position})"
 	end
 end
 
@@ -316,9 +345,11 @@ def self.args_to_model(args_node)
 		populate_from_list(args,args_node.post) if args_node.post
 		args
 	#elsif args_node.is_a? BlockPassNode
-	#	raise 'BLOCKPASSNODE: what should I do with that?'
+	#	args << node_to_model(args_node)
+	#	args
 	else 
-		raise "I don't know how to deal with #{args_node.class}"
+		#raise "I don't know how to deal with #{node.node_type.name} (position: #{node.position})"
+		raise UnknownNodeType.new(args_node)
 	end
 end
 

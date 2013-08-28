@@ -22,15 +22,22 @@ module RubyMM
 		contains_many_uni 'contents', Value
 	end 
 
-	class CodeBlock < RGen::MetamodelBuilder::MMBase
+	class AbstractCodeBlock < RGen::MetamodelBuilder::MMBase
+	end
+
+	class CodeBlock < AbstractCodeBlock
 		contains_one_uni 'body', Value
 		contains_many_uni 'args', Argument
+	end
+
+	class BlockReference < AbstractCodeBlock
+		has_attr 'name', String
 	end
 
 	class Call < Value
 		has_attr 'name', String
 		contains_many_uni 'args', Value
-		contains_one_uni 'block_arg', CodeBlock
+		contains_one_uni 'block_arg', AbstractCodeBlock
 		contains_one_uni 'receiver', Value
 		has_attr 'implicit_receiver', Boolean
 
