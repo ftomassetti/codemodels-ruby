@@ -213,6 +213,16 @@ def self.node_to_model(node,parent_model=nil)
  		model.assigned = node_to_model(node.first)
  		model.value = node_to_model(node.second).value
  		model
+ 	when 'MULTIPLEASGNNODE'
+ 		# TODO consider asterisk
+ 		model = RubyMM::MultipleAssignment.new
+ 		if node.pre
+ 			for i in 0..(node.pre.count-1)
+ 				model.assignments = model.assignments << node_to_model(node.pre.get(i))
+ 			end
+ 		end
+ 		# TODO consider rest and post!
+ 		model
 
  	###
  	### The rest

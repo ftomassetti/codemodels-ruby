@@ -51,4 +51,19 @@ class TestNotVariableAssignement < Test::Unit::TestCase
         operator:'/'
   end  
 
+	def test_multiple_assignment
+	    root = RubyMM.parse('a,@b,c = 1,2,3')
+	    assert_node root,RubyMM::MultipleAssignment
+	    assert_equal 3,root.assignments.count
+	    assert_node root.assignments[0], RubyMM::LocalVarAssignment,
+	    	name_assigned:'a',
+	    	value: RubyMM.int(1)
+	    assert_node root.assignments[1], RubyMM::InstanceVarAssignment,
+	    	name_assigned:'b',
+	    	value: RubyMM.int(2)	   
+	    assert_node root.assignments[2], RubyMM::LocalVarAssignment,
+	    	name_assigned:'v',
+	    	value: RubyMM.int(3)	   	    		    		    	
+	end  
+
 end

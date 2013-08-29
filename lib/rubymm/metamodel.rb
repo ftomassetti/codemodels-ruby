@@ -173,24 +173,24 @@ module RubyMM
 		has_attr 'name', String
 	end
 
-	class VarAssignement < Value
+	class VarAssignment < Value
 		has_attr 'name_assigned', String
 		contains_one_uni 'value', Value
 	end
 
-	class LocalVarAssignment < VarAssignement
+	class LocalVarAssignment < VarAssignment
 	end
 
-	class GlobalVarAssignment < VarAssignement
+	class GlobalVarAssignment < VarAssignment
 	end
 
-	class InstanceVarAssignment < VarAssignement
+	class InstanceVarAssignment < VarAssignment
 	end
 
-	class ClassVarAssignment < VarAssignement
+	class ClassVarAssignment < VarAssignment
 	end
 
-	class BlockVarAssignment < VarAssignement
+	class BlockVarAssignment < VarAssignment
 	end
 
 	class VarAccess < Value
@@ -260,6 +260,10 @@ module RubyMM
 		contains_one_uni 'element',Value
 		contains_one_uni 'value',Value
 		has_attr 'operator',String
+	end
+
+	class MultipleAssignment < Value
+		contains_many_uni 'assignments',VarAssignment
 	end
 
 	class Return < Statement
