@@ -138,7 +138,60 @@ def self.node_to_model(node,parent_model=nil)
  		model.value = node.value
  		model
 
+ 	###
+ 	### Variable accesses
+ 	###
+ 	when 'LOCALVARNODE'
+ 		model = RubyMM::LocalVarAccess.new
+ 		model.name = node.name
+ 		model
+ 	when 'DVARNODE'
+ 		model = RubyMM::BlockVarAccess.new
+ 		model.name = node.name
+ 		model
+ 	when 'GLOBALVARNODE'
+ 		model = RubyMM::GlobalVarAccess.new
+ 		model.name = get_var_name_depending_on_parser_version(node)
+ 		model
+ 	when 'CLASSVARNODE'
+ 		model = RubyMM::ClassVarAccess.new
+ 		model.name = get_var_name_depending_on_parser_version(node,2)
+ 		model
+ 	when 'INSTVARNODE'
+ 		RubyMM::InstanceVarAccess.build get_var_name_depending_on_parser_version(node) 	
 
+ 	###
+ 	### Variable assignements
+ 	###
+  	when 'LOCALASGNNODE'
+ 		model = RubyMM::LocalVarAssignment.new
+ 		model.name_assigned = node.name
+ 		model.value = node_to_model(node.value)
+ 		model		
+  	when 'DASGNNODE'
+ 		model = RubyMM::BlockVarAssignment.new
+ 		model.name_assigned = node.name
+ 		model.value = node_to_model(node.value)
+ 		model	 		
+ 	when 'GLOBALASGNNODE'
+ 		model = RubyMM::GlobalVarAssignment.new
+ 		model.name_assigned = get_var_name_depending_on_parser_version(node)
+ 		model.value = node_to_model(node.value)
+ 		model 		
+ 	when 'CLASSVARASGNNODE'
+ 		model = RubyMM::ClassVarAssignment.new
+ 		model.name_assigned = get_var_name_depending_on_parser_version(node,2)
+ 		model.value = node_to_model(node.value)
+ 		model 		
+ 	when 'INSTASGNNODE'
+ 		model = RubyMM::InstanceVarAssignment.new
+ 		model.name_assigned = get_var_name_depending_on_parser_version(node)
+ 		model.value = node_to_model(node.value)
+ 		model
+
+ 	###
+ 	### The rest
+ 	###
 
  	when 'SELFNODE'
  		model = RubyMM::Self.new
@@ -232,39 +285,8 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::Constant.new
  		model.name = node.name
  		model
- 	when 'LOCALASGNNODE'
- 		model = RubyMM::LocalVarAssignment.new
- 		model.name_assigned = node.name
- 		model.value = node_to_model(node.value)
- 		model
- 	when 'LOCALVARNODE'
- 		model = RubyMM::LocalVarAccess.new
- 		model.name = node.name
- 		model
- 	when 'DVARNODE'
- 		model = RubyMM::BlockVarAccess.new
- 		model.name = node.name
- 		model
  	when 'IFNODE'
  		model = RubyMM::IfStatement.new
- 		model
- 	when 'GLOBALVARNODE'
- 		model = RubyMM::GlobalVarAccess.new
- 		model.name = get_var_name_depending_on_parser_version(node)
- 		model
- 	when 'GLOBALASGNNODE'
- 		model = RubyMM::GlobalVarAssignment.new
- 		model.name_assigned = get_var_name_depending_on_parser_version(node)
- 		model.value = node_to_model(node.value)
- 		model
- 	when 'CLASSVARNODE'
- 		model = RubyMM::ClassVarAccess.new
- 		model.name = get_var_name_depending_on_parser_version(node,2)
- 		model
- 	when 'CLASSVARASGNNODE'
- 		model = RubyMM::ClassVarAssignment.new
- 		model.name_assigned = get_var_name_depending_on_parser_version(node,2)
- 		model.value = node_to_model(node.value)
  		model 		
  	when 'HASHNODE'
  		model = RubyMM::HashLiteral.new
@@ -311,13 +333,6 @@ def self.node_to_model(node,parent_model=nil)
  		model.element = node_to_model(node.args[0])
  		model.value = node_to_model(node.args[1])
  		model
- 	when 'INSTASGNNODE'
- 		model = RubyMM::InstanceVarAssignment.new
- 		model.name_assigned = get_var_name_depending_on_parser_version(node)
- 		model.value = node_to_model(node.value)
- 		model
- 	when 'INSTVARNODE'
- 		RubyMM::InstanceVarAccess.build get_var_name_depending_on_parser_version(node)
  	when 'RETURNNODE'
  		model = RubyMM::Return.new
  		model.value = node_to_model(node.value)

@@ -190,6 +190,9 @@ module RubyMM
 	class ClassVarAssignment < VarAssignement
 	end
 
+	class BlockVarAssignment < VarAssignement
+	end
+
 	class VarAccess < Value
 		has_attr 'name', String
 

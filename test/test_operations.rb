@@ -48,44 +48,6 @@ class TestOperations < Test::Unit::TestCase
     assert_is_str root.args[0],'something'   
   end
 
-  def test_local_var_assign
-    root = RubyMM.parse('some_var = 10')
-
-    assert_right_class root, RubyMM::LocalVarAssignment
-    assert_equal 'some_var',root.name_assigned
-    assert_is_int root.value, 10
-  end
-
-  def test_global_var_access
-    root = RubyMM.parse('$v')
-
-    assert_right_class root, RubyMM::GlobalVarAccess
-    assert_equal 'v',root.name
-  end
-
-  def test_global_var_assignement
-    root = RubyMM.parse('$v = 10')
-
-    assert_right_class root, RubyMM::GlobalVarAssignment
-    assert_equal 'v',root.name_assigned
-    assert_is_int root.value, 10
-  end
-
-  def test_class_var_access
-    root = RubyMM.parse('@@v')
-
-    assert_right_class root, RubyMM::ClassVarAccess
-    assert_equal 'v',root.name
-  end
-
-  def test_class_var_assignement
-    root = RubyMM.parse('@@v = 10')
-
-    assert_right_class root, RubyMM::ClassVarAssignment
-    assert_equal 'v',root.name_assigned
-    assert_is_int root.value, 10
-  end
-
   def test_empty_hash
     root = RubyMM.parse('{}')
 
@@ -138,19 +100,6 @@ class TestOperations < Test::Unit::TestCase
         array: RubyMM::Call.build(name:'models',implicit_receiver:false),
         element: RubyMM.int(1),
         value: RubyMM.int(2)
-  end
-
-  def test_inst_assignment
-    root = RubyMM.parse('@v = 1')
-    assert_node root, RubyMM::InstanceVarAssignment,
-      name_assigned: 'v',
-      value: RubyMM.int(1)
-  end
-
-  def test_inst_access
-    root = RubyMM.parse('@v')
-    assert_node root,RubyMM::InstanceVarAccess,
-      name:'v'
   end
 
   def test_return_empty
