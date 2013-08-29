@@ -133,6 +133,13 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::BooleanLiteral.new
  		model.value = true
  		model
+ 	when 'REGEXPNODE'
+ 		model = RubyMM::RegExpLiteral.new
+ 		model.value = node.value
+ 		model
+
+
+
 
 	when 'CALLNODE'
 		model = RubyMM::Call.new

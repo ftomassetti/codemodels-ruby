@@ -89,6 +89,10 @@ module RubyMM
 		has_attr 'value', Float
 	end
 
+	class RegExpLiteral < Literal
+		has_attr 'value', String
+	end
+
 	def self.bool(value)
 		BooleanLiteral.build(value)
 	end

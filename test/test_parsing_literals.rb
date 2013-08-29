@@ -57,4 +57,11 @@ class TestOperations < Test::Unit::TestCase
       value: 12.3
   end
 
+  def test_regexp
+    root = RubyMM.parse'/^[a-z]*/'
+
+    assert_node root,RubyMM::RegExpLiteral,
+      value: '^[a-z]*'
+  end
+
  end
