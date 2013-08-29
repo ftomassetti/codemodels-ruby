@@ -2,7 +2,7 @@ module RubyMM
 
 module InfoExtraction
 
-def self.is_id_case_str(s)
+def self.is_id_str(s)
 	not s.index /[^A-Za-z0-9_!?]/
 end
 
@@ -11,8 +11,6 @@ def self.id_to_words(id)
 	while id.start_with?'_' # otherwise _ciao => ['','ciao']
 		id = id[1..-1]
 	end
-
-	#parts = id.split /[_!?]/
 
 	number_index = id.index /[0-9]/
 	if number_index
