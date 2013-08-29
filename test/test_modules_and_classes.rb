@@ -61,4 +61,10 @@ class TestOperations < Test::Unit::TestCase
     assert_equal 0,root.contents.count
   end
 
+  def test_self
+    root = RubyMM.parse('self')
+
+    assert_node root, RubyMM::Self
+  end
+
 end

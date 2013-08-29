@@ -23,7 +23,7 @@ module TestHelper
 		assert_equal nil, node.container
 	end
 
-	def assert_node(node,clazz,values)
+	def assert_node(node,clazz,values={})
 		assert_right_class node,clazz
 		assert_values node,values
 	end

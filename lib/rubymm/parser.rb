@@ -140,7 +140,9 @@ def self.node_to_model(node,parent_model=nil)
 
 
 
-
+ 	when 'SELFNODE'
+ 		model = RubyMM::Self.new
+ 		model
 	when 'CALLNODE'
 		model = RubyMM::Call.new
 		model.name = node.name

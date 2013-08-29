@@ -114,6 +114,9 @@ module RubyMM
 	class NilLiteral < Literal
 	end
 
+	class Self < Value
+	end
+
 	class Constant < Value
 		has_attr 'name', String
 		contains_one_uni 'container',Constant
