@@ -247,10 +247,19 @@ module RubyMM
 		contains_many_uni 'rescue_clauses',RescueClause
 	end
 
+	# ex a[1] = 2
 	class ElementAssignement < Value
-		contains_one_uni 'array',Value
+		contains_one_uni 'container',Value
 		contains_one_uni 'element',Value
 		contains_one_uni 'value',Value
+	end
+
+	# ex a[1] += 2
+	class ElementOperationAssignement < Value
+		contains_one_uni 'container',Value
+		contains_one_uni 'element',Value
+		contains_one_uni 'value',Value
+		has_attr 'operator',String
 	end
 
 	class Return < Statement

@@ -190,6 +190,31 @@ def self.node_to_model(node,parent_model=nil)
  		model
 
  	###
+ 	### Other assignments
+ 	###
+
+ 	when 'OPELEMENTASGNNODE'
+ 		model = RubyMM::ElementOperationAssignement.new
+ 		model.container = node_to_model(node.receiver)
+ 		model.element = node_to_model(node.args[0])
+ 		model.value = node_to_model(node.value)
+ 		model.operator = node.operator_name
+ 		model
+ 	when 'ATTRASSIGNNODE'
+ 		model = RubyMM::ElementAssignement.new
+ 		model.container = node_to_model(node.receiver)
+ 		model.element = node_to_model(node.args[0])
+ 		model.value = node_to_model(node.args[1])
+ 		model
+ 	when 'OPASGNORNODE'
+ 		model = RubyMM::OrAssignment.new
+ 		# assigned : from access to variable
+ 		# value    : from assignement to value 		
+ 		model.assigned = node_to_model(node.first)
+ 		model.value = node_to_model(node.second).value
+ 		model
+
+ 	###
  	### The rest
  	###
 
@@ -327,12 +352,6 @@ def self.node_to_model(node,parent_model=nil)
 			model.body = node_to_model(node.body)
 		end
  		model
- 	when 'ATTRASSIGNNODE'
- 		model = RubyMM::ElementAssignement.new
- 		model.array = node_to_model(node.receiver)
- 		model.element = node_to_model(node.args[0])
- 		model.value = node_to_model(node.args[1])
- 		model
  	when 'RETURNNODE'
  		model = RubyMM::Return.new
  		model.value = node_to_model(node.value)
@@ -346,13 +365,6 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::OrOperator.new
  		model.left = node_to_model(node.first)
  		model.right = node_to_model(node.second)
- 		model
- 	when 'OPASGNORNODE'
- 		model = RubyMM::OrAssignment.new
- 		# assigned : from access to variable
- 		# value    : from assignement to value 		
- 		model.assigned = node_to_model(node.first)
- 		model.value = node_to_model(node.second).value
  		model
  	when 'ITERNODE'
  		model = RubyMM::CodeBlock.new

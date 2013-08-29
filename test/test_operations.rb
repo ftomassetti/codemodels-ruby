@@ -94,14 +94,6 @@ class TestOperations < Test::Unit::TestCase
         body: RubyMM::BooleanLiteral.build(true)
   end
 
-  def test_element_assignment
-    root = RubyMM.parse('models[1] = 2')
-    assert_node root,RubyMM::ElementAssignement,
-        array: RubyMM::Call.build(name:'models',implicit_receiver:false),
-        element: RubyMM.int(1),
-        value: RubyMM.int(2)
-  end
-
   def test_return_empty
     root = RubyMM.parse('return')
     assert_node root,RubyMM::Return,
