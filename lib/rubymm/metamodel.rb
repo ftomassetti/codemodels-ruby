@@ -85,6 +85,10 @@ module RubyMM
 		has_attr 'value', Integer
 	end
 
+	class FloatLiteral < Literal
+		has_attr 'value', Float
+	end
+
 	def self.bool(value)
 		BooleanLiteral.build(value)
 	end

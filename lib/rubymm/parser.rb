@@ -88,6 +88,52 @@ def self.node_to_model(node,parent_model=nil)
 	case node.node_type.name
 	when 'NEWLINENODE'
 		node_to_model node.next_node
+
+	##
+	## Literals
+	##
+	when 'FLOATNODE'
+		model = RubyMM::FloatLiteral.new
+		model.value = node.value
+		model
+	when 'FIXNUMNODE'
+		model = RubyMM::IntLiteral.new
+		model.value = node.value
+		model
+	when 'STRNODE'
+		model = RubyMM::StringLiteral.new
+		model.value = node.value
+		model.dynamic = false
+		model
+	when 'DSTRNODE'
+		model = RubyMM::StringLiteral.new
+		#model.value = node.value
+		model.dynamic = true
+		for i in 0..(node.size-1)
+			model.pieces = model.pieces << node_to_model(node.get i)
+		end
+		model
+	when 'NILNODE'
+		begin
+			implicit_nil = Java::OrgJrubyparserAst::NilImplicitNode
+		rescue
+			implicit_nil = nil # apparently the class was removed...
+		end
+		if implicit_nil && (node.is_a? Java::OrgJrubyparserAst::NilImplicitNode)
+			return nil
+		else
+			#puts "NIL for #{node}"
+			RubyMM::NilLiteral.new
+		end
+ 	when 'FALSENODE'
+ 		model = RubyMM::BooleanLiteral.new
+ 		model.value = false
+ 		model
+ 	when 'TRUENODE'
+ 		model = RubyMM::BooleanLiteral.new
+ 		model.value = true
+ 		model
+
 	when 'CALLNODE'
 		model = RubyMM::Call.new
 		model.name = node.name
@@ -151,23 +197,6 @@ def self.node_to_model(node,parent_model=nil)
 			#puts "Contents #{model.contents.class}"
 		end
 		model
-	when 'FIXNUMNODE'
-		model = RubyMM::IntLiteral.new
-		model.value = node.value
-		model
-	when 'STRNODE'
-		model = RubyMM::StringLiteral.new
-		model.value = node.value
-		model.dynamic = false
-		model
-	when 'DSTRNODE'
-		model = RubyMM::StringLiteral.new
-		#model.value = node.value
-		model.dynamic = true
-		for i in 0..(node.size-1)
-			model.pieces = model.pieces << node_to_model(node.get i)
-		end
-		model
 	when 'EVSTRNODE'
 		node_to_model(node.body)
 	when 'CLASSNODE'
@@ -181,18 +210,6 @@ def self.node_to_model(node,parent_model=nil)
 		model.defname = node_to_model(node.getCPath)
 		body_node_to_contents(node.body_node,model)
 		model
-	when 'NILNODE'
-		begin
-			implicit_nil = Java::OrgJrubyparserAst::NilImplicitNode
-		rescue
-			implicit_nil = nil # apparently the class was removed...
-		end
-		if implicit_nil && (node.is_a? Java::OrgJrubyparserAst::NilImplicitNode)
-			return nil
-		else
-			#puts "NIL for #{node}"
-			RubyMM::NilLiteral.new
-		end
 	when 'COLON2NODE'
 		model = RubyMM::Constant.new
 		model.name = node.name
@@ -218,14 +235,6 @@ def self.node_to_model(node,parent_model=nil)
  	when 'DVARNODE'
  		model = RubyMM::BlockVarAccess.new
  		model.name = node.name
- 		model
- 	when 'FALSENODE'
- 		model = RubyMM::BooleanLiteral.new
- 		model.value = false
- 		model
- 	when 'TRUENODE'
- 		model = RubyMM::BooleanLiteral.new
- 		model.value = true
  		model
  	when 'IFNODE'
  		model = RubyMM::IfStatement.new

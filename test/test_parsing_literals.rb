@@ -50,4 +50,11 @@ class TestOperations < Test::Unit::TestCase
     assert_right_class root, RubyMM::NilLiteral
   end
 
+  def test_float
+    root = RubyMM.parse('12.3')
+
+    assert_node root,RubyMM::FloatLiteral,
+      value: 12.3
+  end
+
  end
