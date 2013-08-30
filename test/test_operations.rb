@@ -153,5 +153,14 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::GlobalScopeReference,
         name: 'FooBar'
   end
-  
+
+  def test_constant_through_global_scope_ref
+    r = RubyMM.parse('::ActionView::MissingTemplate')
+
+    assert_node r, RubyMM::Constant,
+        name: 'MissingTemplate'
+    assert_node r.container, RubyMM::GlobalScopeReference,
+        name: 'ActionView'
+  end
+
 end

@@ -133,8 +133,8 @@ module RubyMM
 
 	class Constant < Value
 		has_attr 'name', String
-		contains_one_uni 'container',Constant
-		has_one 'top_container',Constant, :derived => true
+		contains_one_uni 'container',Value
+		has_one 'top_container',Value, :derived => true
 
 		module Methods
 			def top_container_derived
