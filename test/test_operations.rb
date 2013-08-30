@@ -163,4 +163,22 @@ class TestOperations < Test::Unit::TestCase
         name: 'ActionView'
   end
 
+  def test_case_single_when
+    r = RubyMM.parse("case v; when 'A'; 1;end")
+
+    raise "Implement me!"
+  end
+
+  def test_case_two_whens
+    r = RubyMM.parse("case v; when 'A'; 1; when 'B'; 2; end")
+
+    raise "Implement me!"
+  end
+
+  def test_case_two_whens_and_case
+    r = RubyMM.parse("case v; when 'A'; 1; when 'B'; 2; default; 3; end")
+
+    raise "Implement me!"
+  end
+
 end
