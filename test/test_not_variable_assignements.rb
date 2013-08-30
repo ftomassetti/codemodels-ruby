@@ -51,7 +51,7 @@ class TestNotVariableAssignement < Test::Unit::TestCase
         operator:'/'
   end  
 
-	def test_multiple_assignment
+	def test_multiple_assignment_to_values
 	    root = RubyMM.parse('a,@b,c = 1,2,3')
 	    assert_node root,RubyMM::MultipleAssignment
 	    assert_equal 3,root.assignments.count
@@ -66,5 +66,12 @@ class TestNotVariableAssignement < Test::Unit::TestCase
 	    	value: nil
       assert_equal [RubyMM.int(1),RubyMM.int(2),RubyMM.int(3)],root.values	   	    		    		    	
 	end  
+
+  def test_multiple_assignment_to_call
+    root = RubyMM.parse('@auth_source_pages, @auth_sources = paginate AuthSource, :per_page => 25')
+    assert_node root,RubyMM::MultipleAssignment
+    assert_equal 1,root.values.count
+    assert_node root.values[0], RubyMM::Call, name: 'paginate'
+  end
 
 end

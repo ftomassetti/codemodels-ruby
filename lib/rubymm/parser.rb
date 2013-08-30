@@ -221,7 +221,12 @@ def self.node_to_model(node,parent_model=nil)
  				model.assignments = model.assignments << node_to_model(node.pre.get(i))
  			end
  		end
- 		node_to_model(node.value).values.each {|x| model.values = model.values << x}
+ 		values_model = node_to_model(node.value)
+ 		if values_model.respond_to? :values
+ 			values_model.values.each {|x| model.values = model.values << x}
+ 		else
+ 			model.values = model.values << values_model
+ 		end
  		# TODO consider rest and post!
  		model
  	when 'MULTIPLEASGN19NODE'
@@ -232,7 +237,12 @@ def self.node_to_model(node,parent_model=nil)
  				model.assignments = model.assignments << node_to_model(node.pre.get(i))
  			end
  		end
- 		node_to_model(node.value).values.each {|x| model.values = model.values << x}
+ 		values_model = node_to_model(node.value)
+ 		if values_model.respond_to? :values
+ 			values_model.values.each {|x| model.values = model.values << x}
+ 		else
+ 			model.values = model.values << values_model
+ 		end
  		# TODO consider rest and post!
  		model
 
