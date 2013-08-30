@@ -57,13 +57,14 @@ class TestNotVariableAssignement < Test::Unit::TestCase
 	    assert_equal 3,root.assignments.count
 	    assert_node root.assignments[0], RubyMM::LocalVarAssignment,
 	    	name_assigned:'a',
-	    	value: RubyMM.int(1)
+	    	value: nil
 	    assert_node root.assignments[1], RubyMM::InstanceVarAssignment,
 	    	name_assigned:'b',
-	    	value: RubyMM.int(2)	   
+	    	value: nil
 	    assert_node root.assignments[2], RubyMM::LocalVarAssignment,
-	    	name_assigned:'v',
-	    	value: RubyMM.int(3)	   	    		    		    	
+	    	name_assigned:'c',
+	    	value: nil
+      assert_equal [RubyMM.int(1),RubyMM.int(2),RubyMM.int(3)],root.values	   	    		    		    	
 	end  
 
 end

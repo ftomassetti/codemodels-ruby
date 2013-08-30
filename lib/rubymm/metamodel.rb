@@ -52,6 +52,7 @@ module RubyMM
 
 	class CallToSuper < Value
 		contains_many_uni 'args', Value
+		contains_one_uni 'block_arg', AbstractCodeBlock
 	end
 
 	class RescueClause < RGen::MetamodelBuilder::MMBase 
@@ -268,6 +269,7 @@ module RubyMM
 
 	class MultipleAssignment < Value
 		contains_many_uni 'assignments',VarAssignment
+		contains_many_uni 'values',Value
 	end
 
 	class Return < Statement

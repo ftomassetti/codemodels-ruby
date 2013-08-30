@@ -221,6 +221,18 @@ def self.node_to_model(node,parent_model=nil)
  				model.assignments = model.assignments << node_to_model(node.pre.get(i))
  			end
  		end
+ 		node_to_model(node.value).values.each {|x| model.values = model.values << x}
+ 		# TODO consider rest and post!
+ 		model
+ 	when 'MULTIPLEASGN19NODE'
+  		# TODO consider asterisk
+ 		model = RubyMM::MultipleAssignment.new
+ 		if node.pre
+ 			for i in 0..(node.pre.count-1)
+ 				model.assignments = model.assignments << node_to_model(node.pre.get(i))
+ 			end
+ 		end
+ 		node_to_model(node.value).values.each {|x| model.values = model.values << x}
  		# TODO consider rest and post!
  		model
 
@@ -231,6 +243,12 @@ def self.node_to_model(node,parent_model=nil)
  	when 'SELFNODE'
  		model = RubyMM::Self.new
  		model
+ 	when 'ZSUPERNODE'
+ 		model = RubyMM::CallToSuper.new
+ 		if node.iter
+			model.block_arg = node_to_model(node.iter)
+		end
+ 		model 		
 	when 'CALLNODE'
 		model = RubyMM::Call.new
 		model.name = node.name
