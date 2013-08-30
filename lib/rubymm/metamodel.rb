@@ -122,6 +122,10 @@ module RubyMM
 	class Self < Value
 	end
 
+	class GlobalScopeReference < Value
+		has_attr 'name', String
+	end
+
 	# for example the name of a method in an alias statement
 	class LiteralReference < Value
 		has_attr 'value', String

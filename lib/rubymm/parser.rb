@@ -250,11 +250,14 @@ def self.node_to_model(node,parent_model=nil)
  	### The rest
  	###
 
+ 	when 'COLON3NODE'
+ 		model = RubyMM::GlobalScopeReference.new
+ 		model.name = node.name
+ 		model
  	when 'LITERALNODE'
  		model = RubyMM::LiteralReference.new
  		model.value = node.name
  		model
-
  	when 'SELFNODE'
  		model = RubyMM::Self.new
  		model

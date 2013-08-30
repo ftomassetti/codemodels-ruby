@@ -147,4 +147,11 @@ class TestOperations < Test::Unit::TestCase
     assert_equal 0,call_to_super.args.count
   end
 
+  def test_global_scope_ref
+    r = RubyMM.parse('::FooBar')
+
+    assert_node r, RubyMM::GlobalScopeReference,
+        name: 'FooBar'
+  end
+  
 end
