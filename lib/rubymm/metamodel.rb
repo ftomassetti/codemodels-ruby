@@ -50,6 +50,10 @@ module RubyMM
 		include Methods
 	end
 
+	class CallToSuper < Value
+		contains_many_uni 'args', Value
+	end
+
 	class RescueClause < RGen::MetamodelBuilder::MMBase 
 		contains_one_uni 'body',Value
 	end

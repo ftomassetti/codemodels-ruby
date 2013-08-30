@@ -1,1 +1,3 @@
-gem 'emf_jruby'
+source 'https://rubygems.org'
+
+gemspec

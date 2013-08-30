@@ -139,4 +139,12 @@ class TestOperations < Test::Unit::TestCase
     assert (not (c2==c1))
   end
 
+  def test_call_to_super_with_no_params
+    r = RubyMM.parse('def mymethod;super;end')
+
+    call_to_super = r.body
+    assert_node call_to_super,RubyMM.CallToSuper
+    assert_equal 0,call_to_super.args.count
+  end
+
 end
