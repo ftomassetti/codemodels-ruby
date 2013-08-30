@@ -139,7 +139,7 @@ module RubyMM
 		module Methods
 			def top_container_derived
 				return nil unless container
-				return container if not container.container
+				return container unless (container.respond_to?(:container) and container.container)
 				container.top_container
 			end
 
