@@ -118,4 +118,25 @@ class TestOperations < Test::Unit::TestCase
     assert_equal false,RubyMM.bool(true)==RubyMM.bool(false)
   end
 
+  # this and the following are more testing emf_jruby than this package...
+  def test_eql_constants
+    c1 = RubyMM.constant 'a','b','c'
+    c2 = RubyMM.constant 'a','b','c'
+
+    assert c1.eql?(c2)
+    assert c2.eql?(c1)
+    assert c1==c2
+    assert c2==c1
+  end
+
+  def test_not_eql_constants
+    c1 = RubyMM.constant 'a','b','c'
+    c2 = RubyMM.constant 'a','d','c'
+
+    assert (not (c1.eql?(c2)))
+    assert (not (c2.eql?(c1)))
+    assert (not (c1==c2))
+    assert (not (c2==c1))
+  end
+
 end
