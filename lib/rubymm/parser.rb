@@ -237,8 +237,23 @@ def self.node_to_model(node,parent_model=nil)
  		model
 
  	###
+ 	### Statements
+ 	###
+
+ 	when 'ALIASNODE'
+ 		model = RubyMM::AliasStatement.new
+ 		model.old_name = node_to_model(node.oldName)
+ 		model.new_name = node_to_model(node.newName)
+ 		model
+
+ 	###
  	### The rest
  	###
+
+ 	when 'LITERALNODE'
+ 		model = RubyMM::LiteralReference.new
+ 		model.value = node.name
+ 		model
 
  	when 'SELFNODE'
  		model = RubyMM::Self.new

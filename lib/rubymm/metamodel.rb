@@ -122,6 +122,11 @@ module RubyMM
 	class Self < Value
 	end
 
+	# for example the name of a method in an alias statement
+	class LiteralReference < Value
+		has_attr 'value', String
+	end
+
 	class Constant < Value
 		has_attr 'name', String
 		contains_one_uni 'container',Constant
@@ -245,6 +250,11 @@ module RubyMM
 
 	class ArrayLiteral < Literal
 		contains_many_uni 'values', Value
+	end
+
+	class AliasStatement < Statement
+		contains_one_uni 'old_name',Value
+		contains_one_uni 'new_name',Value
 	end
 
 	class BeginEndBlock < Value
