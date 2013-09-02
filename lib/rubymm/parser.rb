@@ -255,6 +255,20 @@ def self.node_to_model(node,parent_model=nil)
  		model.old_name = node_to_model(node.oldName)
  		model.new_name = node_to_model(node.newName)
  		model
+ 	when 'CASENODE'
+ 		model = RubyMM::CaseStatement.new
+ 		for ci in 0..(node.cases.count-1)
+ 			c = node.cases[ci]
+ 			model.when_clauses = model.when_clauses << node_to_model(c)
+ 		end
+ 		model.else_body = node_to_model(node.else)
+ 		model
+ 	when 'WHENNODE'
+ 		model = RubyMM::WhenClause.new
+ 		model.condition
+ 		model.body = node_to_model(node.body)
+ 		model.condition = node_to_model(node.expression)
+ 		model
 
  	###
  	### The rest

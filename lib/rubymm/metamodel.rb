@@ -261,6 +261,16 @@ module RubyMM
 		contains_one_uni 'new_name',Value
 	end
 
+	class WhenClause < RGen::MetamodelBuilder::MMBase
+		contains_one_uni 'condition',Value
+		contains_one_uni 'body',Value
+	end
+
+	class CaseStatement < Statement
+		contains_many_uni 'when_clauses', WhenClause
+		contains_one_uni 'else_body', Value
+	end
+
 	class BeginEndBlock < Value
 		contains_one_uni 'body',Value
 		contains_many_uni 'rescue_clauses',RescueClause
