@@ -1,7 +1,7 @@
 require 'helper'
 
 require 'test/unit'
-require 'rubymm'
+require 'ruby-lightmodels'
  
 class TestExceptionHandling < Test::Unit::TestCase
 

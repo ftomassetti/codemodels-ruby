@@ -1,6 +1,5 @@
 $LOAD_PATH << File.expand_path( File.dirname(__FILE__) + '/../lib' )
 
-
 module TestHelper
 
 	def assert_is_int(node,value)

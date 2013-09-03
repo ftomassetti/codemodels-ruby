@@ -1,5 +1,5 @@
 require 'jruby-parser'
-require 'rubymm/metamodel'
+require 'rubylm/metamodel'
 require 'emf_jruby'
 
 java_import org.jrubyparser.ast.ArrayNode

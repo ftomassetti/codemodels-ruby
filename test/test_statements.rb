@@ -1,7 +1,7 @@
 require 'helper'
 
 require 'test/unit'
-require 'rubymm'
+require 'ruby-lightmodels'
  
 class TestOperations < Test::Unit::TestCase
 
