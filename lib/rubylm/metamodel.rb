@@ -107,6 +107,8 @@ module RubyMM
 
 	class RegExpLiteral < Literal
 		has_attr 'value', String
+		has_attr 'dynamic', Boolean
+		contains_many_uni 'pieces', Value # only for dynamic strings
 	end
 
 	def self.bool(value)

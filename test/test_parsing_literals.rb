@@ -29,6 +29,15 @@ class TestOperations < Test::Unit::TestCase
   end
 
   def test_dstring_with_value
+    root = RubyMM.parse('/^#{Regexp.escape(operator)}(.*)$/')
+
+    assert_right_class root, RubyMM::RegExpLiteral
+    assert_equal 3, root.pieces.count
+    assert_is_str root.pieces[0],'^'
+    assert_is_str root.pieces[2],'(.*)$'
+  end
+
+  def test_dregexp_with_value
     root = RubyMM.parse('"some #{val} string"')
 
     assert_right_class root, RubyMM::StringLiteral
