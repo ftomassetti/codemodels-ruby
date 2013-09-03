@@ -436,6 +436,11 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::Splat.new
  		model.splatted = node_to_model(node.value)
  		model
+ 	when 'UNARYCALLNODE'
+ 		model = RubyMM::UnaryOperation.new
+ 		model.value = node_to_model(node.receiver)
+ 		model.operator_name = node.lexical_name
+ 		model
  	when 'ZARRAYNODE'
  		RubyMM::ArrayLiteral.new
  	when 'BEGINNODE'

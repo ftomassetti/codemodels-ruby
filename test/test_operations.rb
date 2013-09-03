@@ -169,4 +169,10 @@ class TestOperations < Test::Unit::TestCase
     assert_node r.splatted, RubyMM::Call, name:'args'
   end
 
+  def test_unary_minus
+    r = RubyMM.parse('-a')
+    assert_node r, RubyMM::UnaryOperation, operator_name: '-'
+    assert_node r.value, RubyMM::Call, name:'a'
+  end
+
 end

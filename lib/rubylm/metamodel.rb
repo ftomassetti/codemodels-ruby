@@ -300,6 +300,11 @@ module RubyMM
 		contains_many_uni 'rescue_clauses',RescueClause
 	end
 
+	class UnaryOperation < Value
+		contains_one_uni 'value',Value
+		has_attr 'operator_name', String
+	end
+
 	class Splat < Value
 		contains_one_uni 'splatted', Value
 	end
