@@ -23,7 +23,7 @@ module RubyMM
 		contains_many_uni 'contents', Value
 	end 
 
-	class AbstractCodeBlock < RGen::MetamodelBuilder::MMBase
+	class AbstractCodeBlock < Value
 	end
 
 	class CodeBlock < AbstractCodeBlock
