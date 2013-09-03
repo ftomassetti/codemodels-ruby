@@ -482,7 +482,7 @@ end
 
 def self.unknown_node_type_found(node)
 	if RubyMM.skip_unknown_node
-		puts "skipping #{node.node_type.name}..."
+		puts "skipping #{node.node_type.name} at #{node.position}..."
 	else
 		raise UnknownNodeType.new(node)
 	end
