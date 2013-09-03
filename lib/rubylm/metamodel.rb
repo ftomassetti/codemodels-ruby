@@ -15,7 +15,8 @@ module RubyMM
 
 	class IfStatement < Statement
 		contains_one_uni 'condition', Value
-		contains_many_uni 'body', Value
+		contains_one_uni 'then_body', Value
+		contains_one_uni 'else_body', Value
 	end
 
 	class Block < Value

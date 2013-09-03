@@ -396,6 +396,9 @@ def self.node_to_model(node,parent_model=nil)
  		model
  	when 'IFNODE'
  		model = RubyMM::IfStatement.new
+ 		model.condition = node_to_model(node.condition)
+ 		model.then_body = node_to_model(node.then_body)  		
+ 		model.else_body = node_to_model(node.else_body)
  		model 		
  	when 'HASHNODE'
  		model = RubyMM::HashLiteral.new

@@ -53,4 +53,40 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r, RubyMM::WhileStatement, condition: RubyMM.int(1), body: RubyMM.int(2)#, type: :postfixed
 	end
 
+	def test_if_pre
+		r = RubyMM.parse('if 1; 2; end')
+
+		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body: RubyMM.int(2), else_body: nil
+	end
+
+	def test_if_pre_with_else
+		r = RubyMM.parse('if 1; 2; else; 3; end')
+
+		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body: RubyMM.int(2), else_body: RubyMM.int(3)
+	end
+
+	def test_if_post
+		r = RubyMM.parse('2 if 1')
+
+		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body: RubyMM.int(2), else_body: nil
+	end
+
+	def test_unless_pre
+		r = RubyMM.parse('unless 1; 2; end')
+
+		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body:nil, else_body: RubyMM.int(2)
+	end
+
+	def test_unless_pre_with_else
+		r = RubyMM.parse('unless 1; 2; else; 3; end')
+
+		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body: RubyMM.int(3), else_body: RubyMM.int(2)
+	end
+
+	def test_unless_post
+		r = RubyMM.parse('2 unless 1')
+
+		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body:nil, else_body: RubyMM.int(2)
+	end
+
 end
