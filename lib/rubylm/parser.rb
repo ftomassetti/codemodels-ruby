@@ -529,7 +529,13 @@ def self.args_to_model(args_node)
 			#puts "DEALING WITH #{i} #{args_node.get i} #{(args_node.get i).class}"
 			args << node_to_model(args_node.get i)
 		end
-		args 	
+		args 		
+	elsif args_node.is_a? Array
+		args_node.each do |el|
+			#puts "DEALING WITH #{i} #{args_node.get i} #{(args_node.get i).class}"
+			args << node_to_model(el)
+		end
+		args 
 	elsif args_node.is_a? ArgsNode
 		populate_from_list(args,args_node.pre) if args_node.pre
 		populate_from_list(args,args_node.optional) if args_node.optional
