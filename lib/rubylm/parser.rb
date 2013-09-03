@@ -35,8 +35,8 @@ end
 
 class UnknownNodeType < ParsingError
 
- 	def initialize(node)
- 		super(node,"UnknownNodeType: type=#{node.node_type.name}")
+ 	def initialize(node,where=nil)
+ 		super(node,"UnknownNodeType: type=#{node.node_type.name} , where: #{where}")
  	end
 
 end
@@ -540,7 +540,7 @@ def self.args_to_model(args_node)
 	#	args << node_to_model(args_node)
 	#	args
 	else
-		raise "ARGS: #{args_node} (#{args_node.class})"
+		raise UnknownNodeType.new(node,'in args')
 	end
 end
 
