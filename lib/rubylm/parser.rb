@@ -303,6 +303,10 @@ def self.node_to_model(node,parent_model=nil)
  	### The rest
  	###
 
+ 	when 'SUPERNODE'
+ 		model = RubyMM::SuperCall.new
+ 		model.args = args_to_model(node.args)
+ 		model
  	when 'NTHREFNODE'
  		RubyMM::NthGroupReference.build(node.matchNumber)
  	when 'YIELDNODE'
