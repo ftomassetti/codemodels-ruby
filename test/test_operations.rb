@@ -192,4 +192,9 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::YieldStatement
   end
 
+  def test_nth_group_ref
+    r = RubyMM.parse('$1')
+    assert_node r, RubyMM::NthGroupReference, n: 1
+  end
+
 end

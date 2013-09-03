@@ -303,6 +303,8 @@ def self.node_to_model(node,parent_model=nil)
  	### The rest
  	###
 
+ 	when 'NTHREFNODE'
+ 		RubyMM::NthGroupReference.build(node.matchNumber)
  	when 'YIELDNODE'
  		RubyMM::YieldStatement.new
  	when 'COLON3NODE'
