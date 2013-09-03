@@ -187,4 +187,9 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::Range, lower: RubyMM.int(1), upper: RubyMM.int(2)
   end
 
+  def test_yield
+    r = RubyMM.parse('yield')
+    assert_node r, RubyMM::YieldStatement
+  end
+
 end

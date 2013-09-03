@@ -305,6 +305,9 @@ module RubyMM
 		contains_one_uni 'value', Value
 	end
 
+	class YieldStatement < Statement
+	end
+
 	class BeginEndBlock < Value
 		contains_one_uni 'body',Value
 		contains_many_uni 'rescue_clauses',RescueClause

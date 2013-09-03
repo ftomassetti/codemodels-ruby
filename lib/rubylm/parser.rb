@@ -303,6 +303,8 @@ def self.node_to_model(node,parent_model=nil)
  	### The rest
  	###
 
+ 	when 'YIELDNODE'
+ 		RubyMM::YieldStatement.new
  	when 'COLON3NODE'
  		model = RubyMM::GlobalScopeReference.new
  		model.name = node.name
