@@ -204,8 +204,10 @@ def self.node_to_model(node,parent_model=nil)
  	when 'ATTRASSIGNNODE'
  		model = RubyMM::ElementAssignement.new
  		model.container = node_to_model(node.receiver)
- 		model.element = node_to_model(node.args[0])
- 		model.value = node_to_model(node.args[1])
+ 		if node.args # apparently it can be null...
+ 			model.element = node_to_model(node.args[0])
+ 			model.value = node_to_model(node.args[1])
+ 		end
  		model
  	when 'OPASGNORNODE'
  		model = RubyMM::OrAssignment.new
