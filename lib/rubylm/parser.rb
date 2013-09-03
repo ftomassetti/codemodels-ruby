@@ -540,7 +540,7 @@ def self.args_to_model(args_node)
 	#	args << node_to_model(args_node)
 	#	args
 	else
-		raise UnknownNodeType.new(node,'in args')
+		raise UnknownNodeType.new(args_node,'in args')
 	end
 end
 
