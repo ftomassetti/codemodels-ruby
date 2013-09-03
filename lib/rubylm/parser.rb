@@ -540,8 +540,7 @@ def self.args_to_model(args_node)
 	#	args << node_to_model(args_node)
 	#	args
 	else
-		args << node_to_model(args_node)
-		args
+		raise "ARGS: #{args_node} (#{args_node.class})"
 	end
 end
 
