@@ -73,6 +73,7 @@ module RubyMM
 	class Def < Value
 		has_attr 'name', String
 		contains_one_uni 'body', Value
+		contains_one_uni 'ensure_body', Value
 		has_attr 'onself',Boolean
 		contains_many_uni 'rescue_clauses',RescueClause
 	end

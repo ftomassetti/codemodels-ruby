@@ -192,6 +192,11 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::YieldStatement
   end
 
+  def test_def_with_ensure
+    r = RubyMM.parse('def a;2;ensure;1;end')
+    assert_node r, RubyMM::Def, body: RubyMM.int(2), ensure_body: RubyMM.int(1)
+  end
+
   def test_next
     r = RubyMM.parse('next')
     assert_node r, RubyMM::NextStatement

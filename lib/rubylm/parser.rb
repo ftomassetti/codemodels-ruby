@@ -391,6 +391,10 @@ def self.node_to_model(node,parent_model=nil)
 	 		rescue_clause_model = RubyMM::RescueClause.new
 	 		rescue_clause_model.body = node_to_model(rescue_body_node.body)
 	 		model.rescue_clauses = model.rescue_clauses << rescue_clause_model
+	 	elsif node.body.node_type.name=='ENSURENODE'
+	 		ensure_node = node.body
+	 		model.ensure_body = node_to_model(ensure_node.ensure)
+	 		model.body = node_to_model(ensure_node.body)
 		else
 			model.body = node_to_model(node.body,model)
 		end
