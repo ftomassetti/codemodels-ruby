@@ -540,7 +540,7 @@ def self.args_to_model(args_node)
 	#	args << node_to_model(args_node)
 	#	args
 	else 
-		unknown_node_type_found(args_node)
+		args << node_to_model(args)
 	end
 end
 
