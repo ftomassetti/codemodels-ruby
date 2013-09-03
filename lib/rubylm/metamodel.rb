@@ -300,6 +300,10 @@ module RubyMM
 		contains_many_uni 'rescue_clauses',RescueClause
 	end
 
+	class Splat < Value
+		contains_one_uni 'splatted', Value
+	end
+
 	# ex a[1] = 2
 	class ElementAssignement < Value
 		contains_one_uni 'container',Value

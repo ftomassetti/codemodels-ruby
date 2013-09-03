@@ -432,6 +432,10 @@ def self.node_to_model(node,parent_model=nil)
  			model.values = model.values << v
  		end
  		model
+ 	when 'SPLATNODE'
+ 		model = RubyMM::Splat.new
+ 		model.splatted = node_to_model(node.value)
+ 		model
  	when 'ZARRAYNODE'
  		RubyMM::ArrayLiteral.new
  	when 'BEGINNODE'

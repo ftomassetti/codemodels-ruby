@@ -163,4 +163,10 @@ class TestOperations < Test::Unit::TestCase
         name: 'ActionView'
   end
 
+  def test_splat
+    r = RubyMM.parse("a = *args").value
+    assert_node r,RubyMM::Splat
+    assert_node r.splatted, RubyMM::Call, name:'args'
+  end
+
 end
