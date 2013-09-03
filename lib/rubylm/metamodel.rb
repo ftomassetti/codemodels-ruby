@@ -310,14 +310,14 @@ module RubyMM
 	end
 
 	# ex a[1] = 2
-	class ElementAssignement < Value
+	class ElementAssignment < VarAssignment
 		contains_one_uni 'container',Value
 		contains_one_uni 'element',Value
 		contains_one_uni 'value',Value
 	end
 
 	# ex a[1] += 2
-	class ElementOperationAssignement < Value
+	class ElementOperationAssignment < Value
 		contains_one_uni 'container',Value
 		contains_one_uni 'element',Value
 		contains_one_uni 'value',Value

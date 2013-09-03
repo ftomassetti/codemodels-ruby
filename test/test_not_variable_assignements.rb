@@ -3,13 +3,13 @@ require 'helper'
 require 'test/unit'
 require 'ruby-lightmodels'
  
-class TestNotVariableAssignement < Test::Unit::TestCase
+class TestNotVariableAssignment < Test::Unit::TestCase
 
   include TestHelper
 
   def test_element_assignment
     root = RubyMM.parse('models[1] = 2')
-    assert_node root,RubyMM::ElementAssignement,
+    assert_node root,RubyMM::ElementAssignment,
         container: RubyMM::Call.build(name:'models',implicit_receiver:false),
         element: RubyMM.int(1),
         value: RubyMM.int(2)
@@ -17,7 +17,7 @@ class TestNotVariableAssignement < Test::Unit::TestCase
 
   def test_element_plus_assignment
     root = RubyMM.parse('models[1] += 2')
-    assert_node root,RubyMM::ElementOperationAssignement,
+    assert_node root,RubyMM::ElementOperationAssignment,
         container: RubyMM::Call.build(name:'models',implicit_receiver:false),
         element: RubyMM.int(1),
         value: RubyMM.int(2),
@@ -26,7 +26,7 @@ class TestNotVariableAssignement < Test::Unit::TestCase
 
   def test_element_minus_assignment
     root = RubyMM.parse('models[1] -= 2')
-    assert_node root,RubyMM::ElementOperationAssignement,
+    assert_node root,RubyMM::ElementOperationAssignment,
         container: RubyMM::Call.build(name:'models',implicit_receiver:false),
         element: RubyMM.int(1),
         value: RubyMM.int(2),
@@ -35,7 +35,7 @@ class TestNotVariableAssignement < Test::Unit::TestCase
 
   def test_element_mul_assignment
     root = RubyMM.parse('models[1] *= 2')
-    assert_node root,RubyMM::ElementOperationAssignement,
+    assert_node root,RubyMM::ElementOperationAssignment,
         container: RubyMM::Call.build(name:'models',implicit_receiver:false),
         element: RubyMM.int(1),
         value: RubyMM.int(2),
@@ -44,7 +44,7 @@ class TestNotVariableAssignement < Test::Unit::TestCase
 
    def test_element_div_assignment
     root = RubyMM.parse('models[1] /= 2')
-    assert_node root,RubyMM::ElementOperationAssignement,
+    assert_node root,RubyMM::ElementOperationAssignment,
         container: RubyMM::Call.build(name:'models',implicit_receiver:false),
         element: RubyMM.int(1),
         value: RubyMM.int(2),

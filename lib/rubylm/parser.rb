@@ -162,7 +162,7 @@ def self.node_to_model(node,parent_model=nil)
  		RubyMM::InstanceVarAccess.build get_var_name_depending_on_parser_version(node) 	
 
  	###
- 	### Variable assignements
+ 	### Variable Assignments
  	###
   	when 'LOCALASGNNODE'
  		model = RubyMM::LocalVarAssignment.new
@@ -195,14 +195,14 @@ def self.node_to_model(node,parent_model=nil)
  	###
 
  	when 'OPELEMENTASGNNODE'
- 		model = RubyMM::ElementOperationAssignement.new
+ 		model = RubyMM::ElementOperationAssignment.new
  		model.container = node_to_model(node.receiver)
  		model.element = node_to_model(node.args[0])
  		model.value = node_to_model(node.value)
  		model.operator = node.operator_name
  		model
  	when 'ATTRASSIGNNODE'
- 		model = RubyMM::ElementAssignement.new
+ 		model = RubyMM::ElementAssignment.new
  		model.container = node_to_model(node.receiver)
  		if node.args # apparently it can be null...
  			model.element = node_to_model(node.args[0])
@@ -212,7 +212,7 @@ def self.node_to_model(node,parent_model=nil)
  	when 'OPASGNORNODE'
  		model = RubyMM::OrAssignment.new
  		# assigned : from access to variable
- 		# value    : from assignement to value 		
+ 		# value    : from Assignment to value 		
  		model.assigned = node_to_model(node.first)
  		model.value = node_to_model(node.second).value
  		model
