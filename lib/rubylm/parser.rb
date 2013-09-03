@@ -2,6 +2,7 @@ require 'jruby-parser'
 require 'rubylm/metamodel'
 require 'emf_jruby'
 
+java_import org.jrubyparser.ast.Node
 java_import org.jrubyparser.ast.ArrayNode
 java_import org.jrubyparser.ast.ListNode
 java_import org.jrubyparser.ast.BlockPassNode
@@ -536,9 +537,9 @@ def self.args_to_model(args_node)
 		populate_from_list(args,args_node.rest) if args_node.rest
 		populate_from_list(args,args_node.post) if args_node.post
 		args
-	#elsif args_node.is_a? BlockPassNode
-	#	args << node_to_model(args_node)
-	#	args
+	elsif args_node.is_a? Node
+		args << node_to_model(args_node)
+		args
 	else
 		raise UnknownNodeType.new(args_node,'in args')
 	end
