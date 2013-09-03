@@ -247,6 +247,16 @@ def self.node_to_model(node,parent_model=nil)
  		model
 
  	###
+ 	### Constants
+ 	###
+
+ 	when 'CONSTDECLNODE'
+ 		model = RubyMM::ConstantDecl.new
+ 		model.name = node.name
+ 		model.value = node_to_model(node.value)
+ 		model
+
+ 	###
  	### Statements
  	###
 

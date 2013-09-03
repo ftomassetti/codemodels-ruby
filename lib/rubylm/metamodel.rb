@@ -116,6 +116,11 @@ module RubyMM
 		StringLiteral.build(value)
 	end
 
+	class ConstantDecl < Value
+		has_attr 'name', String
+		contains_one_uni 'value', Value
+	end
+
 	class NilLiteral < Literal
 	end
 
