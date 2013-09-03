@@ -13,6 +13,11 @@ module RubyMM
 	class Statement < Value
 	end
 
+	class RegexMatcher < Value
+		contains_one_uni 'checked_value', Value
+		contains_one_uni 'regex', Value
+	end
+
 	class IfStatement < Statement
 		contains_one_uni 'condition', Value
 		contains_one_uni 'then_body', Value

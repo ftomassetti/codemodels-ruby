@@ -175,4 +175,10 @@ class TestOperations < Test::Unit::TestCase
     assert_node r.value, RubyMM::Call, name:'a'
   end
 
+  def test_regex_matcher
+    r = RubyMM.parse('k =~ /^extra_/')
+
+
+  end
+
 end
