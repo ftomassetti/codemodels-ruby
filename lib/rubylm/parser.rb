@@ -275,9 +275,13 @@ def self.node_to_model(node,parent_model=nil)
  		model
  	when 'WHENNODE'
  		model = RubyMM::WhenClause.new
- 		model.condition
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.expression)
+ 		model
+ 	when 'WHILENODE'
+ 		model = RubyMM::WhileStatement.new
+ 		model.body = node_to_model(node.body)
+ 		model.condition = node_to_model(node.condition)
  		model
 
  	###

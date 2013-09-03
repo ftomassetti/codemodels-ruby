@@ -41,4 +41,16 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r.when_clauses[1], RubyMM::WhenClause, condition: RubyMM.string('B'), body: RubyMM.int(2)		
 	end
 
+	def test_while_pre
+		r = RubyMM.parse('while 1; 2; end')
+
+		assert_node r, RubyMM::WhileStatement, condition: RubyMM.int(1), body: RubyMM.int(2)#, type: :prefixed
+	end
+
+	def test_while_post
+		r = RubyMM.parse('2 while 1')
+
+		assert_node r, RubyMM::WhileStatement, condition: RubyMM.int(1), body: RubyMM.int(2)#, type: :postfixed
+	end
+
 end

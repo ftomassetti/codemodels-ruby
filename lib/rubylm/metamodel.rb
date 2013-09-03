@@ -276,6 +276,12 @@ module RubyMM
 		contains_one_uni 'else_body', Value
 	end
 
+	class WhileStatement < Statement
+		contains_one_uni 'condition', Value
+		contains_one_uni 'body', Value
+		#has_attr 'type', Symbol
+	end
+
 	class BeginEndBlock < Value
 		contains_one_uni 'body',Value
 		contains_many_uni 'rescue_clauses',RescueClause
