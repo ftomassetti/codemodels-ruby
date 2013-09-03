@@ -89,4 +89,10 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body:nil, else_body: RubyMM.int(2)
 	end
 
+	def test_inline_rescue
+		r = RubyMM.parse('1 rescue 2')
+
+		assert_node r, RubyMM::RescueStatement, body: RubyMM.int(1), value: RubyMM::int(2)
+	end
+
 end

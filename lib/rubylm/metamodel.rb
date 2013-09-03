@@ -290,6 +290,11 @@ module RubyMM
 		#has_attr 'type', Symbol
 	end
 
+	class RescueStatement < Statement
+		contains_one_uni 'body', Value
+		contains_one_uni 'value', Value
+	end
+
 	class BeginEndBlock < Value
 		contains_one_uni 'body',Value
 		contains_many_uni 'rescue_clauses',RescueClause
