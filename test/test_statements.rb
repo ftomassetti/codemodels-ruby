@@ -71,6 +71,12 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body: RubyMM.int(2), else_body: nil
 	end
 
+	def test_termary_operator
+		r = RubyMM.parse('1 ? 2 : 3')
+
+		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body: RubyMM.int(2), else_body: RubyMM.int(3)
+	end
+
 	def test_unless_pre
 		r = RubyMM.parse('unless 1; 2; end')
 
