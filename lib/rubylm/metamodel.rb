@@ -111,6 +111,9 @@ module RubyMM
 		contains_many_uni 'pieces', Value # only for dynamic strings
 	end
 
+	class NextStatement < Statement
+	end
+
 	def self.bool(value)
 		BooleanLiteral.build(value)
 	end

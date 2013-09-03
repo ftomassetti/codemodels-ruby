@@ -319,6 +319,8 @@ def self.node_to_model(node,parent_model=nil)
  		RubyMM::NthGroupReference.build(node.matchNumber)
  	when 'YIELDNODE'
  		RubyMM::YieldStatement.new
+	when 'NEXTNODE'
+ 		RubyMM::NextStatement.new 		
  	when 'COLON3NODE'
  		model = RubyMM::GlobalScopeReference.new
  		model.name = node.name
