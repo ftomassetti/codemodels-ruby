@@ -245,6 +245,13 @@ def self.node_to_model(node,parent_model=nil)
  		end
  		# TODO consider rest and post!
  		model
+ 	when 'OPASGNNODE'
+ 		model = RubyMM::OperatorAssignment.new
+ 		model.value = node_to_model(node.valueNode)
+ 		model.container = node_to_model(node.receiverNode)
+ 		model.element_name = node.variable_name
+ 		model.operator_name = node.operator_name
+    	model
 
  	###
  	### Constants

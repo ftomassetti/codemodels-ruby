@@ -213,6 +213,13 @@ module RubyMM
 	class BlockVarAssignment < VarAssignment
 	end
 
+	class OperatorAssignment < Value
+		contains_one_uni 'container', Value
+		has_attr 'element_name', String
+		contains_one_uni 'value', Value
+		has_attr 'operator_name', String
+	end
+
 	class VarAccess < Value
 		has_attr 'name', String
 
