@@ -178,7 +178,13 @@ class TestOperations < Test::Unit::TestCase
   def test_regex_matcher
     r = RubyMM.parse('k =~ /^extra_/')
 
+    assert_node r, RubyMM::RegexMatcher, regex: RubyMM::RegExpLiteral.build('^extra_')
+    assert_node r.checked_value, RubyMM::Call, name: 'k'
+  end
 
+  def test_range
+    r = RubyMM.parse('1..2')
+    assert_node r, RubyMM::Range, lower: RubyMM.int(1), upper: RubyMM.int(2)
   end
 
 end

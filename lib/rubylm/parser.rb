@@ -307,10 +307,15 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::GlobalScopeReference.new
  		model.name = node.name
  		model
+ 	when 'DOTNODE'
+ 		model = RubyMM::Range.new
+ 		model.lower = node_to_model(node.beginNode)
+ 		model.upper = node_to_model(node.endNode)
+ 		model
  	when 'MATCH3NODE'
  		model = RubyMM::RegexMatcher.new
- 		model.checked_value = node_to_model(node.receiver)
- 		model.regex = node_to_model(node.value)
+ 		model.checked_value = node_to_model(node.value)
+ 		model.regex = node_to_model(node.receiver)
  		model
  	when 'LITERALNODE'
  		model = RubyMM::LiteralReference.new

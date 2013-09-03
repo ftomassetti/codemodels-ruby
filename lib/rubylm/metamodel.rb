@@ -18,6 +18,11 @@ module RubyMM
 		contains_one_uni 'regex', Value
 	end
 
+	class Range < Value
+		contains_one_uni 'lower', Value
+		contains_one_uni 'upper', Value
+	end
+
 	class IfStatement < Statement
 		contains_one_uni 'condition', Value
 		contains_one_uni 'then_body', Value
