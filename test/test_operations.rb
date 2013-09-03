@@ -212,4 +212,40 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::SuperCall, args: [RubyMM.int(1),RubyMM.int(2)]
   end
 
+  def splatted_array
+    splatted = RubyMM::Splat.new
+    splatted.splatted = RubyMM::ArrayLiteral.new
+    splatted
+  end
+
+  def test_args_cat_one
+    r = RubyMM.parse('m(1,*[])')
+    assert_equal [RubyMM.int(1),splatted_array], r.args
+  end  
+
+  def test_args_cat_two
+    r = RubyMM.parse('m(1,2,*[])')
+    assert_equal [RubyMM.int(1),RubyMM.int(2),splatted_array], r.args
+  end  
+
+  def test_args_push_one
+    r = RubyMM.parse('m(*[],1)')
+    assert_equal [splatted_array,RubyMM.int(1)], r.args
+   end
+
+  def test_args_push_two
+    r = RubyMM.parse('m(*[],1,2)')
+    assert_equal [splatted_array,RubyMM.int(1),RubyMM.int(2)], r.args
+  end
+
+  def test_args_cat_or_push_zero   
+    r = RubyMM.parse('m(*[])')
+    assert_equal [splatted_array], r.args
+  end  
+
+  def test_args_cat_and_push_two
+    r = RubyMM.parse('m(1,2,*[],3,4)')
+    assert_equal [RubyMM.int(1),RubyMM.int(2),splatted_array,RubyMM.int(3),RubyMM.int(4)],r.args
+  end
+
 end

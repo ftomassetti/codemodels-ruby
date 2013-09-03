@@ -7,7 +7,10 @@ java_import org.jrubyparser.ast.ArrayNode
 java_import org.jrubyparser.ast.ListNode
 java_import org.jrubyparser.ast.BlockPassNode
 java_import org.jrubyparser.ast.ArgsNode
+java_import org.jrubyparser.ast.ArgsCatNode
+java_import org.jrubyparser.ast.ArgsPushNode
 java_import org.jrubyparser.ast.SymbolNode
+java_import org.jrubyparser.util.StaticAnalyzerHelper
 
 module RubyMM
 
@@ -564,12 +567,55 @@ def self.args_to_model(args_node)
 			#puts "DEALING WITH #{i} #{args_node.get i} #{(args_node.get i).class}"
 			args << node_to_model(args_node.get i)
 		end
-		args 		
+		args
+	elsif args_node.is_a? ArrayJavaProxy
+		for i in 0..(args_node.size-1) 
+			#puts "DEALING WITH #{i} #{args_node.get i} #{(args_node.get i).class}"
+			args << node_to_model(args_node[i])
+		end
+		args 			 		
 	elsif args_node.is_a? ArgsNode
 		populate_from_list(args,args_node.pre) if args_node.pre
 		populate_from_list(args,args_node.optional) if args_node.optional
 		populate_from_list(args,args_node.rest) if args_node.rest
 		populate_from_list(args,args_node.post) if args_node.post
+		args
+	elsif args_node.is_a?(ArgsCatNode) or args_node.is_a?(ArgsPushNode)
+		#puts "\nFlattening #{args_node}"
+		flatten = StaticAnalyzerHelper.flattenRHSValues(args_node)
+		#puts "\nFlattened as: #{flatten[0]} --- #{flatten[1]} --- #{flatten[2]}"
+		# if flatten[0].size==1 
+		# 	if flatten[0][0].is_a?(ArgsCatNode)
+		# 		args.concat(args_to_model(flatten[0][0]))
+		# 	else
+		# 		splatted = RubyMM::Splat.new
+		# 		splatted.splatted = node_to_model(flatten[0][0])
+		# 		args << splatted
+		# 	end
+		# else
+		if flatten[0].is_a?(ListNode) && flatten[0].count==1 && flatten[0][0].is_a?(ArgsCatNode)
+			args.concat(args_to_model(flatten[0][0]))
+		else
+			args.concat(args_to_model(flatten[0]))
+		end			
+		#end
+		#puts "\nAfter adding flatten[0] args=#{args}"
+		if flatten[1]
+			if flatten[1].is_a? ArrayNode
+				args.concat(args_to_model(flatten[1]))
+			else
+				splatted = RubyMM::Splat.new
+				splatted.splatted = node_to_model(flatten[1])
+				if splatted.splatted.is_a? RubyMM::Splat
+					args << splatted.splatted				
+				else
+					args << splatted
+				end
+			end
+		end
+		#puts "\nAfter adding flatten[1] (#{flatten[1]} of (#{flatten[1].class})) args=#{args}"
+		args.concat(args_to_model(flatten[2]))
+		#puts "\nAfter adding flatten[2] args=#{args}"
 		args
 	elsif args_node.is_a? Node
 		args << node_to_model(args_node)

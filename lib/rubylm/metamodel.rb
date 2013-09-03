@@ -82,7 +82,11 @@ module RubyMM
 		module Methods
 
 			def to_s
-				value.to_s
+				if respond_to? :value
+					value.to_s
+				else
+					super
+				end
 			end
 
 			def inspect
