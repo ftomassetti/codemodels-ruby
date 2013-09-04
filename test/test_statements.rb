@@ -107,6 +107,12 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r, RubyMM::IfStatement, condition: RubyMM.int(1), then_body:nil, else_body: RubyMM.int(2)
 	end
 
+	def test_undef
+		r = RubyMM.parse('undef pippo')
+
+		assert_node r, RubyMM::UndefStatement, name: RubyMM::LiteralReference.build('pippo')
+	end
+
 	def test_inline_rescue
 		r = RubyMM.parse('1 rescue 2')
 

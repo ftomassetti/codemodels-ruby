@@ -296,6 +296,10 @@ def self.node_to_model(node,parent_model=nil)
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.expression)
  		model
+ 	when 'UNDEFNODE'
+ 		model = RubyMM::UndefStatement.new
+ 		model.name = node_to_model(node.name)
+ 		model
  	when 'WHILENODE'
  		model = RubyMM::WhileStatement.new
  		model.body = node_to_model(node.body)

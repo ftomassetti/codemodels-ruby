@@ -296,6 +296,10 @@ module RubyMM
 		contains_one_uni 'new_name',Value
 	end
 
+	class UndefStatement < Statement
+		contains_one_uni 'name', Value
+	end
+
 	class WhenClause < RGen::MetamodelBuilder::MMBase
 		contains_one_uni 'condition',Value
 		contains_one_uni 'body',Value
