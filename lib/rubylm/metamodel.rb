@@ -211,6 +211,11 @@ module RubyMM
 		contains_many_uni 'contents', Value
 	end
 
+	class SingletonClassDecl < Value
+		contains_one_uni 'object', Value
+		contains_many_uni 'contents', Value
+	end	
+
 	class Symbol < Literal
 		has_attr 'name', String
 	end

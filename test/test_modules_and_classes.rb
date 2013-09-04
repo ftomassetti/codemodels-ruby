@@ -67,4 +67,10 @@ class TestOperations < Test::Unit::TestCase
     assert_node root, RubyMM::Self
   end
 
+  def test_singleton_class 
+    r = RubyMM.parse('class << self; end')
+
+    assert_node r, RubyMM::SingletonClassDecl, contents: [], object: RubyMM::Self.new
+  end
+
 end

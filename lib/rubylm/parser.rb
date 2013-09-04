@@ -430,6 +430,11 @@ def self.node_to_model(node,parent_model=nil)
 		model.super_class = node_to_model(node.super)
 		body_node_to_contents(node.body_node,model)
 		model
+	when 'SCLASSNODE'
+		model = RubyMM::SingletonClassDecl.new
+		model.object = node_to_model(node.receiver)
+		body_node_to_contents(node.body_node,model)
+		model		
 	when 'MODULENODE'
 		model = RubyMM::ModuleDecl.new
 		model.defname = node_to_model(node.getCPath)
