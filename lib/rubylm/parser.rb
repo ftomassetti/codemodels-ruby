@@ -7,6 +7,7 @@ java_import org.jrubyparser.ast.ArrayNode
 java_import org.jrubyparser.ast.ListNode
 java_import org.jrubyparser.ast.BlockPassNode
 java_import org.jrubyparser.ast.ArgsNode
+java_import org.jrubyparser.ast.IterNode
 java_import org.jrubyparser.ast.SymbolNode
 java_import org.jrubyparser.ast.ArrayNode
 
@@ -418,7 +419,13 @@ def self.node_to_model(node,parent_model=nil)
 		model = RubyMM::Call.new
 		model.name = node.name
 
-		model.args = my_args_flattener(node.args)
+		if node.iter==nil and node.args.is_a?IterNode			
+			model.block_arg = node_to_model(node.args)
+			# no args
+		else
+			model.block_arg = node_to_model(node.iter) if node.iter
+			model.args = my_args_flattener(node.args)
+		end
 
 		model.implicit_receiver = true
 		model		

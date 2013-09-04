@@ -138,4 +138,18 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r, RubyMM::Call, name:'using_open_id?', args:[]
 	end
 
+	def test_call_only_iter
+		r = RubyMM.parse('respond_to do |format| 1; end') 
+
+		assert_node r, RubyMM::Call, name:'respond_to', args:[]
+		assert_node r.block_arg, RubyMM::CodeBlock
+	end
+
+	def test_call_iter_and_args
+		r = RubyMM.parse('respond_to(1,2) do |format| 1; end') 
+
+		assert_node r, RubyMM::Call, name:'respond_to', args:[RubyMM.int(1),RubyMM.int(2)]
+		assert_node r.block_arg, RubyMM::CodeBlock
+	end
+
 end
