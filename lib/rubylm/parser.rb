@@ -96,7 +96,7 @@ def self.my_args_flattener(args_node)
 			res << RubyMM.splat(node_to_model(args_node.secondNode))
 		end
 		res
-	elsif args_node.is_a? ArrayNode
+	elsif args_node.is_a? ListNode
 		res = []
 		for i in 0..(args_node.size-1) 
 			res << node_to_model(args_node.get i)
@@ -107,7 +107,7 @@ def self.my_args_flattener(args_node)
 		res << node_to_model(args_node)
 		res
 	else
-		raise "Unknown: #{args_node.node_type.name}"
+		raise "Unknown: #{args_node.node_type.name} at #{args_node.position}, parent #{args_node.parent}"
 	end
 end
 

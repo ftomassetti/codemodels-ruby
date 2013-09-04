@@ -132,4 +132,10 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r.value, RubyMM::Call, name: 'mymethod'
 	end
 
+	def test_call_no_receiver_no_params
+		r = RubyMM.parse('using_open_id?')
+
+		assert_node r, RubyMM::Call, name:'using_open_id?', args:[]
+	end
+
 end
