@@ -318,6 +318,9 @@ module RubyMM
 		#has_attr 'type', Symbol
 	end
 
+	class BreakStatement < Statement
+	end
+
 	class SuperCall < Statement
 		contains_many_uni 'args', Value
 	end

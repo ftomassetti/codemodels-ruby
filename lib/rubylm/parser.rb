@@ -301,6 +301,8 @@ def self.node_to_model(node,parent_model=nil)
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.condition)
  		model
+ 	when 'BREAKNODE'
+ 		RubyMM::BreakStatement.new
  	when 'UNTILNODE'
  		model = RubyMM::UntilStatement.new
  		model.body = node_to_model(node.body)
