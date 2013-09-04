@@ -33,6 +33,9 @@ module RubyMM
 		contains_one_uni 'value', Value
 	end
 
+	class RetryStatement < Statement
+	end
+
 	class Block < Value
 		contains_many_uni 'contents', Value
 	end 
