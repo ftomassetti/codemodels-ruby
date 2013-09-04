@@ -11,6 +11,6 @@ Gem::Specification.new do |s|
   s.files       = Dir['./lib/*.rb'] + Dir['./lib/rubylm/*.rb'] + Dir['./lib/jars/*.jar']
   s.add_dependency('json')
   s.add_dependency('emf_jruby')
-  s.add_dependency('jruby-parser')
+  s.add_dependency('jruby-parser', '=0.5.0')
   s.add_dependency('lightmodels')
 end
