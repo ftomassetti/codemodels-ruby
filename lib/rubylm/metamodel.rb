@@ -18,6 +18,11 @@ module RubyMM
 		contains_one_uni 'regex', Value
 	end
 
+	class RegexTryer < Value
+		contains_one_uni 'checked_value', Value
+		contains_one_uni 'regex', Value
+	end
+
 	class Range < Value
 		contains_one_uni 'lower', Value
 		contains_one_uni 'upper', Value

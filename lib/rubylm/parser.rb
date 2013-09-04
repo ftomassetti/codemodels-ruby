@@ -341,6 +341,11 @@ def self.node_to_model(node,parent_model=nil)
  		model.lower = node_to_model(node.beginNode)
  		model.upper = node_to_model(node.endNode)
  		model
+ 	when 'MATCH2NODE'
+ 		model = RubyMM::RegexTryer.new
+ 		model.checked_value = node_to_model(node.value)
+ 		model.regex = node_to_model(node.receiver)
+ 		model 		
  	when 'MATCH3NODE'
  		model = RubyMM::RegexMatcher.new
  		model.checked_value = node_to_model(node.value)

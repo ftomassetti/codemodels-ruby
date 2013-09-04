@@ -7,7 +7,7 @@ class TestOperations < Test::Unit::TestCase
 
   include TestHelper
 
-    def test_class_decl_ext_class_in_module
+  def test_class_decl_ext_class_in_module
     root = RubyMM.parse("class TestOperations < Test::Unit::TestCase\nend")
   
     assert_right_class root, RubyMM::ClassDecl
