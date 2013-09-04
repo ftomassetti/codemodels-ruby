@@ -265,7 +265,7 @@ def self.node_to_model(node,parent_model=nil)
  		if values_model.respond_to? :values
  			values_model.values.each {|x| model.addValues(x) }
  		else
- 			model.values = model.values << values_model
+ 			model.addValues( values_model )
  		end
  		# TODO consider rest and post!
  		model
@@ -488,7 +488,7 @@ def self.node_to_model(node,parent_model=nil)
 		for i in 0..(node.size-1)
 			content_at_i = node_to_model(node.get i)
 			#puts "Adding to contents #{content_at_i}" 
-			model.contents = (model.contents << content_at_i)
+			model.addContents( content_at_i )
 			#puts "Contents #{model.contents.class}"
 		end
 		model
