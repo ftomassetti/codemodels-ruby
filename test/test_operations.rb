@@ -214,6 +214,11 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::NthGroupReference, n: 1
   end
 
+  def test_back_ref
+    r = RubyMM.parse('$&')
+    assert_node r, RubyMM::BackReference
+  end
+
   def test_super_call
     r = RubyMM.parse('super(1,2)')
     assert_node r, RubyMM::SuperCall, args: [RubyMM.int(1),RubyMM.int(2)]

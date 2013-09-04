@@ -349,6 +349,9 @@ module RubyMM
 		contains_one_uni 'value', Value
 	end
 
+	class BackReference < Value
+	end
+
 	class NthGroupReference < Value
 		has_attr 'n', Integer
 	end

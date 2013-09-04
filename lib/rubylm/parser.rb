@@ -492,6 +492,8 @@ def self.node_to_model(node,parent_model=nil)
 			#puts "Contents #{model.contents.class}"
 		end
 		model
+	when 'BACKREFNODE'
+		RubyMM::BackReference.new
 	when 'EVSTRNODE'
 		node_to_model(node.body)
 	when 'CLASSNODE'
