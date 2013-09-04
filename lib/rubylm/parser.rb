@@ -397,15 +397,22 @@ def self.node_to_model(node,parent_model=nil)
 		model = RubyMM::Call.new
 		model.name = node.name
 		model.receiver = node_to_model node.receiver
+		
 		if node.args.node_type.name == 'BLOCKPASSNODE'
 			model.block_arg = node_to_model(node.args)
-			model.args = args_to_model(node.args.args) if node.args.args
+			args_to_process = node.args.args
 		else
-			model.args = args_to_model node.args
+			args_to_process = node.args
 		end
-		if node.iter
-			model.block_arg = node_to_model(node.iter)
+
+		if node.iter==nil and args_to_process.is_a?IterNode			
+			model.block_arg = node_to_model(args_to_process)
+			# no args
+		else
+			model.block_arg = node_to_model(node.iter) if node.iter
+			model.args = my_args_flattener(args_to_process) if args_to_process
 		end
+
 		model.implicit_receiver = false
 		model
 	when 'VCALLNODE'
@@ -431,7 +438,7 @@ def self.node_to_model(node,parent_model=nil)
 			# no args
 		else
 			model.block_arg = node_to_model(node.iter) if node.iter
-			model.args = my_args_flattener(args_to_process)
+			model.args = my_args_flattener(args_to_process) if args_to_process
 		end
 
 		model.implicit_receiver = true
@@ -580,12 +587,14 @@ def self.node_to_model(node,parent_model=nil)
  		model.args = args_to_model(node.var)
  		model.body = node_to_model(node.body)
  		model
- 	#when 'CONSTDECLNODE'
- 	#	raise 'Const decl node: not implemented'
  	when 'ARGUMENTNODE'
  		model = RubyMM::Argument.new
  		model.name = node.name
  		model
+ 	when 'RESTARG'
+ 		model = RubyMM::Argument.new
+ 		model.name = node.name
+ 		model 		
  	when 'BLOCKPASSNODE'
  		model = RubyMM::BlockReference.new
  		#raise ParsingError.new(node,"Unexpected something that is not a symbol but a #{node.body}") unless node.body.is_a? SymbolNode
@@ -611,8 +620,12 @@ def self.unknown_node_type_found(node)
 end
 
 def self.populate_from_list(array,list_node)
-	for i in 0..(list_node.size-1) 
-		array << node_to_model(list_node.get i)
+	if list_node.respond_to? :size
+		for i in 0..(list_node.size-1) 
+			array << node_to_model(list_node.get i)
+		end
+	else
+		array << node_to_model(list_node)
 	end
 end
 
