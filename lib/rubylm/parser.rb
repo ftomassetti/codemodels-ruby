@@ -479,7 +479,7 @@ def self.node_to_model(node,parent_model=nil)
  	when 'ZARRAYNODE'
  		RubyMM::ArrayLiteral.new
  	when 'RETRYNODE'
- 		RUbyMM::RetryStatement.new
+ 		RubyMM::RetryStatement.new
  	when 'BEGINNODE'
  		model = RubyMM::BeginEndBlock.new
  		if node.body==nil
