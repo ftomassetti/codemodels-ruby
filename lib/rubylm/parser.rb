@@ -406,7 +406,7 @@ def self.node_to_model(node,parent_model=nil)
 			model.block_arg = node_to_model(node.iter) if node.iter
 			model.args = my_args_flattener(args_to_process) if args_to_process
 		end
- 	
+
  		model 		
 	when 'CALLNODE'
 		model = RubyMM::Call.new
@@ -615,6 +615,14 @@ def self.node_to_model(node,parent_model=nil)
  		#raise ParsingError.new(node,"Unexpected something that is not a symbol but a #{node.body}") unless node.body.is_a? SymbolNode
  		model.value = node_to_model(node.body)
  		model
+ 	when 'ARGSCATNODE'
+ 		model = RubyMM::ArrayLiteral.new
+ 		model.values = my_args_flattener(node)
+ 		model
+ 	when 'ARGSPUSHNODE'
+ 		model = RubyMM::ArrayLiteral.new
+ 		model.values = my_args_flattener(node)
+ 		model 		
 	else		
 		#n = node
 		#while n

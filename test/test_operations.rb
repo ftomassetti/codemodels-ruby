@@ -311,4 +311,22 @@ class TestOperations < Test::Unit::TestCase
     assert_equal r.args[10], RubyMM.int(10)
   end  
 
+  def test_parsing_array_containing_splat_at_end
+    r = RubyMM.parse("[1, *2]")
+
+    assert_node r, RubyMM::ArrayLiteral, values: [RubyMM.int(1), RubyMM.splat(RubyMM.int(2))]
+  end
+
+  def test_parsing_array_containing_splat_at_start
+    r = RubyMM.parse("[*1, 2]")
+
+    assert_node r, RubyMM::ArrayLiteral, values: [RubyMM.splat(RubyMM.int(1)), RubyMM.int(2)]
+  end
+
+  def test_parsing_array_containing_splat_in_the_middle
+    r = RubyMM.parse("[1, *2, 3]")
+
+    assert_node r, RubyMM::ArrayLiteral, values: [RubyMM.int(1), RubyMM.splat(RubyMM.int(2)), RubyMM.int(3)]
+  end
+
 end
