@@ -143,6 +143,12 @@ def self.node_to_model(node,parent_model=nil)
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model
+	when 'DXSTRNODE'
+		model = RubyMM::CmdLineStringLiteral.new
+		for i in 0..(node.size-1)
+			model.addPieces( node_to_model(node.get i) )
+		end
+		model		
 	when 'DREGEXPNODE'
 		model = RubyMM::RegExpLiteral.new
 		#model.value = node.value

@@ -149,6 +149,11 @@ module RubyMM
 		contains_many_uni 'pieces', Value # only for dynamic strings
 	end
 
+	class CmdLineStringLiteral < Literal
+		has_attr 'value', String
+		contains_many_uni 'pieces', Value # only for dynamic strings		
+	end
+
 	def self.string(value)
 		StringLiteral.build(value)
 	end

@@ -14,7 +14,7 @@ class TestOperations < Test::Unit::TestCase
     assert_equal 'a',root.name
   end
 
-    def test_false
+  def test_false
     root = RubyMM.parse('false')
 
     assert_right_class root, RubyMM::BooleanLiteral
@@ -71,6 +71,15 @@ class TestOperations < Test::Unit::TestCase
 
     assert_node root,RubyMM::RegExpLiteral,
       value: '^[a-z]*'
+  end
+
+  def test_cmd_line_str
+    root = RubyMM.parse '`svn info --xml #{path}`'
+
+    assert_right_class root, RubyMM::CmdLineStringLiteral
+    assert_equal 2, root.pieces.count
+    assert_is_str root.pieces[0],'svn info --xml '
+    assert_node root.pieces[1], RubyMM::Call, name:'path'
   end
 
  end
