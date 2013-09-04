@@ -68,10 +68,10 @@ def self.body_node_to_contents(body_node,container_node)
 	if body
 		if body.is_a? RubyMM::Block	
 			body.contents.each do |el|
-				container_node.contents = container_node.contents << el 
+				container_node.addContents(el)
 			end
 		else
-			container_node.contents = container_node.contents << body
+			container_node.addContents( body )
 		end
 	end
 end
@@ -140,7 +140,7 @@ def self.node_to_model(node,parent_model=nil)
 		#model.value = node.value
 		model.dynamic = true
 		for i in 0..(node.size-1)
-			model.pieces = model.pieces << node_to_model(node.get i)
+			model.addPieces( node_to_model(node.get i) )
 		end
 		model
 	when 'DREGEXPNODE'
@@ -148,7 +148,7 @@ def self.node_to_model(node,parent_model=nil)
 		#model.value = node.value
 		model.dynamic = true
 		for i in 0..(node.size-1)
-			model.pieces = model.pieces << node_to_model(node.get i)
+			model.addPieces( node_to_model(node.get i) )
 		end
 		model
 	when 'NILNODE'
@@ -258,12 +258,12 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::MultipleAssignment.new
  		if node.pre
  			for i in 0..(node.pre.count-1)
- 				model.assignments = model.assignments << node_to_model(node.pre.get(i))
+ 				model.addAssignments( node_to_model(node.pre.get(i)) )
  			end
  		end
  		values_model = node_to_model(node.value)
  		if values_model.respond_to? :values
- 			values_model.values.each {|x| model.values = model.values << x}
+ 			values_model.values.each {|x| model.addValues(x) }
  		else
  			model.values = model.values << values_model
  		end
@@ -274,14 +274,14 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::MultipleAssignment.new
  		if node.pre
  			for i in 0..(node.pre.count-1)
- 				model.assignments = model.assignments << node_to_model(node.pre.get(i))
+ 				model.addAssignments( node_to_model(node.pre.get(i)) )
  			end
  		end
  		values_model = node_to_model(node.value)
  		if values_model.respond_to? :values
- 			values_model.values.each {|x| model.values = model.values << x}
+ 			values_model.values.each {|x| model.addValues(x)}
  		else
- 			model.values = model.values << values_model
+ 			model.addValues( values_model )
  		end
  		# TODO consider rest and post!
  		model
@@ -316,7 +316,7 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::CaseStatement.new
  		for ci in 0..(node.cases.count-1)
  			c = node.cases[ci]
- 			model.when_clauses = model.when_clauses << node_to_model(c)
+ 			model.addWhen_clauses( node_to_model(c) )
  		end
  		model.else_body = node_to_model(node.else)
  		model
@@ -471,7 +471,7 @@ def self.node_to_model(node,parent_model=nil)
 	 		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
 	 		rescue_clause_model = RubyMM::RescueClause.new
 	 		rescue_clause_model.body = node_to_model(rescue_body_node.body)
-	 		model.rescue_clauses = model.rescue_clauses << rescue_clause_model
+	 		model.addRescue_clauses( rescue_clause_model )
 		else
 			model.body = node_to_model(node.body,model)
 		end
@@ -538,7 +538,7 @@ def self.node_to_model(node,parent_model=nil)
  			v_node = node.get_list_node[i*2 +1]
  			v = node_to_model(v_node)
  			pair = RubyMM::HashPair.build key: k, value: v
- 			model.pairs = model.pairs << pair
+ 			model.addPairs(pair)
  		end
  		model
  	when 'DEFINEDNODE'
@@ -550,7 +550,7 @@ def self.node_to_model(node,parent_model=nil)
  		for i in 0..(node.count-1)
  			v_node = node[i]
  			v = node_to_model(v_node)
- 			model.values = model.values << v
+ 			model.addValues(v)
  		end
  		model
  	when 'SPLATNODE'
@@ -578,7 +578,7 @@ def self.node_to_model(node,parent_model=nil)
 	 		assert_node_type(rescue_body_node,'RESCUEBODYNODE')
 	 		rescue_clause_model = RubyMM::RescueClause.new
 		 	rescue_clause_model.body = node_to_model(rescue_body_node.body)
-		 	model.rescue_clauses = model.rescue_clauses << rescue_clause_model
+		 	model.addRescue_clauses( rescue_clause_model )
 		else
 			model.body = node_to_model(node.body)
 		end
