@@ -419,12 +419,19 @@ def self.node_to_model(node,parent_model=nil)
 		model = RubyMM::Call.new
 		model.name = node.name
 
-		if node.iter==nil and node.args.is_a?IterNode			
+		if node.args.node_type.name == 'BLOCKPASSNODE'
 			model.block_arg = node_to_model(node.args)
+			args_to_process = node.args.args
+		else
+			args_to_process = node.args
+		end
+
+		if node.iter==nil and args_to_process.is_a?IterNode			
+			model.block_arg = node_to_model(args_to_process)
 			# no args
 		else
 			model.block_arg = node_to_model(node.iter) if node.iter
-			model.args = my_args_flattener(node.args)
+			model.args = my_args_flattener(args_to_process)
 		end
 
 		model.implicit_receiver = true

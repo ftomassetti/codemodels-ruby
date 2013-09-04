@@ -152,4 +152,15 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r.block_arg, RubyMM::CodeBlock
 	end
 
+	def test_call_splat_and_block
+		r = RubyMM.parse('form_for(*args, &proc)')
+
+		assert_node r, RubyMM::Call, name:'form_for'
+		assert_equal 1, r.args.count
+		assert_node r.args[0], RubyMM::Splat
+		assert_node r.args[0].splatted, RubyMM::Call, name: 'args'
+		assert_node r.block_arg, RubyMM::BlockReference
+		assert_node r.block_arg.value, RubyMM::Call, name: 'proc'
+	end
+
 end
