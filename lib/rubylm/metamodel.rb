@@ -221,7 +221,7 @@ module RubyMM
 
 	class ClassDecl < Value
 		contains_one_uni 'defname', Constant
-		contains_one_uni 'super_class',Constant
+		contains_one_uni 'super_class',Value
 		contains_many_uni 'contents', Value
 	end
 

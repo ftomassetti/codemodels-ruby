@@ -73,4 +73,11 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::SingletonClassDecl, contents: [], object: RubyMM::Self.new
   end
 
+  def test_class_extending_struct
+    r = RubyMM.parse 'class Notifiable < Struct.new(:name, :parent); end'
+
+    assert_node r, RubyMM::ClassDecl
+    assert_node r.super_class, RubyMM::Call, name: 'new'
+  end
+
 end
