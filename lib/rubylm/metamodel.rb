@@ -335,6 +335,12 @@ module RubyMM
 		#has_attr 'type', Symbol
 	end
 
+	class ForStatement < Statement
+		contains_one_uni 'collection', Value
+		contains_one_uni 'iterator', Value
+		contains_one_uni 'body', Value
+	end
+
 	class UntilStatement < Statement
 		contains_one_uni 'condition', Value
 		contains_one_uni 'body', Value

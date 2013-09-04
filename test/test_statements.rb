@@ -163,4 +163,9 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r.block_arg.value, RubyMM::Call, name: 'proc'
 	end
 
+	def test_for
+		r = RubyMM.parse 'for a in 2; 3; end'
+		assert_node r, RubyMM::ForStatement, collection: RubyMM.int(2), iterator: RubyMM::LocalVarAssignment.build('a'), body: RubyMM.int(3)
+	end		
+
 end
