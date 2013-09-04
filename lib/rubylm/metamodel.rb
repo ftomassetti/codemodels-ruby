@@ -365,6 +365,12 @@ module RubyMM
 		contains_one_uni 'splatted', Value
 	end
 
+	def self.splat(v)
+		s = Splat.new
+		s.splatted = v
+		s
+	end
+
 	# ex a[1] = 2
 	class ElementAssignment < VarAssignment
 		contains_one_uni 'container',Value

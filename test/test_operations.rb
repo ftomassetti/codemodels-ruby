@@ -219,4 +219,96 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::SuperCall, args: [RubyMM.int(1),RubyMM.int(2)]
   end
 
+  def test_argscat_at_the_end_after_three
+    r = RubyMM.parse('link_to(name, options, html_options, *parameters_for_method_reference)')
+
+    assert_equal 4,r.args.count
+    assert_node r.args[0], RubyMM::Call, name: 'name'
+    assert_node r.args[1], RubyMM::Call, name: 'options'
+    assert_node r.args[2], RubyMM::Call, name: 'html_options'
+    assert_node r.args[3], RubyMM::Splat
+    assert_node r.args[3].splatted, RubyMM::Call, name: 'parameters_for_method_reference'
+  end
+
+   def test_argspush_at_the_beginning_before_three
+    r = RubyMM.parse('link_to(*parameters_for_method_reference, name, options, html_options)')
+
+    assert_equal 4,r.args.count
+    assert_node r.args[1], RubyMM::Call, name: 'name'
+    assert_node r.args[2], RubyMM::Call, name: 'options'
+    assert_node r.args[3], RubyMM::Call, name: 'html_options'
+    assert_node r.args[0], RubyMM::Splat
+    assert_node r.args[0].splatted, RubyMM::Call, name: 'parameters_for_method_reference'
+  end 
+
+  def test_argscat_on_empty_array_at_the_end_after_three
+    r = RubyMM.parse('link_to(name, options, html_options, *[])')
+
+    assert_equal 4,r.args.count
+    assert_node r.args[0], RubyMM::Call, name: 'name'
+    assert_node r.args[1], RubyMM::Call, name: 'options'
+    assert_node r.args[2], RubyMM::Call, name: 'html_options'
+    assert_node r.args[3], RubyMM::Splat
+    assert_node r.args[3].splatted, RubyMM::ArrayLiteral
+  end
+
+  def test_argspush_on_empty_array_at_the_beginning_before_three
+    r = RubyMM.parse('link_to(*[], name, options, html_options)')
+
+    assert_equal 4,r.args.count
+    assert_node r.args[1], RubyMM::Call, name: 'name'
+    assert_node r.args[2], RubyMM::Call, name: 'options'
+    assert_node r.args[3], RubyMM::Call, name: 'html_options'
+    assert_node r.args[0], RubyMM::Splat
+    assert_node r.args[0].splatted, RubyMM::ArrayLiteral
+  end
+
+  def test_five_before_and_after_splat_arg
+    r = RubyMM.parse('link_to(0,1,2,3,4,*5,6,7,8,9,10)')
+    assert_equal 11,r.args.count
+    assert_equal r.args[0], RubyMM.int(0)
+    assert_equal r.args[1], RubyMM.int(1)
+    assert_equal r.args[2], RubyMM.int(2)
+    assert_equal r.args[3], RubyMM.int(3)
+    assert_equal r.args[4], RubyMM.int(4)
+    assert_equal r.args[5].splatted, RubyMM.int(5)
+    assert_equal r.args[6], RubyMM.int(6)
+    assert_equal r.args[7], RubyMM.int(7)
+    assert_equal r.args[8], RubyMM.int(8)
+    assert_equal r.args[9], RubyMM.int(9)
+    assert_equal r.args[10], RubyMM.int(10)
+  end
+
+  def test_five_before_and_after_with_array_as_splat_arg
+    r = RubyMM.parse('link_to(0,1,2,3,4,*[],6,7,8,9,10)')
+    assert_equal 11,r.args.count
+    assert_equal r.args[0], RubyMM.int(0)
+    assert_equal r.args[1], RubyMM.int(1)
+    assert_equal r.args[2], RubyMM.int(2)
+    assert_equal r.args[3], RubyMM.int(3)
+    assert_equal r.args[4], RubyMM.int(4)
+    assert_equal r.args[5].splatted, RubyMM::ArrayLiteral.new
+    assert_equal r.args[6], RubyMM.int(6)
+    assert_equal r.args[7], RubyMM.int(7)
+    assert_equal r.args[8], RubyMM.int(8)
+    assert_equal r.args[9], RubyMM.int(9)
+    assert_equal r.args[10], RubyMM.int(10)
+  end  
+
+  def test_five_before_and_after_with_array_as_splat_arg_as_some_of_other_args
+    r = RubyMM.parse('link_to([],1,2,3,4,*[],6,7,8,[],10)')
+    assert_equal 11,r.args.count
+    assert_equal r.args[0], RubyMM::ArrayLiteral.new
+    assert_equal r.args[1], RubyMM.int(1)
+    assert_equal r.args[2], RubyMM.int(2)
+    assert_equal r.args[3], RubyMM.int(3)
+    assert_equal r.args[4], RubyMM.int(4)
+    assert_equal r.args[5].splatted, RubyMM::ArrayLiteral.new
+    assert_equal r.args[6], RubyMM.int(6)
+    assert_equal r.args[7], RubyMM.int(7)
+    assert_equal r.args[8], RubyMM.int(8)
+    assert_equal r.args[9], RubyMM::ArrayLiteral.new
+    assert_equal r.args[10], RubyMM.int(10)
+  end  
+
 end

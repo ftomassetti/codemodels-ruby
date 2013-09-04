@@ -8,6 +8,9 @@ java_import org.jrubyparser.ast.ListNode
 java_import org.jrubyparser.ast.BlockPassNode
 java_import org.jrubyparser.ast.ArgsNode
 java_import org.jrubyparser.ast.SymbolNode
+java_import org.jrubyparser.ast.ArrayNode
+
+java_import org.jrubyparser.util.StaticAnalyzerHelper
 
 module RubyMM
 
@@ -48,11 +51,8 @@ end
 
 
 def self.parse(code)
-	tree = JRubyParser.parse(code)
-	#puts "Code: #{code} Root: #{tree}"
+	tree = JRubyParser.parse(code, {:version=>JRubyParser::Compat::RUBY2_0})
 	tree_to_model(tree)
-#rescue UnknownNodeType => e
-#	raise "Gotcha: #{e}"
 end
 
 def self.tree_to_model(tree)
@@ -82,6 +82,34 @@ def self.get_var_name_depending_on_parser_version(node,prefix_size=1)
  		return node.name[prefix_size..-1]
  	end
  end
+
+def self.my_args_flattener(args_node)
+	if args_node.node_type.name=='ARGSPUSHNODE'
+		res = my_args_flattener(args_node.firstNode)
+		res << node_to_model(args_node.secondNode)
+		res
+	elsif args_node.node_type.name=='ARGSCATNODE'
+		res = my_args_flattener(args_node.firstNode)
+		if args_node.secondNode.is_a?(ArrayNode)
+			res.concat(my_args_flattener(args_node.secondNode))
+		else
+			res << RubyMM.splat(node_to_model(args_node.secondNode))
+		end
+		res
+	elsif args_node.is_a? ArrayNode
+		res = []
+		for i in 0..(args_node.size-1) 
+			res << node_to_model(args_node.get i)
+		end
+		res		
+	elsif args_node.node_type.name=='SPLATNODE'
+		res = []
+		res << node_to_model(args_node)
+		res
+	else
+		raise "Unknown: #{args_node.node_type.name}"
+	end
+end
 
 def self.node_to_model(node,parent_model=nil)
 	return nil if node==nil
@@ -389,8 +417,9 @@ def self.node_to_model(node,parent_model=nil)
 	when 'FCALLNODE'
 		model = RubyMM::Call.new
 		model.name = node.name
-		#model.receiver = node_to_model node.receiver
-		model.args = args_to_model node.args
+
+		model.args = my_args_flattener(node.args)
+
 		model.implicit_receiver = true
 		model		
 	when 'DEFNNODE'
