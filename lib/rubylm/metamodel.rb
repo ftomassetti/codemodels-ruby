@@ -10,6 +10,10 @@ module RubyMM
 		has_attr 'name', String
 	end
 
+	class SplittedArgument < Argument
+		has_many_attr 'names', String
+	end
+
 	class Statement < Value
 	end
 

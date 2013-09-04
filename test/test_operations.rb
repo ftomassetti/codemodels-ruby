@@ -329,4 +329,13 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::ArrayLiteral, values: [RubyMM.int(1), RubyMM.splat(RubyMM.int(2)), RubyMM.int(3)]
   end
 
+  def test_multiple_assignment_in_block_args
+    r = RubyMM.parse('m() { |params, (key, value)| 1}')
+
+    assert_node r.block_arg, RubyMM::CodeBlock
+    assert_equal 2, r.block_arg.args.count
+    assert_node r.block_arg.args[0], RubyMM::Argument, name:'params'
+    assert_node r.block_arg.args[1], RubyMM::SplittedArgument, names:['key','value']
+  end
+
 end

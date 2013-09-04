@@ -599,7 +599,7 @@ def self.node_to_model(node,parent_model=nil)
  		model
  	when 'ITERNODE'
  		model = RubyMM::CodeBlock.new
- 		model.args = args_to_model(node.var)
+ 		model.args = clean_args(args_to_model(node.var))
  		model.body = node_to_model(node.body)
  		model
  	when 'ARGUMENTNODE'
@@ -650,6 +650,17 @@ def self.populate_from_list(array,list_node)
 	else
 		array << node_to_model(list_node)
 	end
+end
+
+def self.clean_args(args)
+	for i in 0..(args.count-1) 
+		if args[i].is_a? RubyMM::MultipleAssignment
+			old = args[i]
+			args[i] = RubyMM::SplittedArgument.new
+			old.assignments.each {|a| args[i].names = args[i].names << a.name_assigned}
+		end
+	end
+	args
 end
 
 def self.args_to_model(args_node)
