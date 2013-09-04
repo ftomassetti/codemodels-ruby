@@ -29,6 +29,10 @@ module RubyMM
 		contains_one_uni 'else_body', Value
 	end
 
+	class IsDefined < Value
+		contains_one_uni 'value', Value
+	end
+
 	class Block < Value
 		contains_many_uni 'contents', Value
 	end 

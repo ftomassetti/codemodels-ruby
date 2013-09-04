@@ -101,4 +101,11 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r, RubyMM::RescueStatement, body: RubyMM.int(1), value: RubyMM::int(2)
 	end
 
+	def test_defined
+		r = RubyMM.parse('defined? mymethod')
+
+		assert_node r, RubyMM::IsDefined
+		assert_node r.value, RubyMM::Call, name: 'mymethod'
+	end
+
 end

@@ -455,6 +455,10 @@ def self.node_to_model(node,parent_model=nil)
  			model.pairs = model.pairs << pair
  		end
  		model
+ 	when 'DEFINEDNODE'
+ 		model = RubyMM::IsDefined.new
+ 		model.value = node_to_model(node.expression)
+ 		model
  	when 'ARRAYNODE'
  		model = RubyMM::ArrayLiteral.new
  		for i in 0..(node.count-1)
