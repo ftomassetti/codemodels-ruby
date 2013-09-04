@@ -57,6 +57,11 @@ module RubyMM
 		contains_one_uni 'value', Value
 	end
 
+	class SuperCall < Statement
+		contains_many_uni 'args', Value
+		contains_one_uni 'block_arg', AbstractCodeBlock
+	end
+
 	class Call < Value
 		has_attr 'name', String
 		contains_many_uni 'args', Value
@@ -333,10 +338,6 @@ module RubyMM
 	end
 
 	class BreakStatement < Statement
-	end
-
-	class SuperCall < Statement
-		contains_many_uni 'args', Value
 	end
 
 	class RescueStatement < Statement

@@ -351,10 +351,6 @@ def self.node_to_model(node,parent_model=nil)
  	### The rest
  	###
 
- 	when 'SUPERNODE'
- 		model = RubyMM::SuperCall.new
- 		model.args = args_to_model(node.args)
- 		model
  	when 'NTHREFNODE'
  		RubyMM::NthGroupReference.build(node.matchNumber)
  	when 'YIELDNODE'
@@ -392,6 +388,25 @@ def self.node_to_model(node,parent_model=nil)
  		if node.iter
 			model.block_arg = node_to_model(node.iter)
 		end
+ 		model 		
+ 	when 'SUPERNODE'
+ 		model = RubyMM::SuperCall.new
+ 	
+ 		if node.args.node_type.name == 'BLOCKPASSNODE'
+			model.block_arg = node_to_model(node.args)
+			args_to_process = node.args.args
+		else
+			args_to_process = node.args
+		end
+
+		if node.iter==nil and args_to_process.is_a?IterNode			
+			model.block_arg = node_to_model(args_to_process)
+			# no args
+		else
+			model.block_arg = node_to_model(node.iter) if node.iter
+			model.args = my_args_flattener(args_to_process) if args_to_process
+		end
+ 	
  		model 		
 	when 'CALLNODE'
 		model = RubyMM::Call.new
