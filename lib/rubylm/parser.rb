@@ -301,6 +301,11 @@ def self.node_to_model(node,parent_model=nil)
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.condition)
  		model
+ 	when 'UNTILNODE'
+ 		model = RubyMM::UntilStatement.new
+ 		model.body = node_to_model(node.body)
+ 		model.condition = node_to_model(node.condition)
+ 		model 		
  	when 'RESCUENODE'
  		model = RubyMM::RescueStatement.new
  		model.body = node_to_model(node.body)

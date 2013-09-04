@@ -312,6 +312,12 @@ module RubyMM
 		#has_attr 'type', Symbol
 	end
 
+	class UntilStatement < Statement
+		contains_one_uni 'condition', Value
+		contains_one_uni 'body', Value
+		#has_attr 'type', Symbol
+	end
+
 	class SuperCall < Statement
 		contains_many_uni 'args', Value
 	end

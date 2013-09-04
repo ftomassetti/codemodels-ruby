@@ -53,6 +53,18 @@ class TestOperations < Test::Unit::TestCase
 		assert_node r, RubyMM::WhileStatement, condition: RubyMM.int(1), body: RubyMM.int(2)#, type: :postfixed
 	end
 
+	def test_until_pre
+		r = RubyMM.parse('until 1; 2; end')
+
+		assert_node r, RubyMM::UntilStatement, condition: RubyMM.int(1), body: RubyMM.int(2)#, type: :prefixed
+	end
+
+	def test_until_post
+		r = RubyMM.parse('2 until 1')
+
+		assert_node r, RubyMM::UntilStatement, condition: RubyMM.int(1), body: RubyMM.int(2)#, type: :postfixed
+	end	
+
 	def test_if_pre
 		r = RubyMM.parse('if 1; 2; end')
 
