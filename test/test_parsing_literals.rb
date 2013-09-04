@@ -82,4 +82,13 @@ class TestOperations < Test::Unit::TestCase
     assert_node root.pieces[1], RubyMM::Call, name:'path'
   end
 
+  def test_dynamic_symbol
+    root = RubyMM.parse ':"cf_#{visible_field.id}"'
+
+    assert_right_class root, RubyMM::DynamicSymbol
+    assert_equal 2, root.pieces.count
+    assert_is_str root.pieces[0],'cf_'
+    assert_node root.pieces[1], RubyMM::Call, name:'id'    
+  end
+
  end

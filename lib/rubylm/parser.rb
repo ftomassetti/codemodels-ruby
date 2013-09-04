@@ -148,7 +148,13 @@ def self.node_to_model(node,parent_model=nil)
 		for i in 0..(node.size-1)
 			model.addPieces( node_to_model(node.get i) )
 		end
-		model		
+		model	
+	when 'DSYMBOLNODE'
+		model = RubyMM::DynamicSymbol.new
+		for i in 0..(node.size-1)
+			model.addPieces( node_to_model(node.get i) )
+		end
+		model
 	when 'DREGEXPNODE'
 		model = RubyMM::RegExpLiteral.new
 		#model.value = node.value

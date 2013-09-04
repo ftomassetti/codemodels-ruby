@@ -154,6 +154,11 @@ module RubyMM
 		contains_many_uni 'pieces', Value # only for dynamic strings		
 	end
 
+	class DynamicSymbol < Literal
+		has_attr 'value', String
+		contains_many_uni 'pieces', Value	
+	end
+
 	def self.string(value)
 		StringLiteral.build(value)
 	end
@@ -236,7 +241,7 @@ module RubyMM
 	end	
 
 	class Symbol < Literal
-		has_attr 'name', String
+		has_attr 'name', String		
 	end
 
 	class VarAssignment < Value
