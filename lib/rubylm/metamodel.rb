@@ -383,6 +383,7 @@ module RubyMM
 	class BeginEndBlock < Value
 		contains_one_uni 'body',Value
 		contains_many_uni 'rescue_clauses',RescueClause
+		contains_one_uni 'ensure_body', Value
 	end
 
 	class UnaryOperation < Value

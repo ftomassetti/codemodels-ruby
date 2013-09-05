@@ -223,6 +223,11 @@ class TestOperations < Test::Unit::TestCase
     assert_node r.ensure_body, RubyMM::VarAssignment
   end
 
+  def test_begin_ensure_block
+    r = RubyMM.parse('begin;1;ensure;2;end')
+    assert_node r,RubyMM::BeginEndBlock, body: RubyMM.int(1), ensure_body: RubyMM.int(2)
+  end
+
   def test_next
     r = RubyMM.parse('next')
     assert_node r, RubyMM::NextStatement
