@@ -8,14 +8,14 @@ class TestOperations < Test::Unit::TestCase
   include TestHelper
 
   def test_sum
-  	root = RubyMM.parse('3+40')
+    root = RubyMM.parse('3+40')
 
-  	assert_right_class root, RubyMM::Call
-  	assert_equal '+', root.name  	
-  	assert_is_int root.receiver, 3
+    assert_right_class root, RubyMM::Call
+    assert_equal '+', root.name   
+    assert_is_int root.receiver, 3
     assert_equal false, root.implicit_receiver
-  	assert_equal 1,  root.args.count
-  	assert_is_int root.args[0], 40
+    assert_equal 1,  root.args.count
+    assert_is_int root.args[0], 40
   end
 
   def test_def_with_some_statements
@@ -31,10 +31,10 @@ class TestOperations < Test::Unit::TestCase
   end
 
   def test_def_with_one_statements
-  	root = RubyMM.parse("def somefunc \n 10\n end")
+    root = RubyMM.parse("def somefunc \n 10\n end")
 
-  	assert_right_class root, RubyMM::Def
-  	assert_equal 'somefunc', root.name  	
+    assert_right_class root, RubyMM::Def
+    assert_equal 'somefunc', root.name    
     assert_is_int root.body, 10
   end
 
@@ -175,10 +175,22 @@ class TestOperations < Test::Unit::TestCase
     assert_node r.value, RubyMM::Call, name:'a'
   end
 
+  def test_retry
+    r = RubyMM.parse('retry')
+    assert_node r, RubyMM::RetryStatement
+  end
+
   def test_regex_matcher
     r = RubyMM.parse('k =~ /^extra_/')
 
     assert_node r, RubyMM::RegexMatcher, regex: RubyMM::RegExpLiteral.build('^extra_')
+    assert_node r.checked_value, RubyMM::Call, name: 'k'
+  end
+
+  def test_regex_tryer
+    r = RubyMM.parse('/^extra_/ =~ k')
+
+    assert_node r, RubyMM::RegexTryer, regex: RubyMM::RegExpLiteral.build('^extra_')
     assert_node r.checked_value, RubyMM::Call, name: 'k'
   end
 
@@ -207,9 +219,133 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::NthGroupReference, n: 1
   end
 
+  def test_back_ref
+    r = RubyMM.parse('$&')
+    assert_node r, RubyMM::BackReference
+  end
+
   def test_super_call
     r = RubyMM.parse('super(1,2)')
     assert_node r, RubyMM::SuperCall, args: [RubyMM.int(1),RubyMM.int(2)]
+  end
+
+  def test_argscat_at_the_end_after_three
+    r = RubyMM.parse('link_to(name, options, html_options, *parameters_for_method_reference)')
+
+    assert_equal 4,r.args.count
+    assert_node r.args[0], RubyMM::Call, name: 'name'
+    assert_node r.args[1], RubyMM::Call, name: 'options'
+    assert_node r.args[2], RubyMM::Call, name: 'html_options'
+    assert_node r.args[3], RubyMM::Splat
+    assert_node r.args[3].splatted, RubyMM::Call, name: 'parameters_for_method_reference'
+  end
+
+   def test_argspush_at_the_beginning_before_three
+    r = RubyMM.parse('link_to(*parameters_for_method_reference, name, options, html_options)')
+
+    assert_equal 4,r.args.count
+    assert_node r.args[1], RubyMM::Call, name: 'name'
+    assert_node r.args[2], RubyMM::Call, name: 'options'
+    assert_node r.args[3], RubyMM::Call, name: 'html_options'
+    assert_node r.args[0], RubyMM::Splat
+    assert_node r.args[0].splatted, RubyMM::Call, name: 'parameters_for_method_reference'
+  end 
+
+  def test_argscat_on_empty_array_at_the_end_after_three
+    r = RubyMM.parse('link_to(name, options, html_options, *[])')
+
+    assert_equal 4,r.args.count
+    assert_node r.args[0], RubyMM::Call, name: 'name'
+    assert_node r.args[1], RubyMM::Call, name: 'options'
+    assert_node r.args[2], RubyMM::Call, name: 'html_options'
+    assert_node r.args[3], RubyMM::Splat
+    assert_node r.args[3].splatted, RubyMM::ArrayLiteral
+  end
+
+  def test_argspush_on_empty_array_at_the_beginning_before_three
+    r = RubyMM.parse('link_to(*[], name, options, html_options)')
+
+    assert_equal 4,r.args.count
+    assert_node r.args[1], RubyMM::Call, name: 'name'
+    assert_node r.args[2], RubyMM::Call, name: 'options'
+    assert_node r.args[3], RubyMM::Call, name: 'html_options'
+    assert_node r.args[0], RubyMM::Splat
+    assert_node r.args[0].splatted, RubyMM::ArrayLiteral
+  end
+
+  def test_five_before_and_after_splat_arg
+    r = RubyMM.parse('link_to(0,1,2,3,4,*5,6,7,8,9,10)')
+    assert_equal 11,r.args.count
+    assert_equal r.args[0], RubyMM.int(0)
+    assert_equal r.args[1], RubyMM.int(1)
+    assert_equal r.args[2], RubyMM.int(2)
+    assert_equal r.args[3], RubyMM.int(3)
+    assert_equal r.args[4], RubyMM.int(4)
+    assert_equal r.args[5].splatted, RubyMM.int(5)
+    assert_equal r.args[6], RubyMM.int(6)
+    assert_equal r.args[7], RubyMM.int(7)
+    assert_equal r.args[8], RubyMM.int(8)
+    assert_equal r.args[9], RubyMM.int(9)
+    assert_equal r.args[10], RubyMM.int(10)
+  end
+
+  def test_five_before_and_after_with_array_as_splat_arg
+    r = RubyMM.parse('link_to(0,1,2,3,4,*[],6,7,8,9,10)')
+    assert_equal 11,r.args.count
+    assert_equal r.args[0], RubyMM.int(0)
+    assert_equal r.args[1], RubyMM.int(1)
+    assert_equal r.args[2], RubyMM.int(2)
+    assert_equal r.args[3], RubyMM.int(3)
+    assert_equal r.args[4], RubyMM.int(4)
+    assert_equal r.args[5].splatted, RubyMM::ArrayLiteral.new
+    assert_equal r.args[6], RubyMM.int(6)
+    assert_equal r.args[7], RubyMM.int(7)
+    assert_equal r.args[8], RubyMM.int(8)
+    assert_equal r.args[9], RubyMM.int(9)
+    assert_equal r.args[10], RubyMM.int(10)
+  end  
+
+  def test_five_before_and_after_with_array_as_splat_arg_as_some_of_other_args
+    r = RubyMM.parse('link_to([],1,2,3,4,*[],6,7,8,[],10)')
+    assert_equal 11,r.args.count
+    assert_equal r.args[0], RubyMM::ArrayLiteral.new
+    assert_equal r.args[1], RubyMM.int(1)
+    assert_equal r.args[2], RubyMM.int(2)
+    assert_equal r.args[3], RubyMM.int(3)
+    assert_equal r.args[4], RubyMM.int(4)
+    assert_equal r.args[5].splatted, RubyMM::ArrayLiteral.new
+    assert_equal r.args[6], RubyMM.int(6)
+    assert_equal r.args[7], RubyMM.int(7)
+    assert_equal r.args[8], RubyMM.int(8)
+    assert_equal r.args[9], RubyMM::ArrayLiteral.new
+    assert_equal r.args[10], RubyMM.int(10)
+  end  
+
+  def test_parsing_array_containing_splat_at_end
+    r = RubyMM.parse("[1, *2]")
+
+    assert_node r, RubyMM::ArrayLiteral, values: [RubyMM.int(1), RubyMM.splat(RubyMM.int(2))]
+  end
+
+  def test_parsing_array_containing_splat_at_start
+    r = RubyMM.parse("[*1, 2]")
+
+    assert_node r, RubyMM::ArrayLiteral, values: [RubyMM.splat(RubyMM.int(1)), RubyMM.int(2)]
+  end
+
+  def test_parsing_array_containing_splat_in_the_middle
+    r = RubyMM.parse("[1, *2, 3]")
+
+    assert_node r, RubyMM::ArrayLiteral, values: [RubyMM.int(1), RubyMM.splat(RubyMM.int(2)), RubyMM.int(3)]
+  end
+
+  def test_multiple_assignment_in_block_args
+    r = RubyMM.parse('m() { |params, (key, value)| 1}')
+
+    assert_node r.block_arg, RubyMM::CodeBlock
+    assert_equal 2, r.block_arg.args.count
+    assert_node r.block_arg.args[0], RubyMM::Argument, name:'params'
+    assert_node r.block_arg.args[1], RubyMM::SplittedArgument, names:['key','value']
   end
 
   def splatted_array
@@ -218,7 +354,7 @@ class TestOperations < Test::Unit::TestCase
     splatted
   end
 
-  def test_args_cat_one
+    def test_args_cat_one
     r = RubyMM.parse('m(1,*[])')
     assert_equal [RubyMM.int(1),splatted_array], r.args
   end  

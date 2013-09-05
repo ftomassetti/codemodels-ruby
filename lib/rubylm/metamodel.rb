@@ -10,10 +10,19 @@ module RubyMM
 		has_attr 'name', String
 	end
 
+	class SplittedArgument < Argument
+		has_many_attr 'names', String
+	end
+
 	class Statement < Value
 	end
 
 	class RegexMatcher < Value
+		contains_one_uni 'checked_value', Value
+		contains_one_uni 'regex', Value
+	end
+
+	class RegexTryer < Value
 		contains_one_uni 'checked_value', Value
 		contains_one_uni 'regex', Value
 	end
@@ -27,6 +36,13 @@ module RubyMM
 		contains_one_uni 'condition', Value
 		contains_one_uni 'then_body', Value
 		contains_one_uni 'else_body', Value
+	end
+
+	class IsDefined < Value
+		contains_one_uni 'value', Value
+	end
+
+	class RetryStatement < Statement
 	end
 
 	class Block < Value
@@ -43,6 +59,11 @@ module RubyMM
 
 	class BlockReference < AbstractCodeBlock
 		contains_one_uni 'value', Value
+	end
+
+	class SuperCall < Statement
+		contains_many_uni 'args', Value
+		contains_one_uni 'block_arg', AbstractCodeBlock
 	end
 
 	class Call < Value
@@ -133,6 +154,16 @@ module RubyMM
 		contains_many_uni 'pieces', Value # only for dynamic strings
 	end
 
+	class CmdLineStringLiteral < Literal
+		has_attr 'value', String
+		contains_many_uni 'pieces', Value # only for dynamic strings		
+	end
+
+	class DynamicSymbol < Literal
+		has_attr 'value', String
+		contains_many_uni 'pieces', Value	
+	end
+
 	def self.string(value)
 		StringLiteral.build(value)
 	end
@@ -205,12 +236,17 @@ module RubyMM
 
 	class ClassDecl < Value
 		contains_one_uni 'defname', Constant
-		contains_one_uni 'super_class',Constant
+		contains_one_uni 'super_class',Value
 		contains_many_uni 'contents', Value
 	end
 
+	class SingletonClassDecl < Value
+		contains_one_uni 'object', Value
+		contains_many_uni 'contents', Value
+	end	
+
 	class Symbol < Literal
-		has_attr 'name', String
+		has_attr 'name', String		
 	end
 
 	class VarAssignment < Value
@@ -294,6 +330,10 @@ module RubyMM
 		contains_one_uni 'new_name',Value
 	end
 
+	class UndefStatement < Statement
+		contains_one_uni 'name', Value
+	end
+
 	class WhenClause < RGen::MetamodelBuilder::MMBase
 		contains_one_uni 'condition',Value
 		contains_one_uni 'body',Value
@@ -310,13 +350,27 @@ module RubyMM
 		#has_attr 'type', Symbol
 	end
 
-	class SuperCall < Statement
-		contains_many_uni 'args', Value
+	class ForStatement < Statement
+		contains_one_uni 'collection', Value
+		contains_one_uni 'iterator', Value
+		contains_one_uni 'body', Value
+	end
+
+	class UntilStatement < Statement
+		contains_one_uni 'condition', Value
+		contains_one_uni 'body', Value
+		#has_attr 'type', Symbol
+	end
+
+	class BreakStatement < Statement
 	end
 
 	class RescueStatement < Statement
 		contains_one_uni 'body', Value
 		contains_one_uni 'value', Value
+	end
+
+	class BackReference < Value
 	end
 
 	class NthGroupReference < Value
@@ -338,6 +392,12 @@ module RubyMM
 
 	class Splat < Value
 		contains_one_uni 'splatted', Value
+	end
+
+	def self.splat(v)
+		s = Splat.new
+		s.splatted = v
+		s
 	end
 
 	# ex a[1] = 2

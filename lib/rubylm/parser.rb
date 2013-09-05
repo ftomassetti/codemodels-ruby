@@ -7,9 +7,10 @@ java_import org.jrubyparser.ast.ArrayNode
 java_import org.jrubyparser.ast.ListNode
 java_import org.jrubyparser.ast.BlockPassNode
 java_import org.jrubyparser.ast.ArgsNode
-java_import org.jrubyparser.ast.ArgsCatNode
-java_import org.jrubyparser.ast.ArgsPushNode
+java_import org.jrubyparser.ast.IterNode
 java_import org.jrubyparser.ast.SymbolNode
+java_import org.jrubyparser.ast.ArrayNode
+
 java_import org.jrubyparser.util.StaticAnalyzerHelper
 
 module RubyMM
@@ -51,11 +52,8 @@ end
 
 
 def self.parse(code)
-	tree = JRubyParser.parse(code)
-	#puts "Code: #{code} Root: #{tree}"
+	tree = JRubyParser.parse(code, {:version=>JRubyParser::Compat::RUBY2_0})
 	tree_to_model(tree)
-#rescue UnknownNodeType => e
-#	raise "Gotcha: #{e}"
 end
 
 def self.tree_to_model(tree)
@@ -70,10 +68,10 @@ def self.body_node_to_contents(body_node,container_node)
 	if body
 		if body.is_a? RubyMM::Block	
 			body.contents.each do |el|
-				container_node.contents = container_node.contents << el 
+				container_node.addContents(el)
 			end
 		else
-			container_node.contents = container_node.contents << body
+			container_node.addContents( body )
 		end
 	end
 end
@@ -85,6 +83,34 @@ def self.get_var_name_depending_on_parser_version(node,prefix_size=1)
  		return node.name[prefix_size..-1]
  	end
  end
+
+def self.my_args_flattener(args_node)
+	if args_node.node_type.name=='ARGSPUSHNODE'
+		res = my_args_flattener(args_node.firstNode)
+		res << node_to_model(args_node.secondNode)
+		res
+	elsif args_node.node_type.name=='ARGSCATNODE'
+		res = my_args_flattener(args_node.firstNode)
+		if args_node.secondNode.is_a?(ArrayNode)
+			res.concat(my_args_flattener(args_node.secondNode))
+		else
+			res << RubyMM.splat(node_to_model(args_node.secondNode))
+		end
+		res
+	elsif args_node.is_a? ListNode
+		res = []
+		for i in 0..(args_node.size-1) 
+			res << node_to_model(args_node.get i)
+		end
+		res		
+	elsif args_node.node_type.name=='SPLATNODE'
+		res = []
+		res << node_to_model(args_node)
+		res
+	else
+		raise "Unknown: #{args_node.node_type.name} at #{args_node.position}, parent #{args_node.parent}"
+	end
+end
 
 def self.node_to_model(node,parent_model=nil)
 	return nil if node==nil
@@ -114,7 +140,19 @@ def self.node_to_model(node,parent_model=nil)
 		#model.value = node.value
 		model.dynamic = true
 		for i in 0..(node.size-1)
-			model.pieces = model.pieces << node_to_model(node.get i)
+			model.addPieces( node_to_model(node.get i) )
+		end
+		model
+	when 'DXSTRNODE'
+		model = RubyMM::CmdLineStringLiteral.new
+		for i in 0..(node.size-1)
+			model.addPieces( node_to_model(node.get i) )
+		end
+		model	
+	when 'DSYMBOLNODE'
+		model = RubyMM::DynamicSymbol.new
+		for i in 0..(node.size-1)
+			model.addPieces( node_to_model(node.get i) )
 		end
 		model
 	when 'DREGEXPNODE'
@@ -122,7 +160,7 @@ def self.node_to_model(node,parent_model=nil)
 		#model.value = node.value
 		model.dynamic = true
 		for i in 0..(node.size-1)
-			model.pieces = model.pieces << node_to_model(node.get i)
+			model.addPieces( node_to_model(node.get i) )
 		end
 		model
 	when 'NILNODE'
@@ -232,14 +270,14 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::MultipleAssignment.new
  		if node.pre
  			for i in 0..(node.pre.count-1)
- 				model.assignments = model.assignments << node_to_model(node.pre.get(i))
+ 				model.addAssignments( node_to_model(node.pre.get(i)) )
  			end
  		end
  		values_model = node_to_model(node.value)
  		if values_model.respond_to? :values
- 			values_model.values.each {|x| model.values = model.values << x}
+ 			values_model.values.each {|x| model.addValues(x) }
  		else
- 			model.values = model.values << values_model
+ 			model.addValues( values_model )
  		end
  		# TODO consider rest and post!
  		model
@@ -248,14 +286,14 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::MultipleAssignment.new
  		if node.pre
  			for i in 0..(node.pre.count-1)
- 				model.assignments = model.assignments << node_to_model(node.pre.get(i))
+ 				model.addAssignments( node_to_model(node.pre.get(i)) )
  			end
  		end
  		values_model = node_to_model(node.value)
  		if values_model.respond_to? :values
- 			values_model.values.each {|x| model.values = model.values << x}
+ 			values_model.values.each {|x| model.addValues(x)}
  		else
- 			model.values = model.values << values_model
+ 			model.addValues( values_model )
  		end
  		# TODO consider rest and post!
  		model
@@ -290,7 +328,7 @@ def self.node_to_model(node,parent_model=nil)
  		model = RubyMM::CaseStatement.new
  		for ci in 0..(node.cases.count-1)
  			c = node.cases[ci]
- 			model.when_clauses = model.when_clauses << node_to_model(c)
+ 			model.addWhen_clauses( node_to_model(c) )
  		end
  		model.else_body = node_to_model(node.else)
  		model
@@ -299,11 +337,28 @@ def self.node_to_model(node,parent_model=nil)
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.expression)
  		model
+ 	when 'UNDEFNODE'
+ 		model = RubyMM::UndefStatement.new
+ 		model.name = node_to_model(node.name)
+ 		model
  	when 'WHILENODE'
  		model = RubyMM::WhileStatement.new
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.condition)
  		model
+ 	when 'FORNODE'
+ 		model = RubyMM::ForStatement.new
+ 		model.body = node_to_model(node.body)
+ 		model.collection = node_to_model(node.iter)
+ 		model.iterator = node_to_model(node.var)
+ 		model 		
+ 	when 'BREAKNODE'
+ 		RubyMM::BreakStatement.new
+ 	when 'UNTILNODE'
+ 		model = RubyMM::UntilStatement.new
+ 		model.body = node_to_model(node.body)
+ 		model.condition = node_to_model(node.condition)
+ 		model 		
  	when 'RESCUENODE'
  		model = RubyMM::RescueStatement.new
  		model.body = node_to_model(node.body)
@@ -314,10 +369,6 @@ def self.node_to_model(node,parent_model=nil)
  	### The rest
  	###
 
- 	when 'SUPERNODE'
- 		model = RubyMM::SuperCall.new
- 		model.args = args_to_model(node.args)
- 		model
  	when 'NTHREFNODE'
  		RubyMM::NthGroupReference.build(node.matchNumber)
  	when 'YIELDNODE'
@@ -333,6 +384,11 @@ def self.node_to_model(node,parent_model=nil)
  		model.lower = node_to_model(node.beginNode)
  		model.upper = node_to_model(node.endNode)
  		model
+ 	when 'MATCH2NODE'
+ 		model = RubyMM::RegexTryer.new
+ 		model.checked_value = node_to_model(node.value)
+ 		model.regex = node_to_model(node.receiver)
+ 		model 		
  	when 'MATCH3NODE'
  		model = RubyMM::RegexMatcher.new
  		model.checked_value = node_to_model(node.value)
@@ -351,19 +407,45 @@ def self.node_to_model(node,parent_model=nil)
 			model.block_arg = node_to_model(node.iter)
 		end
  		model 		
+ 	when 'SUPERNODE'
+ 		model = RubyMM::SuperCall.new
+ 	
+ 		if node.args.node_type.name == 'BLOCKPASSNODE'
+			model.block_arg = node_to_model(node.args)
+			args_to_process = node.args.args
+		else
+			args_to_process = node.args
+		end
+
+		if node.iter==nil and args_to_process.is_a?IterNode			
+			model.block_arg = node_to_model(args_to_process)
+			# no args
+		else
+			model.block_arg = node_to_model(node.iter) if node.iter
+			model.args = my_args_flattener(args_to_process) if args_to_process
+		end
+
+ 		model 		
 	when 'CALLNODE'
 		model = RubyMM::Call.new
 		model.name = node.name
 		model.receiver = node_to_model node.receiver
+		
 		if node.args.node_type.name == 'BLOCKPASSNODE'
 			model.block_arg = node_to_model(node.args)
-			model.args = args_to_model(node.args.args) if node.args.args
+			args_to_process = node.args.args
 		else
-			model.args = args_to_model node.args
+			args_to_process = node.args
 		end
-		if node.iter
-			model.block_arg = node_to_model(node.iter)
+
+		if node.iter==nil and args_to_process.is_a?IterNode			
+			model.block_arg = node_to_model(args_to_process)
+			# no args
+		else
+			model.block_arg = node_to_model(node.iter) if node.iter
+			model.args = my_args_flattener(args_to_process) if args_to_process
 		end
+
 		model.implicit_receiver = false
 		model
 	when 'VCALLNODE'
@@ -376,8 +458,22 @@ def self.node_to_model(node,parent_model=nil)
 	when 'FCALLNODE'
 		model = RubyMM::Call.new
 		model.name = node.name
-		#model.receiver = node_to_model node.receiver
-		model.args = args_to_model node.args
+
+		if node.args.node_type.name == 'BLOCKPASSNODE'
+			model.block_arg = node_to_model(node.args)
+			args_to_process = node.args.args
+		else
+			args_to_process = node.args
+		end
+
+		if node.iter==nil and args_to_process.is_a?IterNode			
+			model.block_arg = node_to_model(args_to_process)
+			# no args
+		else
+			model.block_arg = node_to_model(node.iter) if node.iter
+			model.args = my_args_flattener(args_to_process) if args_to_process
+		end
+
 		model.implicit_receiver = true
 		model		
 	when 'DEFNNODE'
@@ -393,11 +489,11 @@ def self.node_to_model(node,parent_model=nil)
 	 		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
 	 		rescue_clause_model = RubyMM::RescueClause.new
 	 		rescue_clause_model.body = node_to_model(rescue_body_node.body)
-	 		model.rescue_clauses = model.rescue_clauses << rescue_clause_model
+	 		model.addRescue_clauses( rescue_clause_model )
 	 	elsif node.body.node_type.name=='ENSURENODE'
 	 		ensure_node = node.body
 	 		model.ensure_body = node_to_model(ensure_node.ensure)
-	 		model.body = node_to_model(ensure_node.body)
+	 		model.body = node_to_model(ensure_node.body)	 		
 		else
 			model.body = node_to_model(node.body,model)
 		end
@@ -414,10 +510,12 @@ def self.node_to_model(node,parent_model=nil)
 		for i in 0..(node.size-1)
 			content_at_i = node_to_model(node.get i)
 			#puts "Adding to contents #{content_at_i}" 
-			model.contents = (model.contents << content_at_i)
+			model.addContents( content_at_i )
 			#puts "Contents #{model.contents.class}"
 		end
 		model
+	when 'BACKREFNODE'
+		RubyMM::BackReference.new
 	when 'EVSTRNODE'
 		node_to_model(node.body)
 	when 'CLASSNODE'
@@ -426,6 +524,11 @@ def self.node_to_model(node,parent_model=nil)
 		model.super_class = node_to_model(node.super)
 		body_node_to_contents(node.body_node,model)
 		model
+	when 'SCLASSNODE'
+		model = RubyMM::SingletonClassDecl.new
+		model.object = node_to_model(node.receiver)
+		body_node_to_contents(node.body_node,model)
+		model		
 	when 'MODULENODE'
 		model = RubyMM::ModuleDecl.new
 		model.defname = node_to_model(node.getCPath)
@@ -459,15 +562,19 @@ def self.node_to_model(node,parent_model=nil)
  			v_node = node.get_list_node[i*2 +1]
  			v = node_to_model(v_node)
  			pair = RubyMM::HashPair.build key: k, value: v
- 			model.pairs = model.pairs << pair
+ 			model.addPairs(pair)
  		end
+ 		model
+ 	when 'DEFINEDNODE'
+ 		model = RubyMM::IsDefined.new
+ 		model.value = node_to_model(node.expression)
  		model
  	when 'ARRAYNODE'
  		model = RubyMM::ArrayLiteral.new
  		for i in 0..(node.count-1)
  			v_node = node[i]
  			v = node_to_model(v_node)
- 			model.values = model.values << v
+ 			model.addValues(v)
  		end
  		model
  	when 'SPLATNODE'
@@ -481,6 +588,8 @@ def self.node_to_model(node,parent_model=nil)
  		model
  	when 'ZARRAYNODE'
  		RubyMM::ArrayLiteral.new
+ 	when 'RETRYNODE'
+ 		RubyMM::RetryStatement.new
  	when 'BEGINNODE'
  		model = RubyMM::BeginEndBlock.new
  		if node.body==nil
@@ -493,7 +602,7 @@ def self.node_to_model(node,parent_model=nil)
 	 		assert_node_type(rescue_body_node,'RESCUEBODYNODE')
 	 		rescue_clause_model = RubyMM::RescueClause.new
 		 	rescue_clause_model.body = node_to_model(rescue_body_node.body)
-		 	model.rescue_clauses = model.rescue_clauses << rescue_clause_model
+		 	model.addRescue_clauses( rescue_clause_model )
 		else
 			model.body = node_to_model(node.body)
 		end
@@ -514,20 +623,30 @@ def self.node_to_model(node,parent_model=nil)
  		model
  	when 'ITERNODE'
  		model = RubyMM::CodeBlock.new
- 		model.args = args_to_model(node.var)
+ 		model.args = clean_args(args_to_model(node.var))
  		model.body = node_to_model(node.body)
  		model
- 	#when 'CONSTDECLNODE'
- 	#	raise 'Const decl node: not implemented'
  	when 'ARGUMENTNODE'
  		model = RubyMM::Argument.new
  		model.name = node.name
  		model
+ 	when 'RESTARG'
+ 		model = RubyMM::Argument.new
+ 		model.name = node.name
+ 		model 		
  	when 'BLOCKPASSNODE'
  		model = RubyMM::BlockReference.new
  		#raise ParsingError.new(node,"Unexpected something that is not a symbol but a #{node.body}") unless node.body.is_a? SymbolNode
  		model.value = node_to_model(node.body)
  		model
+ 	when 'ARGSCATNODE'
+ 		model = RubyMM::ArrayLiteral.new
+ 		model.values = my_args_flattener(node)
+ 		model
+ 	when 'ARGSPUSHNODE'
+ 		model = RubyMM::ArrayLiteral.new
+ 		model.values = my_args_flattener(node)
+ 		model 		
 	else		
 		#n = node
 		#while n
@@ -548,9 +667,24 @@ def self.unknown_node_type_found(node)
 end
 
 def self.populate_from_list(array,list_node)
-	for i in 0..(list_node.size-1) 
-		array << node_to_model(list_node.get i)
+	if list_node.respond_to? :size
+		for i in 0..(list_node.size-1) 
+			array << node_to_model(list_node.get i)
+		end
+	else
+		array << node_to_model(list_node)
 	end
+end
+
+def self.clean_args(args)
+	for i in 0..(args.count-1) 
+		if args[i].is_a? RubyMM::MultipleAssignment
+			old = args[i]
+			args[i] = RubyMM::SplittedArgument.new
+			old.assignments.each {|a| args[i].names = args[i].names << a.name_assigned}
+		end
+	end
+	args
 end
 
 def self.args_to_model(args_node)
@@ -567,55 +701,12 @@ def self.args_to_model(args_node)
 			#puts "DEALING WITH #{i} #{args_node.get i} #{(args_node.get i).class}"
 			args << node_to_model(args_node.get i)
 		end
-		args
-	elsif args_node.is_a? ArrayJavaProxy
-		for i in 0..(args_node.size-1) 
-			#puts "DEALING WITH #{i} #{args_node.get i} #{(args_node.get i).class}"
-			args << node_to_model(args_node[i])
-		end
-		args 			 		
+		args 		
 	elsif args_node.is_a? ArgsNode
 		populate_from_list(args,args_node.pre) if args_node.pre
 		populate_from_list(args,args_node.optional) if args_node.optional
 		populate_from_list(args,args_node.rest) if args_node.rest
 		populate_from_list(args,args_node.post) if args_node.post
-		args
-	elsif args_node.is_a?(ArgsCatNode) or args_node.is_a?(ArgsPushNode)
-		#puts "\nFlattening #{args_node}"
-		flatten = StaticAnalyzerHelper.flattenRHSValues(args_node)
-		#puts "\nFlattened as: #{flatten[0]} --- #{flatten[1]} --- #{flatten[2]}"
-		# if flatten[0].size==1 
-		# 	if flatten[0][0].is_a?(ArgsCatNode)
-		# 		args.concat(args_to_model(flatten[0][0]))
-		# 	else
-		# 		splatted = RubyMM::Splat.new
-		# 		splatted.splatted = node_to_model(flatten[0][0])
-		# 		args << splatted
-		# 	end
-		# else
-		if flatten[0].is_a?(ListNode) && flatten[0].count==1 && flatten[0][0].is_a?(ArgsCatNode)
-			args.concat(args_to_model(flatten[0][0]))
-		else
-			args.concat(args_to_model(flatten[0]))
-		end			
-		#end
-		#puts "\nAfter adding flatten[0] args=#{args}"
-		if flatten[1]
-			if flatten[1].is_a? ArrayNode
-				args.concat(args_to_model(flatten[1]))
-			else
-				splatted = RubyMM::Splat.new
-				splatted.splatted = node_to_model(flatten[1])
-				if splatted.splatted.is_a? RubyMM::Splat
-					args << splatted.splatted				
-				else
-					args << splatted
-				end
-			end
-		end
-		#puts "\nAfter adding flatten[1] (#{flatten[1]} of (#{flatten[1].class})) args=#{args}"
-		args.concat(args_to_model(flatten[2]))
-		#puts "\nAfter adding flatten[2] args=#{args}"
 		args
 	elsif args_node.is_a? Node
 		args << node_to_model(args_node)

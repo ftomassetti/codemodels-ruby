@@ -7,7 +7,7 @@ class TestOperations < Test::Unit::TestCase
 
   include TestHelper
 
-    def test_class_decl_ext_class_in_module
+  def test_class_decl_ext_class_in_module
     root = RubyMM.parse("class TestOperations < Test::Unit::TestCase\nend")
   
     assert_right_class root, RubyMM::ClassDecl
@@ -65,6 +65,19 @@ class TestOperations < Test::Unit::TestCase
     root = RubyMM.parse('self')
 
     assert_node root, RubyMM::Self
+  end
+
+  def test_singleton_class 
+    r = RubyMM.parse('class << self; end')
+
+    assert_node r, RubyMM::SingletonClassDecl, contents: [], object: RubyMM::Self.new
+  end
+
+  def test_class_extending_struct
+    r = RubyMM.parse 'class Notifiable < Struct.new(:name, :parent); end'
+
+    assert_node r, RubyMM::ClassDecl
+    assert_node r.super_class, RubyMM::Call, name: 'new'
   end
 
 end
