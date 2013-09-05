@@ -112,6 +112,26 @@ def self.my_args_flattener(args_node)
 	end
 end
 
+def self.process_body(node,model)
+	if node.body==nil
+		model.body = nil
+	elsif node.body.node_type.name=='RESCUENODE'
+		rescue_node = node.body
+		model.body = node_to_model(rescue_node.body)
+ 		rescue_body_node = rescue_node.rescue
+ 		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
+ 		rescue_clause_model = RubyMM::RescueClause.new
+ 		rescue_clause_model.body = node_to_model(rescue_body_node.body)
+ 		model.addRescue_clauses( rescue_clause_model )
+ 	elsif node.body.node_type.name=='ENSURENODE'
+ 		ensure_node = node.body
+ 		model.ensure_body = node_to_model(ensure_node.ensure)
+ 		model.body = node_to_model(ensure_node.body)	 		
+	else
+		model.body = node_to_model(node.body,model)
+	end
+end
+
 def self.node_to_model(node,parent_model=nil)
 	return nil if node==nil
 	#puts "#{node} #{node.node_type.name}"
@@ -479,30 +499,13 @@ def self.node_to_model(node,parent_model=nil)
 	when 'DEFNNODE'
 		model = RubyMM::Def.new
 		model.name = node.name
-		#puts "NODE BODY: #{node.body}"	
-		if node.body==nil
-			model.body = nil
-		elsif node.body.node_type.name=='RESCUENODE'
-			rescue_node = node.body
-			model.body = node_to_model(rescue_node.body)
-	 		rescue_body_node = rescue_node.rescue
-	 		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
-	 		rescue_clause_model = RubyMM::RescueClause.new
-	 		rescue_clause_model.body = node_to_model(rescue_body_node.body)
-	 		model.addRescue_clauses( rescue_clause_model )
-	 	elsif node.body.node_type.name=='ENSURENODE'
-	 		ensure_node = node.body
-	 		model.ensure_body = node_to_model(ensure_node.ensure)
-	 		model.body = node_to_model(ensure_node.body)	 		
-		else
-			model.body = node_to_model(node.body,model)
-		end
+		process_body(node,model)
 		model.onself = false
 		model
 	when 'DEFSNODE'
 		model = RubyMM::Def.new
 		model.name = node.name
-		model.body = node_to_model node.body
+		process_body(node,model)
 		model.onself = true
 		model
 	when 'BLOCKNODE'

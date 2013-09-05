@@ -209,6 +209,20 @@ class TestOperations < Test::Unit::TestCase
     assert_node r, RubyMM::Def, body: RubyMM.int(2), ensure_body: RubyMM.int(1)
   end
 
+  def test_def_on_self_with_block_and_ensure
+    code = "def self.with_deliveries(enabled = true, &block)
+      was_enabled = ActionMailer::Base.perform_deliveries
+      ActionMailer::Base.perform_deliveries = !!enabled
+      yield
+    ensure
+      ActionMailer::Base.perform_deliveries = was_enabled
+    end"
+    r = RubyMM.parse(code)
+    assert_node r, RubyMM::Def, name:'with_deliveries'
+    assert_not_nil r.ensure_body
+    assert_node r.ensure_body, RubyMM::VarAssignment
+  end
+
   def test_next
     r = RubyMM.parse('next')
     assert_node r, RubyMM::NextStatement
