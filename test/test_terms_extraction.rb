@@ -13,6 +13,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 		@userCustomField_model_node = Ruby.parse_code(read_test_data('user_custom_field.rb')) 
 		@statusTest_model_node = Ruby.parse_code(read_test_data('status_test.rb')) 
 		@issuesHelperTest_model_node = Ruby.parse_code(read_test_data('issues_helper_test.rb'))
+		@darcsAdapter_model_node = Ruby.parse_code(read_test_data('darcs_adapter.rb'))
 	end
 
 	def test_info_extraction_addCommentsPermissions_method_1
@@ -67,30 +68,136 @@ class TestTermsExtraction < Test::Unit::TestCase
 	def test_info_extraction_issuesHelperTest_method_1
 		m = @issuesHelperTest_model_node.contents[1].contents[32]
 		assert_node m,Def,{name: 'test_show_detail_relation_added_with_inexistant_issue'}
-		raise 'WRITE ME'
+		assert_map_equal(
+			{"9999"=>1,          # 
+				"inexistant"=>6, #
+				"issue"=>7,      #
+				"number"=>5,     #
+				"find"=>1, #
+				"by"=>1, #
+				"id"=>1, #
+				"assert"=>3, #
+				 "nil"=>1,  #
+				 "property"=>1, #
+				"relation"=>2, #
+				"prop_key"=>1, #
+				"label_precedes"=>1, #
+				"value"=>1, #
+				"journal"=>1, #
+				"detail"=>7, #
+				"new"=>1, #
+				"Precedes Issue #"=>1, #
+				"added"=>2, #
+				 "true"=>1, #
+				 "show"=>3, #
+				"equal"=>2, #
+				"<strong>Precedes</strong> <i>Issue #"=>1, #
+				"</i> added"=>1, #
+				"false"=>1, #
+				"test"=>1, #
+				"with"=>1}, #
+			InfoExtraction.terms_map(m))
 	end
 
 	def test_info_extraction_issuesHelperTest_method_2
 		m = @issuesHelperTest_model_node.contents[1].contents[34]
 		assert_node m,Def,{name: 'test_show_detail_relation_deleted'}
-		raise 'WRITE ME'
+		assert_map_equal(
+			{
+				"assert"=>2, #
+				 "match"=>1,  #
+				 "property"=>1, #
+				"relation"=>2, #
+				"prop_key"=>1, #
+				"label_precedes"=>1, #
+				"1"=>1, #
+				'old'=>1,#
+				"value"=>1, #
+				"journal"=>1, #
+				"detail"=>7, #
+				"new"=>1, #
+				"Precedes deleted (Bug #1: Can't print recipes)"=>1, #
+				"deleted"=>1, #
+				 "true"=>1, #
+				 "show"=>3, #
+				"equal"=>1, #
+				%q{<strong>Precedes</strong> deleted \(<i><a href="/issues/1" class=".+">Bug #1</a>: Can&#x27;t print recipes</i>\)}=>1, #
+				"false"=>1, #
+				"test"=>1 }, 
+			InfoExtraction.terms_map(m))
 	end
 
-	def test_info_extraction_issuesHelperTest_method_3
-		m = @issuesHelperTest_model_node.contents[1].contents[36]
-		assert_node m,Def,{name: 'test_show_detail_relation_deleted_should_not_disclose_issue_that_is_not_visible'}
-		raise 'WRITE ME'
+	def test_info_extraction_darcsAdapter_method_1
+		m = @darcsAdapter_model_node.contents[2].contents[0].contents[0].contents[0].contents[4]
+		assert_node m,Def,{name: 'info'}
+		assert_map_equal(
+			{
+				'info'=>2,
+				'rev'=>3,
+				'revisions'=>1,
+				'limit'=>1,
+				'1'=>1,
+				'new'=>1,
+				'root'=>1,
+				'url'=>2,
+				'lastrev'=>1,
+				'last'=>1
+			},InfoExtraction.terms_map(m))
 	end
 
-
-	 #  def test_show_detail_relation_added_with_inexistant_issue
-  #   inexistant_issue_number = 9999
-  #   assert_nil  Issue.find_by_id(inexistant_issue_number)
-  #   detail = JournalDetail.new(:property => 'relation',
-  #                              :prop_key => 'label_precedes',
-  #                              :value    => inexistant_issue_number)
-  #   assert_equal "Precedes Issue ##{inexistant_issue_number} added", show_detail(detail, true)
-  #   assert_equal "<strong>Precedes</strong> <i>Issue ##{inexistant_issue_number}</i> added", show_detail(detail, false)
-  # end
+	def test_info_extraction_darcsAdapter_method_2
+		m = @darcsAdapter_model_node.contents[2].contents[0].contents[0].contents[0].contents[5]
+		assert_node m,Def,{name: 'entries'}
+		assert_map_equal(
+			{
+				'entries'=>7,
+				'new'=>2,
+				'identifier'=>3,
+				'options'=>1,
+				'path'=>9,
+				'prefix'=>3,
+				'' => 2,
+				'/'=> 1,
+				'blank'=>2,
+				'class'=>2,
+				'client_version'=>1,
+				'above'=>1,
+				'2'=>2,
+				'0'=>2,
+				'url'=>2,
+				'.'=>1,
+				'cmd'=>4,
+				'sq_bin'=>1,
+				'annotate --repodir'=>1,
+				'shell_quote'=>3,
+				'--xml-output'=>1,
+				'--match'=>1,
+				'hash'=>1,
+				'shellout'=>1,
+				'io'=>2,
+				'doc'=>5,
+				'root'=>3,
+				'name'=>4,
+				'directory'=>2,
+				'element'=>3,
+				'elements'=>1,
+				'each'=>1,
+				'file'=>2,
+				'include'=>1,
+				'directory/*'=>1,
+				'rexml'=>1,
+				'document'=>1,
+				'entry'=>2,
+				'from'=>2,
+				'xml'=>2,
+				'?'=>2,
+				'exitstatus'=>1,
+				'compact'=>1,
+				'sort_by'=>1,
+				'<<'=>4,
+				'=='=>2,
+				'!='=>1
+			},InfoExtraction.terms_map(m))
+	end	
 
 end

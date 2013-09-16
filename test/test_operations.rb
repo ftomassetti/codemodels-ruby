@@ -7,6 +7,7 @@ class TestOperations < Test::Unit::TestCase
 
   include TestHelper
   include LightModels
+  include LightModels::Ruby
 
   def test_sum
     root = Ruby.parse('3+40')
@@ -181,14 +182,14 @@ class TestOperations < Test::Unit::TestCase
   def test_regex_matcher
     r = Ruby.parse('k =~ /^extra_/')
 
-    assert_node r, Ruby::RegexMatcher, regex: Ruby::RegExpLiteral.build('^extra_')
+    assert_node r, Ruby::RegexMatcher, regex: Ruby::StaticRegExpLiteral.build('^extra_')
     assert_node r.checked_value, Ruby::Call, name: 'k'
   end
 
   def test_regex_tryer
     r = Ruby.parse('/^extra_/ =~ k')
 
-    assert_node r, Ruby::RegexTryer, regex: Ruby::RegExpLiteral.build('^extra_')
+    assert_node r, Ruby::RegexTryer, regex: Ruby::StaticRegExpLiteral.build('^extra_')
     assert_node r.checked_value, Ruby::Call, name: 'k'
   end
 
@@ -400,5 +401,43 @@ class TestOperations < Test::Unit::TestCase
     r = Ruby.parse('m(1,2,*[],3,4)')
     assert_equal [Ruby.int(1),Ruby.int(2),splatted_array,Ruby.int(3),Ruby.int(4)],r.args
   end
+
+  def test_def_formal_args_with_default_value
+    code = %q{
+      def mymethod(a=1, b=nil, c={})
+      end
+    }   
+    r = Ruby.parse_code(code)
+    assert_node r,InstanceDef,name:'mymethod'
+    assert_equal 3,r.formal_args.count
+    assert_node r.formal_args[0],FormalArgument,name:'a',default_value:Ruby.int(1)
+    assert_node r.formal_args[1],FormalArgument,name:'b',default_value:NilLiteral.new
+    assert_node r.formal_args[2],FormalArgument,name:'c',default_value:HashLiteral.new
+  end
+
+  def test_def_formal_args_without_default_value
+    code = %q{
+      def mymethod(a, b, c)
+      end
+    }   
+    r = Ruby.parse_code(code)
+    assert_node r,InstanceDef,name:'mymethod'
+    assert_equal 3,r.formal_args.count
+    assert_node r.formal_args[0],FormalArgument,name:'a',default_value:nil
+    assert_node r.formal_args[1],FormalArgument,name:'b',default_value:nil
+    assert_node r.formal_args[2],FormalArgument,name:'c',default_value:nil
+  end
+
+  def test_def_formal_args_with_splat_at_end
+    code = %q{
+      def mymethod(a, *b)
+      end
+    }   
+    r = Ruby.parse_code(code)
+    assert_node r,InstanceDef,name:'mymethod'
+    assert_equal 2,r.formal_args.count
+    assert_node r.formal_args[0],FormalArgument,name:'a',default_value:nil
+    assert_node r.formal_args[1],FormalArgument,name:'b',default_value:nil
+  end  
 
 end

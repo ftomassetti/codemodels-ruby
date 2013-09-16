@@ -139,6 +139,35 @@ def self.process_body(node,model)
 	end
 end
 
+def self.process_formal_args(node,model)
+	#puts "\nArgs are: #{node.args}"
+
+	args = []
+	args_node = node.args
+	populate_from_list(args,args_node.pre) if args_node.pre
+	populate_from_list(args,args_node.optional) if args_node.optional
+	populate_from_list(args,args_node.rest) if args_node.rest
+	populate_from_list(args,args_node.post) if args_node.post
+	#puts "\tCollected args: #{args}"
+
+	args.each do |a| 
+		if a.is_a?(Argument)
+			fa = FormalArgument.new
+			fa.name = a.name
+			model.addFormal_args(fa)
+		elsif a.is_a?(FormalArgument)
+			if a.default_value.is_a? VarAssignment
+				a.default_value = a.default_value.value
+			end
+			model.addFormal_args(a)
+		else
+			raise "Unexpected #{a.class}"
+		end
+	end
+	#puts "\tFormal args: #{model.formal_args}"
+	#model.formal_args = args_to_model(my_args_flattener(node.args))
+end
+
 def self.node_to_model(node,parent_model=nil)
 	return nil if node==nil
 	#puts "#{node} #{node.node_type.name}"
@@ -208,7 +237,7 @@ def self.node_to_model(node,parent_model=nil)
  		model.value = true
  		model
  	when 'REGEXPNODE'
- 		model = Ruby::RegExpLiteral.new
+ 		model = Ruby::StaticRegExpLiteral.new
  		model.value = node.value
  		model
 
@@ -498,11 +527,13 @@ def self.node_to_model(node,parent_model=nil)
 	when 'DEFNNODE'
 		model = Ruby::InstanceDef.new
 		model.name = node.name
+		process_formal_args(node,model)
 		process_body(node,model)
 		model
 	when 'DEFSNODE'
 		model = Ruby::SelfDef.new
 		model.name = node.name
+		process_formal_args(node,model)
 		process_body(node,model)
 		model
 	when 'BLOCKNODE'
@@ -634,6 +665,11 @@ def self.node_to_model(node,parent_model=nil)
  		model = Ruby::ArrayLiteral.new
  		model.values = my_args_flattener(node)
  		model 		
+ 	when 'OPTARGNODE'
+ 		model = Ruby::FormalArgument.new
+ 		model.name = node.name
+ 		model.default_value = node_to_model(node.value)
+ 		model
 	else		
 		#n = node
 		#while n

@@ -98,11 +98,17 @@ module Ruby
 		contains_one_uni 'body',Value
 	end
 
+	class FormalArgument < RGen::MetamodelBuilder::MMBase
+		has_attr 'name',String
+		contains_one_uni 'default_value',Value
+	end
+
 	class Def < Value
 		has_attr 'name', String
 		contains_one_uni 'body', Value
 		contains_one_uni 'ensure_body', Value
 		contains_many_uni 'rescue_clauses',RescueClause
+		contains_many_uni 'formal_args', FormalArgument
 	end
 
 	class SelfDef < Def
@@ -143,11 +149,11 @@ module Ruby
 		has_attr 'value', Float
 	end
 
-	class RegExpLiteral < Literal
-		has_attr 'value', String				
+	class RegExpLiteral < Literal					
 	end
 
 	class StaticRegExpLiteral < RegExpLiteral
+		has_attr 'value', String
 	end
 
 	class DynamicRegExpLiteral < RegExpLiteral
@@ -165,8 +171,7 @@ module Ruby
 		IntLiteral.build(value)
 	end
 
-	class StringLiteral < Literal
-		has_attr 'value', String
+	class StringLiteral < Literal		
 	end
 
 	class DynamicStringLiteral < StringLiteral
@@ -174,6 +179,7 @@ module Ruby
 	end
 
 	class StaticStringLiteral < StringLiteral
+		has_attr 'value', String
 	end
 
 	class CmdLineStringLiteral < Literal
@@ -182,7 +188,7 @@ module Ruby
 	end
 
 	class DynamicSymbol < Literal
-		has_attr 'value', String
+		#has_attr 'value', String
 		contains_many_uni 'pieces', Value	
 	end
 

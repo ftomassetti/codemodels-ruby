@@ -59,7 +59,7 @@ module TestHelper
 		fail "Unexpected keys #{act.keys-exp.keys}. Actual map: #{act}" if (act.keys-exp.keys).count > 0
 		fail "Missing keys #{exp.keys-act.keys}. Actual map: #{act}" if (exp.keys-act.keys).count > 0
 		exp.each do |k,exp_v|
-			fail "For #{k} expected #{exp_v}, found #{act[k]}, model=#{model}" if act[k]!=exp_v
+			fail "For '#{k}' expected #{exp_v}, found #{act[k]}, model=#{model}" if act[k]!=exp_v
 		end
 	end
 
