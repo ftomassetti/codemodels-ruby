@@ -1,3 +1,5 @@
+require 'java-lightmodels'
+
 module LightModels
 
 module Ruby
@@ -45,19 +47,26 @@ end
 class RubySpecificInfoExtractionLogic
 	
 	def terms_containing_value?(value)
-		LightModels::Ruby::InfoExtraction.is_id_str(value)
+		::LightModels::Java::InfoExtraction.is_camel_case_str(value) || LightModels::Ruby::InfoExtraction.is_id_str(value)
 	end
 
 	def to_words(value)
-		LightModels::Ruby::InfoExtraction.id_to_words(value)
+		if ::LightModels::Java::InfoExtraction.is_camel_case_str(value)
+			::LightModels::Java::InfoExtraction.camel_to_words(value)
+		else
+			LightModels::Ruby::InfoExtraction.id_to_words(value)
+		end
 	end
 
 	def concat(a,b)
 		# if both the words are capitalized then do not insert the 
 		# underscore
-		if (a.capitalize==a) && (b.capitalize==b)
-			return a+b
-		end
+		#if (a.capitalize==a) && (b.capitalize==b)
+		#	return a+b
+		#end
+
+		# I use the underscore also for MyIdentifier so that I match
+		# my_identifier
 
 		a+'_'+b
 	end

@@ -10,6 +10,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 
 	def setup
 		@addCommentsPermissions_model_node = Ruby.parse_code(read_test_data('012_add_comments_permissions.rb'))
+		@userCustomField_model_node = Ruby.parse_code(read_test_data('user_custom_field.rb')) 
 	end
 
 	def test_info_extraction_addCommentsPermissions_method_1
@@ -31,6 +32,21 @@ class TestTermsExtraction < Test::Unit::TestCase
 			{'down'=>1, 'permission'=>2,'where'=>2,'first'=>2,'destroy'=>3,
 				'controller=? and action=?'=>2,'news'=>2,
 				'add'=>1,'comment'=>2}, 
+			InfoExtraction.terms_map(m))
+	end
+
+	def test_info_extraction_userCustomField_method_1
+		m = @userCustomField_model_node.contents[0]
+		assert_node m,Def,{name: 'type_name'}
+		assert_map_equal(
+			{'type_name'=>1,'label'=>1,'user'=>1,'plural'=>1}, 
+			InfoExtraction.terms_map(m))
+	end
+
+	def test_info_extraction_userCustomField_class
+		m = @userCustomField_model_node
+		assert_map_equal(
+			{'type_name'=>1,'label'=>1,'user'=>2,'plural'=>1,'custom_field'=>2}, 
 			InfoExtraction.terms_map(m))
 	end
 

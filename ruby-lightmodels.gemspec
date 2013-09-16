@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency('emf_jruby')
   s.add_dependency('jruby-parser', '=0.5.0')
   s.add_dependency('lightmodels')
+  s.add_dependency('java-lightmodels')
   s.add_dependency('rgen')
 
   s.add_development_dependency "bundler", "~> 1.3"
