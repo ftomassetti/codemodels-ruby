@@ -18,7 +18,7 @@ class TestOperations < Test::Unit::TestCase
     assert_equal 4, root.contents.count
     assert Ruby.is_call(root.contents[0],'require',[Ruby::string('helper')])
     assert Ruby.is_call(root.contents[1],'require',[Ruby::string('test/unit')])
-    assert Ruby.is_call(root.contents[2],'require',[Ruby::string('Ruby')])
+    assert Ruby.is_call(root.contents[2],'require',[Ruby::string('ruby-lightmodels')])
     def_of_TestOperations = root.contents[3]
     
     # class TestOperations

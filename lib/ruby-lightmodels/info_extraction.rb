@@ -42,6 +42,22 @@ def self.id_to_words(id)
 	end    
 end
 
+class RubySpecificInfoExtractionLogic
+	
+	def terms_containing_value?(value)
+		LightModels::Ruby::InfoExtraction.is_id_str(value)
+	end
+
+	def to_words(value)
+		LightModels::Ruby::InfoExtraction.id_to_words(value)
+	end
+
+end
+
+def self.terms_map(model_node,context=nil)
+	LightModels::InfoExtraction.terms_map(RubySpecificInfoExtractionLogic.new,model_node,context)
+end
+
 end
 
 end
