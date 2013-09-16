@@ -11,7 +11,7 @@ class TestOperations < Test::Unit::TestCase
 
   def test_load_complex_file
 
-    content = IO.read(File.dirname(__FILE__)+'/example_of_complex_class.rb.txt')
+    content = IO.read(File.dirname(__FILE__)+'/data/example_of_complex_class.rb')
     root = Ruby.parse(content)
 
     assert_right_class root, Ruby::Block
