@@ -3,8 +3,8 @@ Dir[curr_dir+"/jars/*.jar"].each do |jar|
 	require jar
 end
 
-require 'rubylm/metamodel'
-require 'rubylm/query'
-require 'rubylm/parser'
-require 'rubylm/model_building'
-require 'rubylm/info_extraction'
+require 'ruby-lightmodels/metamodel'
+require 'ruby-lightmodels/query'
+require 'ruby-lightmodels/parser'
+require 'ruby-lightmodels/model_building'
+require 'ruby-lightmodels/info_extraction'

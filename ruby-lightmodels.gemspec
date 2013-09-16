@@ -1,3 +1,7 @@
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
 Gem::Specification.new do |s|
   s.platform    = 'java'
   s.name        = 'ruby-lightmodels'
@@ -8,9 +12,20 @@ Gem::Specification.new do |s|
   s.authors     = ["Federico Tomassetti"]
   s.email       = 'f.tomassetti@gmail.com'
   s.homepage    = 'http://federico-tomassetti.it'
-  s.files       = Dir['./lib/*.rb'] + Dir['./lib/rubylm/*.rb'] + Dir['./lib/jars/*.jar']
+  s.license     = "APACHE2"
+
+  s.files         = `git ls-files`.split($/)
+  s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  s.test_files    = s.files.grep(%r{^(test|spec|features)/})
+  s.require_paths = ["lib"]
+
   s.add_dependency('json')
   s.add_dependency('emf_jruby')
   s.add_dependency('jruby-parser', '=0.5.0')
   s.add_dependency('lightmodels')
+  s.add_dependency('rgen')
+
+  s.add_development_dependency "bundler", "~> 1.3"
+  s.add_development_dependency "rake"
+  s.add_development_dependency "rubygems-tasks"
 end

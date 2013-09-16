@@ -1,5 +1,5 @@
 require 'jruby-parser'
-require 'rubylm/metamodel'
+require 'ruby-lightmodels/metamodel'
 require 'emf_jruby'
 
 java_import org.jrubyparser.ast.Node
