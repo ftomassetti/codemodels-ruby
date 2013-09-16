@@ -12,6 +12,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 		@addCommentsPermissions_model_node = Ruby.parse_code(read_test_data('012_add_comments_permissions.rb'))
 		@userCustomField_model_node = Ruby.parse_code(read_test_data('user_custom_field.rb')) 
 		@statusTest_model_node = Ruby.parse_code(read_test_data('status_test.rb')) 
+		@issuesHelperTest_model_node = Ruby.parse_code(read_test_data('issues_helper_test.rb'))
 	end
 
 	def test_info_extraction_addCommentsPermissions_method_1
@@ -62,5 +63,34 @@ class TestTermsExtraction < Test::Unit::TestCase
 			'[]'=>5,'!'=>2}, 
 			InfoExtraction.terms_map(m))
 	end
+
+	def test_info_extraction_issuesHelperTest_method_1
+		m = @issuesHelperTest_model_node.contents[1].contents[32]
+		assert_node m,Def,{name: 'test_show_detail_relation_added_with_inexistant_issue'}
+		raise 'WRITE ME'
+	end
+
+	def test_info_extraction_issuesHelperTest_method_2
+		m = @issuesHelperTest_model_node.contents[1].contents[34]
+		assert_node m,Def,{name: 'test_show_detail_relation_deleted'}
+		raise 'WRITE ME'
+	end
+
+	def test_info_extraction_issuesHelperTest_method_3
+		m = @issuesHelperTest_model_node.contents[1].contents[36]
+		assert_node m,Def,{name: 'test_show_detail_relation_deleted_should_not_disclose_issue_that_is_not_visible'}
+		raise 'WRITE ME'
+	end
+
+
+	 #  def test_show_detail_relation_added_with_inexistant_issue
+  #   inexistant_issue_number = 9999
+  #   assert_nil  Issue.find_by_id(inexistant_issue_number)
+  #   detail = JournalDetail.new(:property => 'relation',
+  #                              :prop_key => 'label_precedes',
+  #                              :value    => inexistant_issue_number)
+  #   assert_equal "Precedes Issue ##{inexistant_issue_number} added", show_detail(detail, true)
+  #   assert_equal "<strong>Precedes</strong> <i>Issue ##{inexistant_issue_number}</i> added", show_detail(detail, false)
+  # end
 
 end
