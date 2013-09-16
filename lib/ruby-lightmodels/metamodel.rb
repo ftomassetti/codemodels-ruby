@@ -1,6 +1,8 @@
 require 'rgen/metamodel_builder'
 
-module RubyMM
+module LightModels
+
+module Ruby
 
 	class Value < RGen::MetamodelBuilder::MMBase
 	end
@@ -442,5 +444,7 @@ module RubyMM
 		contains_one_uni 'assigned',Value
 		contains_one_uni 'value', Value
 	end
+
+end
 
 end

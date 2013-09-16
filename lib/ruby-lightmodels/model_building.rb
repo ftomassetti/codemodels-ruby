@@ -1,6 +1,8 @@
 require 'lightmodels'
 
-module RubyMM
+module LightModels
+
+module Ruby
 
 def self.handle_ruby_models_in_dir(src,error_handler=nil,model_handler)
 	LightModels::ModelBuilding.handle_models_in_dir(src,'rb',error_handler,model_handler) do |src|
@@ -21,6 +23,8 @@ def self.generate_ruby_model_per_file(src,dest,model_ext='rb.lm',max_nesting=500
 		root = RubyMM.parse_file(src)
 		LightModels::Serialization.rgenobject_to_model(root)
 	end
+end
+
 end
 
 end

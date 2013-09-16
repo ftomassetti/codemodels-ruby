@@ -1,4 +1,6 @@
-module RubyMM
+module LightModels
+
+module Ruby
 
 module InfoExtraction
 
@@ -38,6 +40,8 @@ def self.id_to_words(id)
 	else
 		id.split /[_!?]/
 	end    
+end
+
 end
 
 end

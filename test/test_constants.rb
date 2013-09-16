@@ -6,11 +6,12 @@ require 'ruby-lightmodels'
 class TestConstants < Test::Unit::TestCase
 
 	include TestHelper
+	include LightModels
 
 	def test_const_decl
-		root = RubyMM.parse("MODULE_NAME = 'test'")
-		assert_node root,RubyMM::ConstantDecl,
-		name:'MODULE_NAME', value: RubyMM.string('test')
+		root = Ruby.parse("MODULE_NAME = 'test'")
+		assert_node root,Ruby::ConstantDecl,
+		name:'MODULE_NAME', value: Ruby.string('test')
 	end
 
 end

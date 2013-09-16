@@ -13,7 +13,9 @@ java_import org.jrubyparser.ast.ArrayNode
 
 java_import org.jrubyparser.util.StaticAnalyzerHelper
 
-module RubyMM
+module LightModels
+
+module Ruby
 
 class << self
 	attr_accessor :skip_unknown_node
@@ -66,7 +68,7 @@ end
 def self.body_node_to_contents(body_node,container_node)
 	body = node_to_model(body_node)
 	if body
-		if body.is_a? RubyMM::Block	
+		if body.is_a? Ruby::Block	
 			body.contents.each do |el|
 				container_node.addContents(el)
 			end
@@ -94,7 +96,7 @@ def self.my_args_flattener(args_node)
 		if args_node.secondNode.is_a?(ArrayNode)
 			res.concat(my_args_flattener(args_node.secondNode))
 		else
-			res << RubyMM.splat(node_to_model(args_node.secondNode))
+			res << Ruby.splat(node_to_model(args_node.secondNode))
 		end
 		res
 	elsif args_node.is_a? ListNode
@@ -120,7 +122,7 @@ def self.process_body(node,model)
 		model.body = node_to_model(rescue_node.body)
  		rescue_body_node = rescue_node.rescue
  		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
- 		rescue_clause_model = RubyMM::RescueClause.new
+ 		rescue_clause_model = Ruby::RescueClause.new
  		rescue_clause_model.body = node_to_model(rescue_body_node.body)
  		model.addRescue_clauses( rescue_clause_model )
  	elsif node.body.node_type.name=='ENSURENODE'
@@ -143,20 +145,20 @@ def self.node_to_model(node,parent_model=nil)
 	## Literals
 	##
 	when 'FLOATNODE'
-		model = RubyMM::FloatLiteral.new
+		model = Ruby::FloatLiteral.new
 		model.value = node.value
 		model
 	when 'FIXNUMNODE'
-		model = RubyMM::IntLiteral.new
+		model = Ruby::IntLiteral.new
 		model.value = node.value
 		model
 	when 'STRNODE'
-		model = RubyMM::StringLiteral.new
+		model = Ruby::StringLiteral.new
 		model.value = node.value
 		model.dynamic = false
 		model
 	when 'DSTRNODE'
-		model = RubyMM::StringLiteral.new
+		model = Ruby::StringLiteral.new
 		#model.value = node.value
 		model.dynamic = true
 		for i in 0..(node.size-1)
@@ -164,19 +166,19 @@ def self.node_to_model(node,parent_model=nil)
 		end
 		model
 	when 'DXSTRNODE'
-		model = RubyMM::CmdLineStringLiteral.new
+		model = Ruby::CmdLineStringLiteral.new
 		for i in 0..(node.size-1)
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model	
 	when 'DSYMBOLNODE'
-		model = RubyMM::DynamicSymbol.new
+		model = Ruby::DynamicSymbol.new
 		for i in 0..(node.size-1)
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model
 	when 'DREGEXPNODE'
-		model = RubyMM::RegExpLiteral.new
+		model = Ruby::RegExpLiteral.new
 		#model.value = node.value
 		model.dynamic = true
 		for i in 0..(node.size-1)
@@ -193,18 +195,18 @@ def self.node_to_model(node,parent_model=nil)
 			return nil
 		else
 			#puts "NIL for #{node}"
-			RubyMM::NilLiteral.new
+			Ruby::NilLiteral.new
 		end
  	when 'FALSENODE'
- 		model = RubyMM::BooleanLiteral.new
+ 		model = Ruby::BooleanLiteral.new
  		model.value = false
  		model
  	when 'TRUENODE'
- 		model = RubyMM::BooleanLiteral.new
+ 		model = Ruby::BooleanLiteral.new
  		model.value = true
  		model
  	when 'REGEXPNODE'
- 		model = RubyMM::RegExpLiteral.new
+ 		model = Ruby::RegExpLiteral.new
  		model.value = node.value
  		model
 
@@ -212,49 +214,49 @@ def self.node_to_model(node,parent_model=nil)
  	### Variable accesses
  	###
  	when 'LOCALVARNODE'
- 		model = RubyMM::LocalVarAccess.new
+ 		model = Ruby::LocalVarAccess.new
  		model.name = node.name
  		model
  	when 'DVARNODE'
- 		model = RubyMM::BlockVarAccess.new
+ 		model = Ruby::BlockVarAccess.new
  		model.name = node.name
  		model
  	when 'GLOBALVARNODE'
- 		model = RubyMM::GlobalVarAccess.new
+ 		model = Ruby::GlobalVarAccess.new
  		model.name = get_var_name_depending_on_parser_version(node)
  		model
  	when 'CLASSVARNODE'
- 		model = RubyMM::ClassVarAccess.new
+ 		model = Ruby::ClassVarAccess.new
  		model.name = get_var_name_depending_on_parser_version(node,2)
  		model
  	when 'INSTVARNODE'
- 		RubyMM::InstanceVarAccess.build get_var_name_depending_on_parser_version(node) 	
+ 		Ruby::InstanceVarAccess.build get_var_name_depending_on_parser_version(node) 	
 
  	###
  	### Variable Assignments
  	###
   	when 'LOCALASGNNODE'
- 		model = RubyMM::LocalVarAssignment.new
+ 		model = Ruby::LocalVarAssignment.new
  		model.name_assigned = node.name
  		model.value = node_to_model(node.value)
  		model		
   	when 'DASGNNODE'
- 		model = RubyMM::BlockVarAssignment.new
+ 		model = Ruby::BlockVarAssignment.new
  		model.name_assigned = node.name
  		model.value = node_to_model(node.value)
  		model	 		
  	when 'GLOBALASGNNODE'
- 		model = RubyMM::GlobalVarAssignment.new
+ 		model = Ruby::GlobalVarAssignment.new
  		model.name_assigned = get_var_name_depending_on_parser_version(node)
  		model.value = node_to_model(node.value)
  		model 		
  	when 'CLASSVARASGNNODE'
- 		model = RubyMM::ClassVarAssignment.new
+ 		model = Ruby::ClassVarAssignment.new
  		model.name_assigned = get_var_name_depending_on_parser_version(node,2)
  		model.value = node_to_model(node.value)
  		model 		
  	when 'INSTASGNNODE'
- 		model = RubyMM::InstanceVarAssignment.new
+ 		model = Ruby::InstanceVarAssignment.new
  		model.name_assigned = get_var_name_depending_on_parser_version(node)
  		model.value = node_to_model(node.value)
  		model
@@ -264,14 +266,14 @@ def self.node_to_model(node,parent_model=nil)
  	###
 
  	when 'OPELEMENTASGNNODE'
- 		model = RubyMM::ElementOperationAssignment.new
+ 		model = Ruby::ElementOperationAssignment.new
  		model.container = node_to_model(node.receiver)
  		model.element = node_to_model(node.args[0])
  		model.value = node_to_model(node.value)
  		model.operator = node.operator_name
  		model
  	when 'ATTRASSIGNNODE'
- 		model = RubyMM::ElementAssignment.new
+ 		model = Ruby::ElementAssignment.new
  		model.container = node_to_model(node.receiver)
  		if node.args # apparently it can be null...
  			model.element = node_to_model(node.args[0])
@@ -279,7 +281,7 @@ def self.node_to_model(node,parent_model=nil)
  		end
  		model
  	when 'OPASGNORNODE'
- 		model = RubyMM::OrAssignment.new
+ 		model = Ruby::OrAssignment.new
  		# assigned : from access to variable
  		# value    : from Assignment to value 		
  		model.assigned = node_to_model(node.first)
@@ -287,7 +289,7 @@ def self.node_to_model(node,parent_model=nil)
  		model
  	when 'MULTIPLEASGNNODE'
  		# TODO consider asterisk
- 		model = RubyMM::MultipleAssignment.new
+ 		model = Ruby::MultipleAssignment.new
  		if node.pre
  			for i in 0..(node.pre.count-1)
  				model.addAssignments( node_to_model(node.pre.get(i)) )
@@ -303,7 +305,7 @@ def self.node_to_model(node,parent_model=nil)
  		model
  	when 'MULTIPLEASGN19NODE'
   		# TODO consider asterisk
- 		model = RubyMM::MultipleAssignment.new
+ 		model = Ruby::MultipleAssignment.new
  		if node.pre
  			for i in 0..(node.pre.count-1)
  				model.addAssignments( node_to_model(node.pre.get(i)) )
@@ -318,7 +320,7 @@ def self.node_to_model(node,parent_model=nil)
  		# TODO consider rest and post!
  		model
  	when 'OPASGNNODE'
- 		model = RubyMM::OperatorAssignment.new
+ 		model = Ruby::OperatorAssignment.new
  		model.value = node_to_model(node.valueNode)
  		model.container = node_to_model(node.receiverNode)
  		model.element_name = node.variable_name
@@ -330,7 +332,7 @@ def self.node_to_model(node,parent_model=nil)
  	###
 
  	when 'CONSTDECLNODE'
- 		model = RubyMM::ConstantDecl.new
+ 		model = Ruby::ConstantDecl.new
  		model.name = node.name
  		model.value = node_to_model(node.value)
  		model
@@ -340,12 +342,12 @@ def self.node_to_model(node,parent_model=nil)
  	###
 
  	when 'ALIASNODE'
- 		model = RubyMM::AliasStatement.new
+ 		model = Ruby::AliasStatement.new
  		model.old_name = node_to_model(node.oldName)
  		model.new_name = node_to_model(node.newName)
  		model
  	when 'CASENODE'
- 		model = RubyMM::CaseStatement.new
+ 		model = Ruby::CaseStatement.new
  		for ci in 0..(node.cases.count-1)
  			c = node.cases[ci]
  			model.addWhen_clauses( node_to_model(c) )
@@ -353,34 +355,34 @@ def self.node_to_model(node,parent_model=nil)
  		model.else_body = node_to_model(node.else)
  		model
  	when 'WHENNODE'
- 		model = RubyMM::WhenClause.new
+ 		model = Ruby::WhenClause.new
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.expression)
  		model
  	when 'UNDEFNODE'
- 		model = RubyMM::UndefStatement.new
+ 		model = Ruby::UndefStatement.new
  		model.name = node_to_model(node.name)
  		model
  	when 'WHILENODE'
- 		model = RubyMM::WhileStatement.new
+ 		model = Ruby::WhileStatement.new
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.condition)
  		model
  	when 'FORNODE'
- 		model = RubyMM::ForStatement.new
+ 		model = Ruby::ForStatement.new
  		model.body = node_to_model(node.body)
  		model.collection = node_to_model(node.iter)
  		model.iterator = node_to_model(node.var)
  		model 		
  	when 'BREAKNODE'
- 		RubyMM::BreakStatement.new
+ 		Ruby::BreakStatement.new
  	when 'UNTILNODE'
- 		model = RubyMM::UntilStatement.new
+ 		model = Ruby::UntilStatement.new
  		model.body = node_to_model(node.body)
  		model.condition = node_to_model(node.condition)
  		model 		
  	when 'RESCUENODE'
- 		model = RubyMM::RescueStatement.new
+ 		model = Ruby::RescueStatement.new
  		model.body = node_to_model(node.body)
  		model.value = node_to_model(node.rescueNode.body)
  		model
@@ -390,45 +392,45 @@ def self.node_to_model(node,parent_model=nil)
  	###
 
  	when 'NTHREFNODE'
- 		RubyMM::NthGroupReference.build(node.matchNumber)
+ 		Ruby::NthGroupReference.build(node.matchNumber)
  	when 'YIELDNODE'
- 		RubyMM::YieldStatement.new
+ 		Ruby::YieldStatement.new
 	when 'NEXTNODE'
- 		RubyMM::NextStatement.new 		
+ 		Ruby::NextStatement.new 		
  	when 'COLON3NODE'
- 		model = RubyMM::GlobalScopeReference.new
+ 		model = Ruby::GlobalScopeReference.new
  		model.name = node.name
  		model
  	when 'DOTNODE'
- 		model = RubyMM::Range.new
+ 		model = Ruby::Range.new
  		model.lower = node_to_model(node.beginNode)
  		model.upper = node_to_model(node.endNode)
  		model
  	when 'MATCH2NODE'
- 		model = RubyMM::RegexTryer.new
+ 		model = Ruby::RegexTryer.new
  		model.checked_value = node_to_model(node.value)
  		model.regex = node_to_model(node.receiver)
  		model 		
  	when 'MATCH3NODE'
- 		model = RubyMM::RegexMatcher.new
+ 		model = Ruby::RegexMatcher.new
  		model.checked_value = node_to_model(node.value)
  		model.regex = node_to_model(node.receiver)
  		model
  	when 'LITERALNODE'
- 		model = RubyMM::LiteralReference.new
+ 		model = Ruby::LiteralReference.new
  		model.value = node.name
  		model
  	when 'SELFNODE'
- 		model = RubyMM::Self.new
+ 		model = Ruby::Self.new
  		model
  	when 'ZSUPERNODE'
- 		model = RubyMM::CallToSuper.new
+ 		model = Ruby::CallToSuper.new
  		if node.iter
 			model.block_arg = node_to_model(node.iter)
 		end
  		model 		
  	when 'SUPERNODE'
- 		model = RubyMM::SuperCall.new
+ 		model = Ruby::SuperCall.new
  	
  		if node.args.node_type.name == 'BLOCKPASSNODE'
 			model.block_arg = node_to_model(node.args)
@@ -447,7 +449,7 @@ def self.node_to_model(node,parent_model=nil)
 
  		model 		
 	when 'CALLNODE'
-		model = RubyMM::Call.new
+		model = Ruby::Call.new
 		model.name = node.name
 		model.receiver = node_to_model node.receiver
 		
@@ -469,14 +471,14 @@ def self.node_to_model(node,parent_model=nil)
 		model.implicit_receiver = false
 		model
 	when 'VCALLNODE'
-		model = RubyMM::Call.new
+		model = Ruby::Call.new
 		model.name = node.name
 		#model.receiver = node_to_model node.receiver
 		#model.args = args_to_model node.args
 		model.implicit_receiver = false
 		model
 	when 'FCALLNODE'
-		model = RubyMM::Call.new
+		model = Ruby::Call.new
 		model.name = node.name
 
 		if node.args.node_type.name == 'BLOCKPASSNODE'
@@ -497,19 +499,19 @@ def self.node_to_model(node,parent_model=nil)
 		model.implicit_receiver = true
 		model		
 	when 'DEFNNODE'
-		model = RubyMM::Def.new
+		model = Ruby::Def.new
 		model.name = node.name
 		process_body(node,model)
 		model.onself = false
 		model
 	when 'DEFSNODE'
-		model = RubyMM::Def.new
+		model = Ruby::Def.new
 		model.name = node.name
 		process_body(node,model)
 		model.onself = true
 		model
 	when 'BLOCKNODE'
-		model = RubyMM::Block.new		
+		model = Ruby::Block.new		
 		for i in 0..(node.size-1)
 			content_at_i = node_to_model(node.get i)
 			#puts "Adding to contents #{content_at_i}" 
@@ -518,62 +520,62 @@ def self.node_to_model(node,parent_model=nil)
 		end
 		model
 	when 'BACKREFNODE'
-		RubyMM::BackReference.new
+		Ruby::BackReference.new
 	when 'EVSTRNODE'
 		node_to_model(node.body)
 	when 'CLASSNODE'
-		model = RubyMM::ClassDecl.new
+		model = Ruby::ClassDecl.new
 		model.defname = node_to_model(node.getCPath)
 		model.super_class = node_to_model(node.super)
 		body_node_to_contents(node.body_node,model)
 		model
 	when 'SCLASSNODE'
-		model = RubyMM::SingletonClassDecl.new
+		model = Ruby::SingletonClassDecl.new
 		model.object = node_to_model(node.receiver)
 		body_node_to_contents(node.body_node,model)
 		model		
 	when 'MODULENODE'
-		model = RubyMM::ModuleDecl.new
+		model = Ruby::ModuleDecl.new
 		model.defname = node_to_model(node.getCPath)
 		body_node_to_contents(node.body_node,model)
 		model
 	when 'COLON2NODE'
-		model = RubyMM::Constant.new
+		model = Ruby::Constant.new
 		model.name = node.name
 		model.container = node_to_model(node.left_node)
  		model
  	when 'SYMBOLNODE'
- 		model = RubyMM::Symbol.new
+ 		model = Ruby::Symbol.new
  		model.name = node.name
  		model
  	when 'CONSTNODE'
- 		model = RubyMM::Constant.new
+ 		model = Ruby::Constant.new
  		model.name = node.name
  		model
  	when 'IFNODE'
- 		model = RubyMM::IfStatement.new
+ 		model = Ruby::IfStatement.new
  		model.condition = node_to_model(node.condition)
  		model.then_body = node_to_model(node.then_body)  		
  		model.else_body = node_to_model(node.else_body)
  		model 		
  	when 'HASHNODE'
- 		model = RubyMM::HashLiteral.new
+ 		model = Ruby::HashLiteral.new
  		count = node.get_list_node.count / 2
  		for i in 0..(count-1)
  			k_node = node.get_list_node[i*2]
  			k = node_to_model(k_node)
  			v_node = node.get_list_node[i*2 +1]
  			v = node_to_model(v_node)
- 			pair = RubyMM::HashPair.build key: k, value: v
+ 			pair = Ruby::HashPair.build key: k, value: v
  			model.addPairs(pair)
  		end
  		model
  	when 'DEFINEDNODE'
- 		model = RubyMM::IsDefined.new
+ 		model = Ruby::IsDefined.new
  		model.value = node_to_model(node.expression)
  		model
  	when 'ARRAYNODE'
- 		model = RubyMM::ArrayLiteral.new
+ 		model = Ruby::ArrayLiteral.new
  		for i in 0..(node.count-1)
  			v_node = node[i]
  			v = node_to_model(v_node)
@@ -581,60 +583,60 @@ def self.node_to_model(node,parent_model=nil)
  		end
  		model
  	when 'SPLATNODE'
- 		model = RubyMM::Splat.new
+ 		model = Ruby::Splat.new
  		model.splatted = node_to_model(node.value)
  		model
  	when 'UNARYCALLNODE'
- 		model = RubyMM::UnaryOperation.new
+ 		model = Ruby::UnaryOperation.new
  		model.value = node_to_model(node.receiver)
  		model.operator_name = node.lexical_name
  		model
  	when 'ZARRAYNODE'
- 		RubyMM::ArrayLiteral.new
+ 		Ruby::ArrayLiteral.new
  	when 'RETRYNODE'
- 		RubyMM::RetryStatement.new
+ 		Ruby::RetryStatement.new
  	when 'BEGINNODE'
- 		model = RubyMM::BeginEndBlock.new
+ 		model = Ruby::BeginEndBlock.new
  		process_body(node,model)
  		model
  	when 'RETURNNODE'
- 		model = RubyMM::Return.new
+ 		model = Ruby::Return.new
  		model.value = node_to_model(node.value)
  		model
  	when 'ANDNODE'
- 		model = RubyMM::AndOperator.new
+ 		model = Ruby::AndOperator.new
  		model.left = node_to_model(node.first)
  		model.right = node_to_model(node.second)
  		model
  	when 'ORNODE'
- 		model = RubyMM::OrOperator.new
+ 		model = Ruby::OrOperator.new
  		model.left = node_to_model(node.first)
  		model.right = node_to_model(node.second)
  		model
  	when 'ITERNODE'
- 		model = RubyMM::CodeBlock.new
+ 		model = Ruby::CodeBlock.new
  		model.args = clean_args(args_to_model(node.var))
  		model.body = node_to_model(node.body)
  		model
  	when 'ARGUMENTNODE'
- 		model = RubyMM::Argument.new
+ 		model = Ruby::Argument.new
  		model.name = node.name
  		model
  	when 'RESTARG'
- 		model = RubyMM::Argument.new
+ 		model = Ruby::Argument.new
  		model.name = node.name
  		model 		
  	when 'BLOCKPASSNODE'
- 		model = RubyMM::BlockReference.new
+ 		model = Ruby::BlockReference.new
  		#raise ParsingError.new(node,"Unexpected something that is not a symbol but a #{node.body}") unless node.body.is_a? SymbolNode
  		model.value = node_to_model(node.body)
  		model
  	when 'ARGSCATNODE'
- 		model = RubyMM::ArrayLiteral.new
+ 		model = Ruby::ArrayLiteral.new
  		model.values = my_args_flattener(node)
  		model
  	when 'ARGSPUSHNODE'
- 		model = RubyMM::ArrayLiteral.new
+ 		model = Ruby::ArrayLiteral.new
  		model.values = my_args_flattener(node)
  		model 		
 	else		
@@ -649,7 +651,7 @@ def self.node_to_model(node,parent_model=nil)
 end
 
 def self.unknown_node_type_found(node)
-	if RubyMM.skip_unknown_node
+	if Ruby.skip_unknown_node
 		puts "skipping #{node.node_type.name} at #{node.position}..."
 	else
 		raise UnknownNodeType.new(node)
@@ -668,9 +670,9 @@ end
 
 def self.clean_args(args)
 	for i in 0..(args.count-1) 
-		if args[i].is_a? RubyMM::MultipleAssignment
+		if args[i].is_a? Ruby::MultipleAssignment
 			old = args[i]
-			args[i] = RubyMM::SplittedArgument.new
+			args[i] = Ruby::SplittedArgument.new
 			old.assignments.each {|a| args[i].names = args[i].names << a.name_assigned}
 		end
 	end
@@ -704,6 +706,8 @@ def self.args_to_model(args_node)
 	else
 		raise UnknownNodeType.new(args_node,'in args')
 	end
+end
+
 end
 
 end
