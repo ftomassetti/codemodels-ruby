@@ -7,7 +7,7 @@ module Ruby
 module InfoExtraction
 
 def self.is_id_str(s)
-	not s.index /[^A-Za-z0-9_!?]/
+	(not s.index /[^A-Za-z0-9_!?]/) && (s.index /[A-Za-z]/)
 end
 
 def self.id_to_words(id)
@@ -47,15 +47,22 @@ end
 class RubySpecificInfoExtractionLogic
 	
 	def terms_containing_value?(value)
-		::LightModels::Java::InfoExtraction.is_camel_case_str(value) || LightModels::Ruby::InfoExtraction.is_id_str(value)
+		res = ::LightModels::Java::InfoExtraction.is_camel_case_str(value) || LightModels::Ruby::InfoExtraction.is_id_str(value)
+		#puts "Contains terms? '#{value}' : #{res} #{::LightModels::Java::InfoExtraction.is_camel_case_str(value)} #{LightModels::Ruby::InfoExtraction.is_id_str(value)}"
+		res
 	end
 
 	def to_words(value)
 		if ::LightModels::Java::InfoExtraction.is_camel_case_str(value)
-			::LightModels::Java::InfoExtraction.camel_to_words(value)
+			res = ::LightModels::Java::InfoExtraction.camel_to_words(value)
+			res.each {|v| raise "Camel case to words produced a nil" if v==nil}
+			raise "No words found using the camel case to words" if res.count==0
 		else
-			LightModels::Ruby::InfoExtraction.id_to_words(value)
-		end
+			res = LightModels::Ruby::InfoExtraction.id_to_words(value)
+			res.each {|v| raise "Id to words produced a nil" if v==nil}
+			raise "No words found using the id to words on '#{value}'" if res.count==0
+		end		
+		res
 	end
 
 	def concat(a,b)
