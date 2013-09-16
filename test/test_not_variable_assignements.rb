@@ -11,7 +11,7 @@ class TestNotVariableAssignment < Test::Unit::TestCase
   def test_element_assignment
     root = Ruby.parse('models[1] = 2')
     assert_node root,Ruby::ElementAssignment,
-        container: Ruby::Call.build(name:'models',implicit_receiver:false),
+        container: Ruby::ExplicitReceiverCall.build(name:'models'),
         element: Ruby.int(1),
         value: Ruby.int(2)
   end
@@ -19,7 +19,7 @@ class TestNotVariableAssignment < Test::Unit::TestCase
   def test_element_plus_assignment
     root = Ruby.parse('models[1] += 2')
     assert_node root,Ruby::ElementOperationAssignment,
-        container: Ruby::Call.build(name:'models',implicit_receiver:false),
+        container: Ruby::ExplicitReceiverCall.build(name:'models'),
         element: Ruby.int(1),
         value: Ruby.int(2),
         operator:'+'
@@ -28,7 +28,7 @@ class TestNotVariableAssignment < Test::Unit::TestCase
   def test_element_minus_assignment
     root = Ruby.parse('models[1] -= 2')
     assert_node root,Ruby::ElementOperationAssignment,
-        container: Ruby::Call.build(name:'models',implicit_receiver:false),
+        container: Ruby::ExplicitReceiverCall.build(name:'models'),
         element: Ruby.int(1),
         value: Ruby.int(2),
         operator:'-'
@@ -37,7 +37,7 @@ class TestNotVariableAssignment < Test::Unit::TestCase
   def test_element_mul_assignment
     root = Ruby.parse('models[1] *= 2')
     assert_node root,Ruby::ElementOperationAssignment,
-        container: Ruby::Call.build(name:'models',implicit_receiver:false),
+        container: Ruby::ExplicitReceiverCall.build(name:'models'),
         element: Ruby.int(1),
         value: Ruby.int(2),
         operator:'*'
@@ -46,7 +46,7 @@ class TestNotVariableAssignment < Test::Unit::TestCase
    def test_element_div_assignment
     root = Ruby.parse('models[1] /= 2')
     assert_node root,Ruby::ElementOperationAssignment,
-        container: Ruby::Call.build(name:'models',implicit_receiver:false),
+        container: Ruby::ExplicitReceiverCall.build(name:'models'),
         element: Ruby.int(1),
         value: Ruby.int(2),
         operator:'/'

@@ -52,6 +52,15 @@ class RubySpecificInfoExtractionLogic
 		LightModels::Ruby::InfoExtraction.id_to_words(value)
 	end
 
+	def concat(a,b)
+		# if both the words are capitalized then do not insert the 
+		# underscore
+		if (a.capitalize==a) && (b.capitalize==b)
+			return a+b
+		end
+
+		a+'_'+b
+	end
 end
 
 def self.terms_map(model_node,context=nil)

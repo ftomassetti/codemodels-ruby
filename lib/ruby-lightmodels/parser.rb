@@ -53,9 +53,14 @@ def self.assert_node_type(node,type)
 end
 
 
-def self.parse(code)
+def self.parse_code(code)
 	tree = JRubyParser.parse(code, {:version=>JRubyParser::Compat::RUBY2_0})
 	tree_to_model(tree)
+end
+
+# DEPRECATED
+def self.parse(code)
+	parse_code(code)
 end
 
 def self.tree_to_model(tree)
@@ -153,14 +158,12 @@ def self.node_to_model(node,parent_model=nil)
 		model.value = node.value
 		model
 	when 'STRNODE'
-		model = Ruby::StringLiteral.new
+		model = Ruby::StaticStringLiteral.new
 		model.value = node.value
-		model.dynamic = false
 		model
 	when 'DSTRNODE'
-		model = Ruby::StringLiteral.new
+		model = Ruby::DynamicStringLiteral.new
 		#model.value = node.value
-		model.dynamic = true
 		for i in 0..(node.size-1)
 			model.addPieces( node_to_model(node.get i) )
 		end
@@ -178,9 +181,8 @@ def self.node_to_model(node,parent_model=nil)
 		end
 		model
 	when 'DREGEXPNODE'
-		model = Ruby::RegExpLiteral.new
+		model = Ruby::DynamicRegExpLiteral.new
 		#model.value = node.value
-		model.dynamic = true
 		for i in 0..(node.size-1)
 			model.addPieces( node_to_model(node.get i) )
 		end
@@ -449,7 +451,7 @@ def self.node_to_model(node,parent_model=nil)
 
  		model 		
 	when 'CALLNODE'
-		model = Ruby::Call.new
+		model = Ruby::ExplicitReceiverCall.new
 		model.name = node.name
 		model.receiver = node_to_model node.receiver
 		
@@ -468,17 +470,13 @@ def self.node_to_model(node,parent_model=nil)
 			model.args = my_args_flattener(args_to_process) if args_to_process
 		end
 
-		model.implicit_receiver = false
 		model
 	when 'VCALLNODE'
-		model = Ruby::Call.new
+		model = Ruby::ExplicitReceiverCall.new
 		model.name = node.name
-		#model.receiver = node_to_model node.receiver
-		#model.args = args_to_model node.args
-		model.implicit_receiver = false
 		model
 	when 'FCALLNODE'
-		model = Ruby::Call.new
+		model = Ruby::ImplicitReceiverCall.new
 		model.name = node.name
 
 		if node.args.node_type.name == 'BLOCKPASSNODE'
@@ -496,19 +494,16 @@ def self.node_to_model(node,parent_model=nil)
 			model.args = my_args_flattener(args_to_process) if args_to_process
 		end
 
-		model.implicit_receiver = true
 		model		
 	when 'DEFNNODE'
-		model = Ruby::Def.new
+		model = Ruby::InstanceDef.new
 		model.name = node.name
 		process_body(node,model)
-		model.onself = false
 		model
 	when 'DEFSNODE'
-		model = Ruby::Def.new
+		model = Ruby::SelfDef.new
 		model.name = node.name
 		process_body(node,model)
-		model.onself = true
 		model
 	when 'BLOCKNODE'
 		model = Ruby::Block.new		

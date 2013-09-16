@@ -73,7 +73,6 @@ module Ruby
 		contains_many_uni 'args', Value
 		contains_one_uni 'block_arg', AbstractCodeBlock
 		contains_one_uni 'receiver', Value
-		has_attr 'implicit_receiver', Boolean
 
 		module Methods
 			def inspect
@@ -82,6 +81,12 @@ module Ruby
 		end
 
 		include Methods
+	end
+
+	class ExplicitReceiverCall < Call
+	end
+
+	class ImplicitReceiverCall < Call
 	end
 
 	class CallToSuper < Value
@@ -97,8 +102,13 @@ module Ruby
 		has_attr 'name', String
 		contains_one_uni 'body', Value
 		contains_one_uni 'ensure_body', Value
-		has_attr 'onself',Boolean
 		contains_many_uni 'rescue_clauses',RescueClause
+	end
+
+	class SelfDef < Def
+	end
+
+	class InstanceDef < Def
 	end
 
 	class Literal < Value
@@ -134,8 +144,13 @@ module Ruby
 	end
 
 	class RegExpLiteral < Literal
-		has_attr 'value', String
-		has_attr 'dynamic', Boolean
+		has_attr 'value', String				
+	end
+
+	class StaticRegExpLiteral < RegExpLiteral
+	end
+
+	class DynamicRegExpLiteral < RegExpLiteral
 		contains_many_uni 'pieces', Value # only for dynamic strings
 	end
 
@@ -152,8 +167,13 @@ module Ruby
 
 	class StringLiteral < Literal
 		has_attr 'value', String
-		has_attr 'dynamic', Boolean
+	end
+
+	class DynamicStringLiteral < StringLiteral
 		contains_many_uni 'pieces', Value # only for dynamic strings
+	end
+
+	class StaticStringLiteral < StringLiteral
 	end
 
 	class CmdLineStringLiteral < Literal
@@ -167,7 +187,7 @@ module Ruby
 	end
 
 	def self.string(value)
-		StringLiteral.build(value)
+		StaticStringLiteral.build(value)
 	end
 
 	class ConstantDecl < Value

@@ -34,22 +34,18 @@ class TestOperations < Test::Unit::TestCase
     st = t_symbol.body.contents[0]
     assert_right_class st, Ruby::LocalVarAssignment
     assert_equal 'root',st.name_assigned
-   	assert_node st.value, Call, name: 'parse', 
+   	assert_node st.value, ExplicitReceiverCall, name: 'parse', 
    			args: [Ruby.string(':a')], 
-   			implicit_receiver: false, 
    			receiver: Ruby.constant('Ruby')
 
     st = t_symbol.body.contents[1]
-    assert_node st, Call, name: 'assert_right_class', 
+    assert_node st, ImplicitReceiverCall, name: 'assert_right_class', 
         args: [LocalVarAccess.build('root'),Ruby.constant('Ruby','Symbol')], 
-        implicit_receiver: true, 
         receiver: nil
 
     st = t_symbol.body.contents[2]
-    call_root_name = Call.build name: 'name', args: [], receiver: LocalVarAccess.build('root'), implicit_receiver: false
-    assert_node st, Call, name: 'assert_equal', 
+    call_root_name = ImplicitReceiverCall.build name: 'name', args: [], receiver: LocalVarAccess.build('root'),
         args: [Ruby.string('a'),call_root_name], 
-        implicit_receiver: true, 
         receiver: nil
   end
 

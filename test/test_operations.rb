@@ -11,10 +11,9 @@ class TestOperations < Test::Unit::TestCase
   def test_sum
     root = Ruby.parse('3+40')
 
-    assert_right_class root, Ruby::Call
+    assert_right_class root, Ruby::ExplicitReceiverCall
     assert_equal '+', root.name   
     assert_is_int root.receiver, 3
-    assert_equal false, root.implicit_receiver
     assert_equal 1,  root.args.count
     assert_is_int root.args[0], 40
   end
@@ -42,9 +41,8 @@ class TestOperations < Test::Unit::TestCase
   def test_require
     root = Ruby.parse("require 'something'")
 
-    assert_right_class root, Ruby::Call
+    assert_right_class root, Ruby::ImplicitReceiverCall
     assert_equal 'require', root.name
-    assert_equal true, root.implicit_receiver
     assert_equal 1, root.args.count
     assert_is_str root.args[0],'something'   
   end
@@ -89,8 +87,7 @@ class TestOperations < Test::Unit::TestCase
     root = Ruby.parse('class A;def self.verbose;true;end;end')
 
     assert_right_class root,Ruby::ClassDecl
-    assert_node root.contents[0], Ruby::Def, 
-        onself: true,
+    assert_node root.contents[0], Ruby::SelfDef, 
         name: 'verbose',
         body: Ruby::BooleanLiteral.build(true)
   end
