@@ -237,20 +237,19 @@ def self.node_to_model(node,parent_model=nil)
 		model
 	when 'DXSTRNODE'
 		model = Ruby::CmdLineStringLiteral.new
-		for i in 0..(node.size-1)
+		for i in 0...node.size
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model	
 	when 'DSYMBOLNODE'
 		model = Ruby::DynamicSymbol.new
-		for i in 0..(node.size-1)
+		for i in 0...node.size
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model
 	when 'DREGEXPNODE'
 		model = Ruby::DynamicRegExpLiteral.new
-		#model.value = node.value
-		for i in 0..(node.size-1)
+		for i in 0...node.size
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model
@@ -586,7 +585,7 @@ def self.node_to_model(node,parent_model=nil)
 	when 'BACKREFNODE'
 		model = Ruby::BackReference.new
 	when 'EVSTRNODE'
-		node_to_model(node.body)
+		model = node_to_model(node.body)
 	when 'CLASSNODE'
 		model = Ruby::ClassDecl.new
 		model.defname = node_to_model(node.getCPath)
