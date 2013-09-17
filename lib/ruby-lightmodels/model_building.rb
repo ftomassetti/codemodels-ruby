@@ -7,6 +7,12 @@ module Ruby
 def self.handle_models_in_dir(src,error_handler=nil,model_handler)
 	LightModels::ModelBuilding.handle_models_in_dir(src,'rb',error_handler,model_handler) do |src|
 		root = Ruby.parse_file(src)
+	end
+end
+
+def self.handle_serialized_models_in_dir(src,error_handler=nil,model_handler)
+	LightModels::ModelBuilding.handle_models_in_dir(src,'rb',error_handler,model_handler) do |src|
+		root = Ruby.parse_file(src)
 		LightModels::Serialization.rgenobject_to_model(root)
 	end
 end
