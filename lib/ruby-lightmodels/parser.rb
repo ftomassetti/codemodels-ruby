@@ -92,6 +92,10 @@ def self.parse(code)
 	parse_code(code)
 end
 
+def self.node_tree_from_code(code)
+	JRubyParser.parse(code, {:version=>JRubyParser::Compat::RUBY2_0})
+end
+
 def self.tree_to_model(tree)
 	unless tree.node_type.name=='ROOTNODE' 
 		raise 'Root expected'
