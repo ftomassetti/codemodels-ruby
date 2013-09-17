@@ -48,6 +48,35 @@ class UnknownNodeType < ParsingError
 
 end
 
+def self.containment_pos(node)
+	container = node.eContainer
+	children  = node.eContainer.send(node.eContainingFeature)
+	if children.respond_to?(:each)
+		children.each_with_index do |c,i|
+			return i if c==node
+		end
+		raise "Not found"
+	else
+		raise "Not found" unless children==node
+		0
+	end
+end
+
+# node tree contains the original 
+def self.corresponding_node(model_element,node_tree)
+	return node_tree unless model_element.eContainer
+	corresponding_parent_node = corresponding_node(model_element.eContainer,node_tree)
+	containment_pos = containment_pos(model_element)
+	containing_feat = model_element.eContainingFeature
+
+	children = corresponding_parent_node.send(containing_feat)
+	if children.respond_to?(:each)
+		children[containment_pos]
+	else
+		children
+	end
+end
+
 def self.assert_node_type(node,type)
 	raise ParsingError.new(node,"AssertionFailed: #{type} expected but #{node.node_type.name} found") unless node.node_type.name==type
 end
