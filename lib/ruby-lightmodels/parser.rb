@@ -716,7 +716,7 @@ def self.node_to_model(node,parent_model=nil)
 		unknown_node_type_found(node)
 		#raise "I don't know how to deal with #{node.node_type.name} (position: #{node.position})"
 	end
-	class << model
+	model.class.class_eval do
 		include RawNodeAccessModule
 	end
 	model.original_node = node
