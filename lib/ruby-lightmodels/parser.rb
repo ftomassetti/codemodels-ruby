@@ -719,7 +719,7 @@ def self.node_to_model(node,parent_model=nil)
 	#model.class.class_eval do
 	#	include RawNodeAccessModule
 	#end
-	model.instance_variable_set(:original_node,node)
+	model.instance_variable_set(:@original_node,node)
 	#model.original_node = node
 	model
 end
