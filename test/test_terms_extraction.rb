@@ -200,4 +200,19 @@ class TestTermsExtraction < Test::Unit::TestCase
 			},InfoExtraction.terms_map(m))
 	end	
 
+	# def test_info_extraction_query
+	# 	c = @query_model_node.contents[3]
+	# 	assert_equal 'Query',c.defname.name
+	# 	m = c.contents[76]
+	# 	assert_equal 'sql_for_field',m.name
+	# 	puts "=== VALUES MAP ==="
+	# 	puts LightModels::InfoExtraction.values_map(m)
+	# 	puts "=== TERMS MAP ==="
+	# 	#putsInfoExtraction.terms_map(m)
+	# 	puts InfoExtraction.terms_map(m)
+	# 	#puts "CLASS NAME #{m.defname.name}"
+	# 	#assert_node m,Def,{name: 'up'}
+
+	# end
+
 end
