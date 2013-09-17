@@ -63,6 +63,7 @@ def self.containment_pos(node)
 end
 
 # node tree contains the original 
+# TO BE FIXED
 def self.corresponding_node(model_element,node_tree)
 	return node_tree unless model_element.eContainer
 	corresponding_parent_node = corresponding_node(model_element.eContainer,node_tree)
