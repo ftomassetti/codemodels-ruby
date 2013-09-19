@@ -41,7 +41,7 @@ class TestOperations < Test::Unit::TestCase
   def test_dregexp_with_value
     root = Ruby.parse('"some #{val} string"')
 
-    assert_right_class root, Ruby::StringLiteral
+    assert_right_class root, Ruby::DynamicStringLiteral
     assert_equal 3, root.pieces.count
     assert_is_str root.pieces[0],'some '
     assert_is_str root.pieces[2],' string'

@@ -200,7 +200,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 			},InfoExtraction.terms_map(m))
 	end	
 
-	def test_option_name_example
+def test_option_name_example
 		code = %q{
 			def option_name
  			   OptionName

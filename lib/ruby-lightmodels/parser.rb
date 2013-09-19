@@ -17,6 +17,10 @@ module LightModels
 
 module Ruby
 
+module RawNodeAccessModule
+	attr_accessor :original_node
+end
+
 class << self
 	attr_accessor :skip_unknown_node
 end
@@ -48,6 +52,36 @@ class UnknownNodeType < ParsingError
 
 end
 
+def self.containment_pos(node)
+	container = node.eContainer
+	children  = node.eContainer.send(node.eContainingFeature)
+	if children.respond_to?(:each)
+		children.each_with_index do |c,i|
+			return i if c==node
+		end
+		raise "Not found"
+	else
+		raise "Not found" unless children==node
+		0
+	end
+end
+
+# node tree contains the original 
+# TO BE FIXED
+def self.corresponding_node(model_element,node_tree)
+	return node_tree unless model_element.eContainer
+	corresponding_parent_node = corresponding_node(model_element.eContainer,node_tree)
+	containment_pos = containment_pos(model_element)
+	containing_feat = model_element.eContainingFeature
+
+	children = corresponding_parent_node.send(containing_feat)
+	if children.respond_to?(:each)
+		children[containment_pos]
+	else
+		children
+	end
+end
+
 def self.assert_node_type(node,type)
 	raise ParsingError.new(node,"AssertionFailed: #{type} expected but #{node.node_type.name} found") unless node.node_type.name==type
 end
@@ -61,6 +95,10 @@ end
 # DEPRECATED
 def self.parse(code)
 	parse_code(code)
+end
+
+def self.node_tree_from_code(code)
+	JRubyParser.parse(code, {:version=>JRubyParser::Compat::RUBY2_0})
 end
 
 def self.tree_to_model(tree)
@@ -173,7 +211,7 @@ def self.node_to_model(node,parent_model=nil)
 	#puts "#{node} #{node.node_type.name}"
 	case node.node_type.name
 	when 'NEWLINENODE'
-		node_to_model node.next_node
+		model = node_to_model node.next_node
 
 	##
 	## Literals
@@ -199,20 +237,19 @@ def self.node_to_model(node,parent_model=nil)
 		model
 	when 'DXSTRNODE'
 		model = Ruby::CmdLineStringLiteral.new
-		for i in 0..(node.size-1)
+		for i in 0...node.size
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model	
 	when 'DSYMBOLNODE'
 		model = Ruby::DynamicSymbol.new
-		for i in 0..(node.size-1)
+		for i in 0...node.size
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model
 	when 'DREGEXPNODE'
 		model = Ruby::DynamicRegExpLiteral.new
-		#model.value = node.value
-		for i in 0..(node.size-1)
+		for i in 0...node.size
 			model.addPieces( node_to_model(node.get i) )
 		end
 		model
@@ -226,7 +263,7 @@ def self.node_to_model(node,parent_model=nil)
 			return nil
 		else
 			#puts "NIL for #{node}"
-			Ruby::NilLiteral.new
+			model = Ruby::NilLiteral.new
 		end
  	when 'FALSENODE'
  		model = Ruby::BooleanLiteral.new
@@ -261,7 +298,7 @@ def self.node_to_model(node,parent_model=nil)
  		model.name = get_var_name_depending_on_parser_version(node,2)
  		model
  	when 'INSTVARNODE'
- 		Ruby::InstanceVarAccess.build get_var_name_depending_on_parser_version(node) 	
+ 		model = Ruby::InstanceVarAccess.build get_var_name_depending_on_parser_version(node) 	
 
  	###
  	### Variable Assignments
@@ -406,7 +443,7 @@ def self.node_to_model(node,parent_model=nil)
  		model.iterator = node_to_model(node.var)
  		model 		
  	when 'BREAKNODE'
- 		Ruby::BreakStatement.new
+ 		model = Ruby::BreakStatement.new
  	when 'UNTILNODE'
  		model = Ruby::UntilStatement.new
  		model.body = node_to_model(node.body)
@@ -423,11 +460,11 @@ def self.node_to_model(node,parent_model=nil)
  	###
 
  	when 'NTHREFNODE'
- 		Ruby::NthGroupReference.build(node.matchNumber)
+ 		model = Ruby::NthGroupReference.build(node.matchNumber)
  	when 'YIELDNODE'
- 		Ruby::YieldStatement.new
+ 		model = Ruby::YieldStatement.new
 	when 'NEXTNODE'
- 		Ruby::NextStatement.new 		
+ 		model = Ruby::NextStatement.new 		
  	when 'COLON3NODE'
  		model = Ruby::GlobalScopeReference.new
  		model.name = node.name
@@ -546,9 +583,9 @@ def self.node_to_model(node,parent_model=nil)
 		end
 		model
 	when 'BACKREFNODE'
-		Ruby::BackReference.new
+		model = Ruby::BackReference.new
 	when 'EVSTRNODE'
-		node_to_model(node.body)
+		model = node_to_model(node.body)
 	when 'CLASSNODE'
 		model = Ruby::ClassDecl.new
 		model.defname = node_to_model(node.getCPath)
@@ -618,9 +655,9 @@ def self.node_to_model(node,parent_model=nil)
  		model.operator_name = node.lexical_name
  		model
  	when 'ZARRAYNODE'
- 		Ruby::ArrayLiteral.new
+ 		model = Ruby::ArrayLiteral.new
  	when 'RETRYNODE'
- 		Ruby::RetryStatement.new
+ 		model = Ruby::RetryStatement.new
  	when 'BEGINNODE'
  		model = Ruby::BeginEndBlock.new
  		process_body(node,model)
@@ -679,6 +716,13 @@ def self.node_to_model(node,parent_model=nil)
 		unknown_node_type_found(node)
 		#raise "I don't know how to deal with #{node.node_type.name} (position: #{node.position})"
 	end
+	model.class.class_eval do
+		include RawNodeAccessModule
+	end
+	#puts "Setting variable for #{model} to #{node}" if model.is_a?(InstanceDef)
+	#model.instance_variable_set(:@original_node,node)
+	model.original_node = node
+	model
 end
 
 def self.unknown_node_type_found(node)
