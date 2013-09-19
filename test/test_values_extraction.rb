@@ -56,4 +56,19 @@ class TestValuesExtraction < Test::Unit::TestCase
 			LightModels::InfoExtraction.values_map(m))
 	end
 
+	def test_option_name_example
+		code = %q{
+			def option_name
+ 			   OptionName
+  			end
+		}
+		m = Ruby.parse_code(code)
+		assert_node m,Def,{name: 'option_name'}
+		assert_map_equal(
+			{
+				'option_name'=>1,
+				'OptionName' =>1
+			},LightModels::InfoExtraction.values_map(m))
+	end			
+
 end

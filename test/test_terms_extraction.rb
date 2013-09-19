@@ -200,4 +200,18 @@ class TestTermsExtraction < Test::Unit::TestCase
 			},InfoExtraction.terms_map(m))
 	end	
 
+	def test_option_name_example
+		code = %q{
+			def option_name
+ 			   OptionName
+  			end
+		}
+		m = Ruby.parse_code(code)
+		assert_node m,Def,{name: 'option_name'}
+		assert_map_equal(
+			{
+				'option_name'=>2
+			},InfoExtraction.terms_map(m))
+	end		
+
 end
