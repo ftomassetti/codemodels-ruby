@@ -174,7 +174,7 @@ def self.process_body(node,model)
 		rescue_clause_model.class.class_eval do
 			include RawNodeAccessModule
 		end
-		rescue_clause_model.original_node(node)
+		rescue_clause_model.original_node = node
 
  		rescue_clause_model.body = node_to_model(rescue_body_node.body)
  		model.addRescue_clauses( rescue_clause_model )
