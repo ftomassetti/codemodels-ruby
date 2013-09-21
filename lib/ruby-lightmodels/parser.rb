@@ -141,6 +141,10 @@ def self.my_args_flattener(args_node)
 		else
 			res << Ruby.splat(node_to_model(args_node.secondNode))
 		end
+		res.class.class_eval do
+			include RawNodeAccessModule
+		end
+		res.original_node(args_node.secondNode)
 		res
 	elsif args_node.is_a? ListNode
 		res = []
@@ -166,6 +170,12 @@ def self.process_body(node,model)
  		rescue_body_node = rescue_node.rescue
  		raise 'AssertionFailed' unless rescue_body_node.node_type.name=='RESCUEBODYNODE'
  		rescue_clause_model = Ruby::RescueClause.new
+
+		rescue_clause_model.class.class_eval do
+			include RawNodeAccessModule
+		end
+		rescue_clause_model.original_node(node)
+
  		rescue_clause_model.body = node_to_model(rescue_body_node.body)
  		model.addRescue_clauses( rescue_clause_model )
  	elsif node.body.node_type.name=='ENSURENODE'
