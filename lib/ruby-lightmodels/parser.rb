@@ -192,6 +192,9 @@ def self.process_formal_args(node,model)
 		if a.is_a?(Argument)
 			fa = FormalArgument.new
 			fa.name = a.name
+			fa.class.class_eval do
+				include RawNodeAccessModule
+			end
 			fa.original_node = node
 			model.addFormal_args(fa)
 		elsif a.is_a?(FormalArgument)
