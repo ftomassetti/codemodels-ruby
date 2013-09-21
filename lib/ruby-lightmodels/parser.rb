@@ -144,7 +144,7 @@ def self.my_args_flattener(args_node)
 		res.class.class_eval do
 			include RawNodeAccessModule
 		end
-		res.original_node(args_node.secondNode)
+		res.original_node = args_node.secondNode
 		res
 	elsif args_node.is_a? ListNode
 		res = []
