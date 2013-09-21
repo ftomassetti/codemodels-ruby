@@ -71,4 +71,34 @@ class TestValuesExtraction < Test::Unit::TestCase
 			},LightModels::InfoExtraction.values_map(m))
 	end			
 
+	def test_comment_sorting_example
+		code = %q{
+			def comments_sorting; self[:comments_sorting] end
+		}
+		m = Ruby.parse_code(code)
+		#puts "Ser: #{JSON.pretty_generate(LightModels::Serialization.jsonize_obj(m))}"
+		assert_node m,Def,{name: 'comments_sorting'}
+		assert_map_equal(
+			{
+				'comments_sorting'=>2,
+				'[]'=>1
+			},LightModels::InfoExtraction.values_map(m))		
+	end
+
+	def test_comment_sorting_assign_example
+		code = %q{	
+		  def comments_sorting=(order); self[:comments_sorting]=order end
+		}
+		m = Ruby.parse_code(code)
+		#puts "SerAss: #{JSON.pretty_generate(LightModels::Serialization.jsonize_obj(m))}"
+		assert_node m,Def,{name: 'comments_sorting='}
+		# '[]' is not contained because this is an element assignment
+		assert_map_equal(
+			{
+				'comments_sorting='=>1,
+				'comments_sorting' =>1,
+				'order' => 2
+			},LightModels::InfoExtraction.values_map(m))		
+	end
+
 end

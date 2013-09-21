@@ -36,4 +36,20 @@ class TestInfoExtraction < Test::Unit::TestCase
     assert_equal ['ciao','come','stai'],Ruby::InfoExtraction.id_to_words('ciao_come_stai!')
   end  
 
+  def test_id_to_words_equal
+    assert_equal ['ciao','come','stai'],Ruby::InfoExtraction.id_to_words('ciao_come_stai=')
+  end  
+
+  def test_assignment_method_name_recognized_as_identifier
+    assert Ruby::InfoExtraction.is_id_str'ciao='
+  end
+
+  def test_modifier_method_name_recognized_as_identifier
+    assert Ruby::InfoExtraction.is_id_str'ciao!'
+  end
+
+  def test_boolean_method_name_recognized_as_identifier
+    assert Ruby::InfoExtraction.is_id_str'ciao?'
+  end
+
 end

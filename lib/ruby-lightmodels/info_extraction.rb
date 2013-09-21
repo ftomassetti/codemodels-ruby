@@ -7,7 +7,7 @@ module Ruby
 module InfoExtraction
 
 def self.is_id_str(s)
-	(not s.index /[^A-Za-z0-9_!?]/) && (s.index /[A-Za-z]/)
+	(not s.index /[^A-Za-z0-9_!?=]/) && (s.index /[A-Za-z]/)
 end
 
 def self.id_to_words(id)
@@ -36,11 +36,11 @@ def self.id_to_words(id)
 			words_after = []
 		end
 		words = words_before
-		words = words + id.split(/[_!?]/)
+		words = words + id.split(/[_!?=]/)
 		words = words + words_after
 		words		
 	else
-		id.split /[_!?]/
+		id.split /[_!?=]/
 	end    
 end
 

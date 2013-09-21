@@ -200,7 +200,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 			},InfoExtraction.terms_map(m))
 	end	
 
-def test_option_name_example
+	def test_option_name_example
 		code = %q{
 			def option_name
  			   OptionName
@@ -213,5 +213,30 @@ def test_option_name_example
 				'option_name'=>2
 			},InfoExtraction.terms_map(m))
 	end		
+
+	def test_comment_sorting_example
+		code = %q{
+			def comments_sorting; self[:comments_sorting] end
+		}
+		m = Ruby.parse_code(code)
+		assert_node m,Def,{name: 'comments_sorting'}
+		assert_map_equal(
+			{
+				'comments_sorting'=>2, '[]'=>1
+			},InfoExtraction.terms_map(m))		
+	end
+
+	def test_comment_sorting_assign_example
+		code = %q{	
+		  def comments_sorting=(order); self[:comments_sorting]=order end
+		}
+		m = Ruby.parse_code(code)
+		assert_node m,Def,{name: 'comments_sorting='}
+		assert_map_equal(
+			{
+				'comments_sorting'=>2,
+				'order' => 2
+			},InfoExtraction.terms_map(m))		
+	end	
 
 end
