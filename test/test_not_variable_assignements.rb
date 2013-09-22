@@ -1,7 +1,4 @@
 require 'helper'
-
-require 'test/unit'
-require 'ruby-lightmodels'
  
 class TestNotVariableAssignment < Test::Unit::TestCase
 

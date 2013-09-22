@@ -1,6 +1,4 @@
 require 'helper'
-require 'test/unit'
-require 'ruby-lightmodels'
 
 class TestValuesExtraction < Test::Unit::TestCase
 

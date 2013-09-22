@@ -1,8 +1,5 @@
 require 'helper'
 
-require 'test/unit'
-require 'ruby-lightmodels'
-
 class TestConstants < Test::Unit::TestCase
 
 	include TestHelper
