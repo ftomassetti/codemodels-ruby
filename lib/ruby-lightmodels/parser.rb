@@ -797,6 +797,13 @@ def self.args_to_model(args_node)
 	end
 end
 
+class Parser < LightModels::Parser
+
+	def parse_code(code)
+		LightModels::Ruby.parse_code(code)
+	end
+
 end
 
+end
 end
