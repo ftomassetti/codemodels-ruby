@@ -20,7 +20,7 @@ class TestValuesExtraction < Test::Unit::TestCase
 				'description'=>2,'label_comment_add'=>1,'label_comment_delete'=>1,
 				'sort'=>2,1130=>1,1133=>1,
 				'is_public'=>2,false=>2,'mail_option'=>2,'mail_enabled'=>2,0=>4}, 
-			LightModels::InfoExtraction.values_map(m))
+			m.values_map)
 		@issuesHelperTest_model_node = Ruby.parse_code(read_test_data('issues_helper_test.rb'))
 	end
 
@@ -39,7 +39,7 @@ class TestValuesExtraction < Test::Unit::TestCase
 				'show_detail'=>2,false=>1,true=>1,
 				'<strong>Precedes</strong> <i>Issue #'=>1,
 				'</i> added'=>1}, 
-			LightModels::InfoExtraction.values_map(m))
+			m.values_map)
 	end
 
 	def test_values_from_arg_names
@@ -51,7 +51,7 @@ class TestValuesExtraction < Test::Unit::TestCase
 		assert_node m,Def,{name: 'mymethod'}
 		assert_map_equal(
 			{'mymethod'=>1,1=>1,'a'=>1,'b'=>1,'c'=>1}, 
-			LightModels::InfoExtraction.values_map(m))
+			m.values_map)
 	end
 
 	def test_option_name_example
@@ -66,7 +66,7 @@ class TestValuesExtraction < Test::Unit::TestCase
 			{
 				'option_name'=>1,
 				'OptionName' =>1
-			},LightModels::InfoExtraction.values_map(m))
+			},m.values_map)
 	end			
 
 	def test_comment_sorting_example
@@ -80,7 +80,7 @@ class TestValuesExtraction < Test::Unit::TestCase
 			{
 				'comments_sorting'=>2,
 				'[]'=>1
-			},LightModels::InfoExtraction.values_map(m))		
+			},m.values_map)		
 	end
 
 	def test_comment_sorting_assign_example
@@ -88,7 +88,7 @@ class TestValuesExtraction < Test::Unit::TestCase
 		  def comments_sorting=(order); self[:comments_sorting]=order end
 		}
 		m = Ruby.parse_code(code)
-		#puts "SerAss: #{JSON.pretty_generate(LightModels::Serialization.jsonize_obj(m))}"
+		
 		assert_node m,Def,{name: 'comments_sorting='}
 		# '[]' is not contained because this is an element assignment
 		assert_map_equal(
@@ -96,7 +96,7 @@ class TestValuesExtraction < Test::Unit::TestCase
 				'comments_sorting='=>1,
 				'comments_sorting' =>1,
 				'order' => 2
-			},LightModels::InfoExtraction.values_map(m))		
+			},m.values_map)		
 	end
 
 end

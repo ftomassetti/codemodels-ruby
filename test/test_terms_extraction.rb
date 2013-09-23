@@ -23,7 +23,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 				'destroy'=>1,
 				'description'=>2,'label'=>2,'sort'=>2,'1130'=>1,'1133'=>1,
 				'is_public'=>2,'false'=>2,'option'=>2,'enabled'=>2,'0'=>4,'mail'=>4}, 
-			InfoExtraction.terms_map(m))
+			m.terms_map)
 	end
 
 	def test_info_extraction_addCommentsPermissions_method_2
@@ -33,7 +33,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 			{'down'=>1, 'permission'=>2,'where'=>2,'first'=>2,'destroy'=>3,
 				'controller=? and action=?'=>2,'news'=>2,
 				'add'=>1,'comment'=>2}, 
-			InfoExtraction.terms_map(m))
+			m.terms_map)
 	end
 
 	def test_info_extraction_userCustomField_method_1
@@ -41,14 +41,14 @@ class TestTermsExtraction < Test::Unit::TestCase
 		assert_node m,Def,{name: 'type_name'}
 		assert_map_equal(
 			{'type_name'=>1,'label'=>1,'user'=>1,'plural'=>1}, 
-			InfoExtraction.terms_map(m))
+			m.terms_map)
 	end
 
 	def test_info_extraction_userCustomField_class
 		m = @userCustomField_model_node
 		assert_map_equal(
 			{'type_name'=>1,'label'=>1,'user'=>2,'plural'=>1,'custom_field'=>2}, 
-			InfoExtraction.terms_map(m))
+			m.terms_map)
 	end
 
 	def test_info_extraction_statusTest_method_1
@@ -60,7 +60,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 			'assert'=>5,'result'=>5,
 			'missing'=>4,'successful'=>4,'unsuccessful'=>2,
 			'[]'=>5,'!'=>2}, 
-			InfoExtraction.terms_map(m))
+			m.terms_map)
 	end
 
 	def test_info_extraction_issuesHelperTest_method_1
@@ -94,7 +94,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 				"false"=>1, #
 				"test"=>1, #
 				"with"=>1}, #
-			InfoExtraction.terms_map(m))
+			m.terms_map)
 	end
 
 	def test_info_extraction_issuesHelperTest_method_2
@@ -122,7 +122,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 				%q{<strong>Precedes</strong> deleted \(<i><a href="/issues/1" class=".+">Bug #1</a>: Can&#x27;t print recipes</i>\)}=>1, #
 				"false"=>1, #
 				"test"=>1 }, 
-			InfoExtraction.terms_map(m))
+			m.terms_map)
 	end
 
 	def test_info_extraction_darcsAdapter_method_1
@@ -140,7 +140,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 				'url'=>2,
 				'lastrev'=>1,
 				'last'=>1
-			},InfoExtraction.terms_map(m))
+			},m.terms_map)
 	end
 
 	def test_info_extraction_darcsAdapter_method_2
@@ -195,7 +195,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 				'<<'=>4,
 				'=='=>2,
 				'!='=>1
-			},InfoExtraction.terms_map(m))
+			},m.terms_map)
 	end	
 
 	def test_option_name_example
@@ -209,7 +209,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 		assert_map_equal(
 			{
 				'option_name'=>2
-			},InfoExtraction.terms_map(m))
+			},m.terms_map)
 	end		
 
 	def test_comment_sorting_example
@@ -221,7 +221,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 		assert_map_equal(
 			{
 				'comments_sorting'=>2, '[]'=>1
-			},InfoExtraction.terms_map(m))		
+			},m.terms_map)		
 	end
 
 	def test_comment_sorting_assign_example
@@ -234,7 +234,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 			{
 				'comments_sorting'=>2,
 				'order' => 2
-			},InfoExtraction.terms_map(m))		
+			},m.terms_map)		
 	end	
 
 end

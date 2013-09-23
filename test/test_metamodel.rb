@@ -59,4 +59,12 @@ class TestOperations < Test::Unit::TestCase
 		assert a.container==nil
 	end
 
+	def test_element_assignment
+		assert Ruby.const_defined? :ElementAssignment
+		c = Ruby.const_get :ElementAssignment
+
+		assert_all_attrs [],                                 c
+		assert_all_refs  ['container','element','value'],    c
+	end
+
 end

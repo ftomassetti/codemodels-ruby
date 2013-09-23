@@ -216,7 +216,7 @@ class TestOperations < Test::Unit::TestCase
     r = Ruby.parse(code)
     assert_node r, Ruby::Def, name:'with_deliveries'
     assert_not_nil r.ensure_body
-    assert_node r.ensure_body, Ruby::VarAssignment
+    assert_node r.ensure_body, Ruby::Assignment
   end
 
   def test_begin_ensure_block

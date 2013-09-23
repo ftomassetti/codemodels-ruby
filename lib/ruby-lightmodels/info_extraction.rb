@@ -83,6 +83,18 @@ def self.terms_map(model_node,context=nil)
 	LightModels::InfoExtraction.terms_map(RubySpecificInfoExtractionLogic.new,model_node,context)
 end
 
+end # end of InfoExtraction
+
+module RubyInfoExtractionFunctionalities
+
+	def terms_map(context=nil)
+		super(InfoExtraction::RubySpecificInfoExtractionLogic.new,context)
+	end
+
+end
+
+class RubyNode
+	include RubyInfoExtractionFunctionalities
 end
 
 end

@@ -4,11 +4,14 @@ module LightModels
 
 module Ruby
 
-	class Value < RGen::MetamodelBuilder::MMBase
+	class RubyNode < RGen::MetamodelBuilder::MMBase
+	end
+
+	class Value < RubyNode
 	end
 
 	# later attrs like optional or default value could be added
-	class Argument < RGen::MetamodelBuilder::MMBase
+	class Argument < RubyNode
 		has_attr 'name', String
 	end
 
@@ -94,11 +97,11 @@ module Ruby
 		contains_one_uni 'block_arg', AbstractCodeBlock
 	end
 
-	class RescueClause < RGen::MetamodelBuilder::MMBase 
+	class RescueClause < RubyNode 
 		contains_one_uni 'body',Value
 	end
 
-	class FormalArgument < RGen::MetamodelBuilder::MMBase
+	class FormalArgument < RubyNode
 		has_attr 'name',String
 		contains_one_uni 'default_value',Value
 	end
@@ -277,9 +280,12 @@ module Ruby
 		has_attr 'name', String		
 	end
 
-	class VarAssignment < Value
-		has_attr 'name_assigned', String
+	class Assignment < Value
 		contains_one_uni 'value', Value
+	end
+
+	class VarAssignment < Assignment
+		has_attr 'name_assigned', String		
 	end
 
 	class LocalVarAssignment < VarAssignment
@@ -340,7 +346,7 @@ module Ruby
 	class ClassVarAccess < VarAccess
 	end
 
-	class HashPair < RGen::MetamodelBuilder::MMBase
+	class HashPair < RubyNode
 		contains_one_uni 'key', Value
 		contains_one_uni 'value', Value
 	end
@@ -362,7 +368,7 @@ module Ruby
 		contains_one_uni 'name', Value
 	end
 
-	class WhenClause < RGen::MetamodelBuilder::MMBase
+	class WhenClause < RubyNode
 		contains_one_uni 'condition',Value
 		contains_one_uni 'body',Value
 	end
@@ -430,10 +436,9 @@ module Ruby
 	end
 
 	# ex a[1] = 2
-	class ElementAssignment < VarAssignment
+	class ElementAssignment < Assignment
 		contains_one_uni 'container',Value
 		contains_one_uni 'element',Value
-		contains_one_uni 'value',Value
 	end
 
 	# ex a[1] += 2
