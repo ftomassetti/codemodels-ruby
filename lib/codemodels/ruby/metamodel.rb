@@ -1,6 +1,6 @@
 require 'rgen/metamodel_builder'
 
-module LightModels
+module CodeModels
 
 module Ruby
 

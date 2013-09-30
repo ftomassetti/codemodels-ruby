@@ -1,7 +1,6 @@
-require 'java-lightmodels'
+require 'codemodels-java'
 
-module LightModels
-
+module CodeModels
 module Ruby
 
 module InfoExtraction
@@ -47,18 +46,18 @@ end
 class RubySpecificInfoExtractionLogic
 	
 	def terms_containing_value?(value)
-		res = ::LightModels::Java::InfoExtraction.is_camel_case_str(value) || LightModels::Ruby::InfoExtraction.is_id_str(value)
-		#puts "Contains terms? '#{value}' : #{res} #{::LightModels::Java::InfoExtraction.is_camel_case_str(value)} #{LightModels::Ruby::InfoExtraction.is_id_str(value)}"
+		res = ::CodeModels::Java::InfoExtraction.is_camel_case_str(value) || CodeModels::Ruby::InfoExtraction.is_id_str(value)
+		#puts "Contains terms? '#{value}' : #{res} #{::CodeModels::Java::InfoExtraction.is_camel_case_str(value)} #{CodeModels::Ruby::InfoExtraction.is_id_str(value)}"
 		res
 	end
 
 	def to_words(value)
-		if ::LightModels::Java::InfoExtraction.is_camel_case_str(value)
-			res = ::LightModels::Java::InfoExtraction.camel_to_words(value)
+		if ::CodeModels::Java::InfoExtraction.is_camel_case_str(value)
+			res = ::CodeModels::Java::InfoExtraction.camel_to_words(value)
 			res.each {|v| raise "Camel case to words produced a nil" if v==nil}
 			raise "No words found using the camel case to words" if res.count==0
 		else
-			res = LightModels::Ruby::InfoExtraction.id_to_words(value)
+			res = CodeModels::Ruby::InfoExtraction.id_to_words(value)
 			res.each {|v| raise "Id to words produced a nil" if v==nil}
 			raise "No words found using the id to words on '#{value}'" if res.count==0
 		end		
@@ -80,7 +79,7 @@ class RubySpecificInfoExtractionLogic
 end
 
 def self.terms_map(model_node,context=nil)
-	LightModels::InfoExtraction.terms_map(RubySpecificInfoExtractionLogic.new,model_node,context)
+	CodeModels::InfoExtraction.terms_map(RubySpecificInfoExtractionLogic.new,model_node,context)
 end
 
 end # end of InfoExtraction
@@ -98,5 +97,4 @@ class RubyNode
 end
 
 end
-
 end

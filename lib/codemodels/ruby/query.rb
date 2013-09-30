@@ -1,4 +1,4 @@
-module LightModels
+module CodeModels
 
 module Ruby
 

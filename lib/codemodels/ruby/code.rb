@@ -1,5 +1,4 @@
-module LightModels
-
+module CodeModels
 module Ruby
 
 def self.to_code(node)
@@ -12,5 +11,4 @@ def self.to_code(node)
 end
 
 end
-
 end

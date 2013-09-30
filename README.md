@@ -1,4 +1,6 @@
-ruby_to_emf_parser
-==================
+codemodels-ruby
+===============
 
-An EMF metamodel for ruby and a parser to build EMF models of ruby code
+Plugin of codemodels to build models from Ruby code.
+
+See http://github.com/ftomassetti/codemodels

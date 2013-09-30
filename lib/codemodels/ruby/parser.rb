@@ -1,6 +1,6 @@
 require 'jruby-parser'
-require 'ruby-lightmodels/metamodel'
 require 'emf_jruby'
+require 'codemodels/ruby/metamodel'
 
 java_import org.jrubyparser.ast.Node
 java_import org.jrubyparser.ast.ArrayNode
@@ -13,7 +13,7 @@ java_import org.jrubyparser.ast.ArrayNode
 
 java_import org.jrubyparser.util.StaticAnalyzerHelper
 
-module LightModels
+module CodeModels
 
 module Ruby
 
@@ -797,10 +797,10 @@ def self.args_to_model(args_node)
 	end
 end
 
-class Parser < LightModels::Parser
+class Parser < CodeModels::Parser
 
 	def parse_code(code)
-		LightModels::Ruby.parse_code(code)
+		CodeModels::Ruby.parse_code(code)
 	end
 
 end
