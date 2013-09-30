@@ -1,4 +1,4 @@
-require 'codemodels-java'
+require 'codemodels/java'
 
 module CodeModels
 module Ruby

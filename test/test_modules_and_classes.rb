@@ -3,7 +3,7 @@ require 'helper'
 class TestOperations < Test::Unit::TestCase
 
   include TestHelper
-  include LightModels
+  include CodeModels
 
   def test_class_decl_ext_class_in_module
     root = Ruby.parse("class TestOperations < Test::Unit::TestCase\nend")

@@ -4,11 +4,11 @@ SimpleCov.start do
 end
 
 require 'test/unit'
-require 'ruby-lightmodels'
+require 'codemodels/ruby'
 
 module TestHelper
 
-	include LightModels
+	include CodeModels
 
 	def assert_is_int(node,value)
 		assert node.is_a? Ruby::IntLiteral

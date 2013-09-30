@@ -3,7 +3,7 @@ require 'helper'
 class TestAssignments < Test::Unit::TestCase
 
 	include TestHelper
-	include LightModels
+	include CodeModels
 
 	def test_op_assignement
 		r = Ruby.parse("a.el ||= 2")

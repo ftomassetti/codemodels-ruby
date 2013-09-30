@@ -2,8 +2,8 @@ require 'helper'
 
 class TestValuesExtraction < Test::Unit::TestCase
 
-	include LightModels
-	include LightModels::Ruby
+	include CodeModels
+	include CodeModels::Ruby
 	include TestHelper
 
 	def setup
@@ -74,7 +74,7 @@ class TestValuesExtraction < Test::Unit::TestCase
 			def comments_sorting; self[:comments_sorting] end
 		}
 		m = Ruby.parse_code(code)
-		#puts "Ser: #{JSON.pretty_generate(LightModels::Serialization.jsonize_obj(m))}"
+		#puts "Ser: #{JSON.pretty_generate(CodeModels::Serialization.jsonize_obj(m))}"
 		assert_node m,Def,{name: 'comments_sorting'}
 		assert_map_equal(
 			{

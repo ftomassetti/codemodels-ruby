@@ -3,7 +3,7 @@ require 'helper'
 class TestOperations < Test::Unit::TestCase
 
 	include TestHelper
-	include LightModels
+	include CodeModels
 
 	def test_constant_top_container_single
 		a = Ruby.constant('a')

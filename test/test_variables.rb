@@ -3,7 +3,7 @@ require 'helper'
 class TestVariables < Test::Unit::TestCase
 
 	include TestHelper
-	include LightModels
+	include CodeModels
 
 	def test_inst_var_access
 		root = Ruby.parse('@v')

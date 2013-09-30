@@ -3,7 +3,7 @@ require 'helper'
 class TestOperations < Test::Unit::TestCase
 
   include TestHelper
-  include LightModels
+  include CodeModels
  
   def test_symbol
     root = Ruby.parse(':a')

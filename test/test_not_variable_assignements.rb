@@ -3,7 +3,7 @@ require 'helper'
 class TestNotVariableAssignment < Test::Unit::TestCase
 
   include TestHelper
-  include LightModels
+  include CodeModels
 
   def test_element_assignment
     root = Ruby.parse('models[1] = 2')

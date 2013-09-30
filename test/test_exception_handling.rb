@@ -3,7 +3,7 @@ require 'helper'
 class TestExceptionHandling < Test::Unit::TestCase
 
   include TestHelper
-  include LightModels
+  include CodeModels
 
   def test_rescue_empty
     root = Ruby.parse('begin;rescue;end')

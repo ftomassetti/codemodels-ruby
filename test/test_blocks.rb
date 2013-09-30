@@ -3,7 +3,7 @@ require 'helper'
 class TestBlocks < Test::Unit::TestCase
 
 	include TestHelper
-  include LightModels
+  include CodeModels
 
 	def test_passing_block_do
 		root = Ruby.parse("[].select do |x|\nx\nend")

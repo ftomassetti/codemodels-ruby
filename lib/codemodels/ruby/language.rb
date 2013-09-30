@@ -1,4 +1,4 @@
-require 'CodeModels'
+require 'codemodels'
 
 module CodeModels
 module Ruby

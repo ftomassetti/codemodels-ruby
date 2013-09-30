@@ -3,7 +3,7 @@ require 'helper'
 class TestLogic < Test::Unit::TestCase
 
   include TestHelper
-  include LightModels
+  include CodeModels
 
   def test_and_symbol
     root = Ruby.parse('1 && 2')

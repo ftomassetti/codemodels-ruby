@@ -3,8 +3,8 @@ require 'helper'
 class TestOperations < Test::Unit::TestCase
 
  include TestHelper
- include LightModels
- include LightModels::Ruby
+ include CodeModels
+ include CodeModels::Ruby
 
   def test_load_complex_file
 

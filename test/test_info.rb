@@ -3,7 +3,7 @@ require 'helper'
 class TestInfoExtraction < Test::Unit::TestCase
 
 	include TestHelper
-  include LightModels
+  include CodeModels
 
 	def test_id_to_words_empty
 		assert_equal [''],Ruby::InfoExtraction.id_to_words('')

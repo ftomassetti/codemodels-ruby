@@ -3,7 +3,7 @@ require 'helper'
 class TestConstants < Test::Unit::TestCase
 
 	include TestHelper
-	include LightModels
+	include CodeModels
 
 	def test_const_decl
 		root = Ruby.parse("MODULE_NAME = 'test'")

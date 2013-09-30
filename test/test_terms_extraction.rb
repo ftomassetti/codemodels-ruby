@@ -2,8 +2,8 @@ require 'helper'
 
 class TestTermsExtraction < Test::Unit::TestCase
 
-	include LightModels
-	include LightModels::Ruby
+	include CodeModels
+	include CodeModels::Ruby
 	include TestHelper
 
 	def setup
@@ -54,7 +54,7 @@ class TestTermsExtraction < Test::Unit::TestCase
 	def test_info_extraction_statusTest_method_1
 		m = @statusTest_model_node.contents[1].contents[1]
 		assert_node m,Def,{name: 'test_state_conditional'}
-		#puts "#{LightModels::Serialization.jsonize_obj(m)}"
+		#puts "#{CodeModels::Serialization.jsonize_obj(m)}"
 		assert_map_equal(
 			{'test'=>1,'state_conditional'=>1,
 			'assert'=>5,'result'=>5,
