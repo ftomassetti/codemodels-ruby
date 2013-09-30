@@ -450,7 +450,7 @@ module Ruby
 	end
 
 	class MultipleAssignment < Value
-		contains_many_uni 'assignments',VarAssignment
+		contains_many_uni 'assignments',Assignment
 		contains_many_uni 'values',Value
 	end
 
