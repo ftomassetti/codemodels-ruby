@@ -20,11 +20,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency('json')
-  s.add_dependency('emf_jruby')
   s.add_dependency('jruby-parser', '=0.5.0')
   s.add_dependency('codemodels')
   s.add_dependency('codemodels-java')
-  s.add_dependency('rgen')
 
   s.add_development_dependency "bundler", "~> 1.3"
   s.add_development_dependency "rake"

@@ -1,5 +1,4 @@
 require 'jruby-parser'
-require 'emf_jruby'
 require 'codemodels'
 require 'codemodels/ruby/metamodel'
 
