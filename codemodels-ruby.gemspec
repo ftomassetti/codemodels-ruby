@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description = "Plugin of codemodels to build models from Ruby code. See http://github.com/ftomassetti/codemodels."
   s.authors     = ["Federico Tomassetti"]
   s.email       = 'f.tomassetti@gmail.com'
-  s.homepage    = 'http://federico-tomassetti.it'
+  s.homepage    = 'https://github.com/ftomassetti/codemodels-ruby'
   s.license     = "APACHE 2"
 
   s.files         = `git ls-files`.split($/)
