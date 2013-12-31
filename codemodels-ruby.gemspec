@@ -5,8 +5,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 Gem::Specification.new do |s|
   s.platform    = 'java'
   s.name        = 'codemodels-ruby'
-  s.version     = '0.1.5'
-  s.date        = '2013-09-03'
+  s.version     = CodeModels::Ruby::VERSOPM
+  s.date        = '2013-12-31'
   s.summary     = "Plugin of codemodels to build models from Ruby code."
   s.description = "Plugin of codemodels to build models from Ruby code. See http://github.com/ftomassetti/codemodels."
   s.authors     = ["Federico Tomassetti"]
