@@ -374,7 +374,14 @@ def self.node_to_model(node,parent_model=nil)
  		model = Ruby::MultipleAssignment.new
  		if node.pre
  			for i in 0..(node.pre.count-1)
- 				model.addAssignments( node_to_model(node.pre.get(i)) )
+ 				begin
+ 					child = node.pre.get(i)
+ 				rescue
+ 					# sometimes it is not accessible... DON'T ASK!
+ 					# maybe I should use childNodes instead of get...
+ 					child = nil
+ 				end
+ 				model.addAssignments( node_to_model(child) ) if child
  			end
  		end
  		values_model = node_to_model(node.value)
