@@ -1,10 +1,10 @@
-require 'rgen/metamodel_builder'
+require 'codemodels'
 
 module CodeModels
 
 module Ruby
 
-	class RubyNode < RGen::MetamodelBuilder::MMBase
+	class RubyNode < CodeModelsAstNode
 	end
 
 	class Value < RubyNode
